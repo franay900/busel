@@ -1,14 +1,11 @@
 import os
-from pathlib import Path
-
-
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = '84xz44(&t+k=#dkwpdn_z92x8e07p4r07&x^0j_@sv1mhg54_&'
-DEBUG = True
 
-ALLOWED_HOSTS = []
+SECRET_KEY = '84xz4~A15HrFd*B5ec???9IetrvZXZq~ELH*UP5T4ACT0~La{Xou'
+DEBUG = False
+
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 STATIC_ROOT=os.path.join(BASE_DIR,'static')
@@ -23,9 +20,9 @@ DATABASES = {
 
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'busel',
-        'USER' : 'sadmin',
-        'PASSWORD' : 'asszxx228',
-        'HOST' : '127.0.0.1',
+        'USER' : 'ilnur',
+        'PASSWORD' : 'masterAdminBusel',
+        'HOST' : 'localhost',
         'PORT' : '5432',
     }
 }
