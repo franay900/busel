@@ -23,6 +23,6 @@ DATABASES = {
         'USER' : 'busel_admin',
         'PASSWORD' : 'masterAdminBusel#345',
         'HOST' : 'localhost',
-        'PORT' : '',
+
     }
 }
