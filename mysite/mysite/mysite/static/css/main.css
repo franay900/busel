@@ -1,0 +1,88 @@
+.styled-table {
+border-collapse: collapse;
+margin: 25px 0;
+font-size: 0.9em;
+font-family: sans-serif;
+min-width: 100%;
+box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+.styled-table thead tr {
+background-color: #009879;
+color: #ffffff;
+text-align: left;
+}
+.styled-table th,
+.styled-table td {
+padding: 12px 15px;
+}
+.styled-table tbody tr {
+border-bottom: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:last-of-type {
+border-bottom: 2px solid #009879;
+}
+
+.styled-table tbody tr.active-row {
+font-weight: bold;
+color: #009879;
+}
+
+.table_link {
+font-weight: bold;
+color: #212529;
+}
+.table_link:hover {
+font-weight: bold;
+color: #009879;
+}
+
+.td{
+width: 33%;
+}
+
+
+  .myTable {
+border: none;
+border-right: solid 1px #DDEFEF;
+border-collapse: collapse;
+border-spacing: 0;
+font: normal 13px Arial, sans-serif;
+}
+.myTable thead td {
+background-color: #EEE;
+border: none;
+color: grey;
+padding: 5px;
+text-align: left;
+text-shadow: 1px 1px 1px #fff;
+white-space: nowrap;
+}
+.myTable tbody td {
+color: #333;
+padding: 5px;
+height:32px;
+text-shadow: 1px 1px 1px #fff;
+white-space: nowrap;
+}
+.myTable tbody td, .myTable thead th {
+border: 1px solid #ccc;
+}
+.row-2{
+height:72px;
+}
+
+
+.date{
+max-width:42px;
+min-width:42px;
+height: 32px;
+}
+
+.student{
+max-height:32px;
+}
