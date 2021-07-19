@@ -1,0 +1,21 @@
+{% extends 'user_index.html' %}
+
+
+
+{% block content %}
+
+  <div class="alert alert-secondary" role="alert">
+  <h4 class="alert-heading">Внимание!</h4>
+  <p> На данной странице производится импорт учащихся. Поддерживаемые форматы: <strong>xlsx</strong>. Половую принадлежность необходимо ввести с маленькой буквы, полностью, без сокращений. Формат записи даты: день.месяц.год. Например: 01.01.2000. Иные форматы записи даты не допускаются. Во избежании ошибочно введенных данных файл перед загрузкой на сервер необходимо проверить. <strong>Класс вводить строго так, как он отображается в элетронном журнале. </strong></p>
+  <hr>
+  <p class="mb-0">Шаблон: <a href="{{ file.file.url }}" class="alert-link" download>{{ file.name }}</a></p>
+</div>
+<form action="" enctype="multipart/form-data" method="POST">
+{% csrf_token %}
+<div class="custom-file">
+  <input name="file" type="file" class="custom-file-input" id="customFileLangHTML" accept=".xlsx">
+  <label class="custom-file-label" for="customFileLangHTML" data-browse="Загрузить">Выберите файл</label>
+</div>
+<button class="btn btn-primary mt-3">Загрузить</button>
+</form>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'user_index.html' %}
+
+{% block h2 %}
+
+{% endblock %}
+
+{% block content %}
+
+   <form  method="POST" action="" enctype="multipart/form-data"> 
+     
+     {% csrf_token %}
+     <div class="container py-2">
+    <div class="row my-2">
+        <!-- edit form column -->
+        <div class="col-lg-4">
+            <h2 class="text-center font-weight-light">Профиль пользователя</h2>
+        </div>
+        <div class="col-lg-8">
+            
+        </div>
+        <div class="col-lg-8 order-lg-1 personal-info">
+        		{% for i in form %}
+        		{% if i != form.avatar %}
+                <div class="form-group row">
+                    <label class="col-lg-3 col-form-label form-control-label">{{ i.label }}:</label>
+                    <div class="col-lg-9">
+                        {{ i }}
+                        <small style="color:red" id="passwordHelpBlock" class="form-text text-muted text-danger">
+						  {{ i.errors }}
+						</small>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+                 <div class="form-group row">
+                    <div class="col-lg-9 ml-auto text-right">
+                        <input type="reset" class="btn btn-outline-secondary" value="Отмена" />
+                        <input type="submit" class="btn btn-primary" value="Сохранить" />
+                    </div>
+                </div>
+        </div>
+        {% for i in form %}
+        {% if i == form.avatar %}
+        <div class="col-lg-4 order-lg-0 text-center">
+            {% if form.instance.avatar %}
+            <img src="{{ form.instance.avatar.url }}" class="mx-auto img-fluid " style="height:200px;width:300px" alt="avatar" />
+            {% endif %}
+            <h6 class="my-4">Загрузить новую фотографию</h6>
+            <div class="input-group px-xl-4">
+            	<div class="custom-file">
+            	{{ i }}
+            	<label class="custom-file-label" for="validatedInputGroupCustomFile">{{ i.label }}</label>
+            </div>
+            </div>
+        </div>
+        {% endif %}
+                {% endfor %}
+    </div>
+</div>
+
+  </form>
+<style>
+    #id_class{
+        width:auto;
+    }
+</style>
+{% endblock %}

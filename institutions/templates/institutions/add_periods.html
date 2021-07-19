@@ -1,0 +1,77 @@
+{% extends 'user_index.html' %}
+{% block h2 %}
+Добавление учебных периодов
+{% endblock %}
+
+
+{% block content %}
+
+
+	<form action="" method="post">
+		
+		{% csrf_token %}
+		{{ form }}
+		<label for="">Тип периода:</label>
+		<div class="form-check">
+		 	<input class="form-check-input" type="radio" name="type_period" id="four" value="4" checked="">
+		 	<label class="form-check-label" for="exampleRadios1">
+		    	Четверти
+		  	</label>
+		</div>
+		<div class="form-check">
+		 	<input class="form-check-input" type="radio" name="type_period" id="three" value="3" >
+		 	<label class="form-check-label" for="exampleRadios1">
+		    	Триместры
+		  	</label>
+		</div>
+		<div class="form-check">
+		 	<input class="form-check-input" type="radio" name="type_period" id="two" value="2" >
+		 	<label class="form-check-label" for="exampleRadios1">
+		    	Полугодия
+		  	</label>
+		</div>
+
+		<div class="four mt-4">
+			<table class="table table-bordered table-sm table-striped " >
+					<tr>
+						<td>Период</td>
+						<td>Начало</td>
+						<td>Окончание</td>
+					</tr>
+				<tr id="one_per">
+					<td id="one_title">1 четверть</td>
+					<td><input name="one_start" id="id_one"   class="form-control form-control-sm" type="date"></td>
+					<td><input name="one_end" class="form-control form-control-sm" type="date"></td>
+				</tr>
+				<tr id="two_per">
+					<td id="two_title">2 четверть</td>
+					<td><input name="two_start" class="form-control form-control-sm" type="date"></td>
+					<td><input name="two_end" class="form-control form-control-sm" type="date"></td>
+				</tr>
+				<tr id="three_per">
+					<td id="three_title">3 четверть</td>
+					<td><input name="three_start" class="form-control form-control-sm" type="date"></td>
+					<td><input name="three_end" class="form-control form-control-sm" type="date"></td>
+				</tr>
+				<tr id="four_per"> 
+					<td>4 четверть</td>
+					<td><input name="four_start" class="form-control form-control-sm" type="date"></td>
+					<td><input name="four_end" class="form-control form-control-sm" type="date"></td>
+				</tr>
+
+			</table>
+		</div>
+
+		<button type="submit" class="btn btn-success mt-3">Сохранить</button>
+	</form>
+
+
+<script>
+let start_year='{{ user.institution.year.start|date:'Y-m-d' }}'
+let end_year='{{ user.institution.year.end|date:'Y-m-d' }}'
+$('input[type="date"]').attr('min', start_year);
+$('input[type="date"]').attr('max', end_year);
+
+radio()
+</script>
+{% endblock %}

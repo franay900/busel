@@ -1,0 +1,25 @@
+{% extends 'user_index.html' %}
+
+
+
+{% block content %}
+	<table class="table table-sm table-bordered">
+		<tr>
+			<td style="width: 33%">Наименование шаблона</td>
+			<td style="width: 33%">Учебный план</td>
+			<td style="width: 34%">Действие</td>
+		</tr>
+		{% for template in templates %}
+		<tr>
+			<td >{{ template.name }}</td>
+			<td >{{ template.сurriculum }}</td>
+			<td ><a href="{{ template.get_absolute_url }}">Редактировать</a></td>
+		</tr>
+		{% endfor %}
+	</table>
+	<form action="{% url 'AddTimetableTemplate' %}" method="POST">
+		{% csrf_token %}
+		<button name="class" value="{{class.pk}}" class="btn btn-success">Добавить</button>
+		
+	</form>
+{% endblock %}

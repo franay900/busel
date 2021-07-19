@@ -1,0 +1,16 @@
+{% extends 'user_index.html' %}
+{% block h2 %}
+Организация
+{% endblock %}
+
+
+{% block content %}
+	
+
+   <form action="" method="post">
+   	{% csrf_token %}
+   	{{ form }}
+   	
+   	<button type="submit" class="btn btn-success">Сохранить</button>
+   </form>
+{% endblock %}

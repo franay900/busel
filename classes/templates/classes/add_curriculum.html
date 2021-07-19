@@ -1,0 +1,112 @@
+{% extends 'user_index.html' %}
+{% block h2 %}
+Добавление учебного плана
+{% endblock %}
+
+
+{% block content %}
+	<form method="POST">
+		{% csrf_token %}
+		{{ form }}
+	<div class="row mt-3">
+  <div class="col-6">
+    <div class="list-group list-group-horizontal-sm" id="list-tab" role="tablist">
+      <a class="list-group-item  list-group-item-action active" id="list-home-list" data-toggle="list" href="#list-home" role="tab" aria-controls="home">1-4 классы</a>
+      <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list" href="#list-profile" role="tab" aria-controls="profile">5-9 классы</a>
+      <a class="list-group-item list-group-item-action" id="list-messages-list" data-toggle="list" href="#list-messages" role="tab" aria-controls="messages">10-11 классы</a>
+    </div>
+  </div>
+<div class="alert alert-danger mt-3" role="alert">
+  <h4 class="alert-heading">Внимание!</h4>
+  <p>На данной странице происходит заполнение учебного плана.Ниже необходимо указать количество учебных часов для изучаемых предметов.В случае отсутствия необходимости в некоторых предметах необходимо пропустить ввод количества учебных часов по данному предмету.</p>
+  <hr>
+  <p class="mb-0">При необходимости можно создать для каждого профиля свой учебный план.</p>
+</div>
+
+  </div>
+  <div class="row">
+  <div class="col-12">
+    <div class="tab-content tab-content-horizontal" id="nav-tabContent">
+      <div class="tab-pane fade show active" id="list-home" role="tabpanel" aria-labelledby="list-home-list">
+      	<table class="table table-bordered table-sm table-striped mt-3">
+      		<thead>
+      			<tr>
+      				<td>Предметы</td>
+      				<td>1 класс</td>
+      				<td>2 класс</td>
+      				<td>3 класс</td>
+      				<td>4 класс</td>
+      			</tr>
+      		</thead>
+      		<tbody>
+      			{% for subject in subjects %}
+      			<tr>
+      				<td>{{ subject.title }}</td>
+      				{% for class in '1234' %}
+      				<td>
+      					<input class="form-control form-control-sm" type="" name="h{{ subject.id }}{{ class }}" placeholder="0">
+      				</td>
+      				{% endfor %}
+      			</tr>
+      			{% endfor %}
+      		</tbody>
+      	</table>
+      </div>
+      <div class="tab-pane fade" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">
+      	<table class="table table-bordered table-sm table-striped mt-3">
+      		<thead>
+      			<tr>
+      				<td>Предметы</td>
+      				<td>5 класс</td>
+      				<td>6 класс</td>
+      				<td>7 класс</td>
+      				<td>8 класс</td>
+      				<td>9 класс</td>
+      			</tr>
+      		</thead>
+      		<tbody>
+      			{% for subject in subjects %}
+      			<tr>
+      				<td>{{ subject.title }}</td>
+      				{% for class in '56789' %}
+      				<td>
+      					<input class="form-control form-control-sm" type="" name="h{{ subject.id }}{{ class }}" placeholder="0">
+      				</td>
+      				{% endfor %}
+      			</tr>
+      			{% endfor %}
+      		</tbody>
+      	</table>
+      </div>
+      <div class="tab-pane fade" id="list-messages" role="tabpanel" aria-labelledby="list-messages-list">
+      	<table class="table table-bordered table-sm table-striped mt-3">
+      		<thead>
+      			<tr>
+      				<td>Предметы</td>
+      				<td>10 класс</td>
+      				<td>11 класс</td>
+
+      			</tr>
+      		</thead>
+      		<tbody>
+      			{% for subject in subjects %}
+      			<tr>
+      				<td>{{ subject.title }}</td>
+      				{% for class in class %}
+      				<td>
+      					<input class="form-control form-control-sm" type="" name="h{{ subject.id }}{{ class }}" placeholder="0">
+      				</td>
+      				{% endfor %}
+      			</tr>
+      			{% endfor %}
+      		</tbody>
+      	</table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="btn btn-success"  type="submit">Добавить</button>
+</form>
+
+{% endblock %}
