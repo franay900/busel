@@ -133,4 +133,4 @@ try:
     from .prod_settings import *
     
 except ImportError:
-    # from .local_settings import *
+    from .local_settings import *
