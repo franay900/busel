@@ -1,4 +1,7 @@
 import os
+from pathlib import Path
+
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -13,3 +16,16 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR,'mysite/static')
 
 ]
+
+DATABASES = {
+    'default': {
+        #
+
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'busel',
+        'USER' : 'sadmin',
+        'PASSWORD' : 'asszxx228',
+        'HOST' : '127.0.0.1',
+        'PORT' : '5432',
+    }
+}

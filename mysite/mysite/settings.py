@@ -12,8 +12,10 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 
+import os
 
 
+BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -79,18 +81,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        #
 
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'busel',
-        'USER' : 'sadmin',
-        'PASSWORD' : 'asszxx228',
-        'HOST' : '127.0.0.1',
-        'PORT' : '5432',
-    }
-}
 
 
 # Password validation
@@ -140,5 +131,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 try:
     from .local_settings import *
-except:
+except ImportError:
     from .prod_settings import *
