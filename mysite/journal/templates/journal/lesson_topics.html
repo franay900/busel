@@ -1,0 +1,79 @@
+{% extends 'user_index.html' %}
+{% load dz_tags %}
+
+
+{% block content %}
+<form action="" method="POST">
+{% csrf_token %}
+<table class="styled-table">
+	<thead>
+	<tr>
+		<td style="width:3%">№</td>
+		<td style="width:10%">Дата</td>
+		<td style="width: 25%">Тема урока</td>
+		<td style="width:25%">Домашнее задание</td>
+		<td style="width:20%">Тип урока</td>
+	</tr>
+	</thead>
+	{% for lesson in lessons %}
+	{% if lesson.date >= period.start and lesson.date <= period.end %}
+	<tr>
+		<td>{{ forloop.counter }}</td>
+		<td>{{ lesson.date|date:'d.m.Y' }}</td>
+		<td><textarea name="topic{{ lesson.pk }}" class="form-control" id="" rows="">{% if lesson.topic %}{{ lesson.topic }}{% endif %}</textarea></td>
+		<td>
+			<textarea name="homework{{ lesson.pk }}" class="form-control" id="" rows="">{% if lesson.homework %}{{ lesson.homework }}{% endif %}</textarea>
+			{% get_dates date=lesson.date  as dates %}
+			<select name="date_homework{{ lesson.pk }}"  class="custom-select custom-select-sm"  name="" id="">
+				<option value="">---</option>
+				{% for date in dates %}
+				{% get_bell date=date as bell %}
+				<option  {{ lesson.date_homework.pk }} {% if lesson.date_homework.pk == date.pk %} selected="" {% endif %}  value="{{ date.pk }}">{{ date.date|date:'d.m.Y D' }} ({{ bell.start }}-{{ bell.end }})</option>
+				{% endfor %}
+			</select>
+		</td>
+		<td>
+			
+			{% if not lesson.types.all  %}
+			<select  name="types{{ lesson.pk }}" id="t{{ lesson.pk }}" class="custom-select custom-select-sm">
+				<option value="">-</option>
+				{% for type in types %}
+				<option value="{{ type.pk }}">{{ type.name }}</option>
+				{% endfor %}
+			</select>
+			{% else %}
+
+			{% for type_lesson in lesson.types.all %}
+			<select disabled="0" red="types{ lesson.pk }}" id="t{{ lesson.pk }}" class="custom-select custom-select-sm">
+				<option value="">-</option>
+				{% for type in types %}
+				<option {% if type.pk == type_lesson.pk %} selected="" {% endif %} value="{{ type.pk }}">{{ type.name }}</option>
+				{% endfor %}
+			</select>
+			{% endfor %}
+			{% endif %}
+			<button type="button" id="append" value="{{ lesson.pk }}" class="btn btn-sm btn-success append">Добавить</button>
+		</td>
+	</tr>
+	{% endif %}
+	{% endfor %}
+</table>
+<button type="submit" class="btn btn-primary ">Сохранить</button>
+
+</form>
+
+ <script type="text/javascript">
+ 	$('.append').click(function(){
+ 		var value=$(this).val()
+ 		var select=$('#t'+value)
+ 		var clone=$(select).clone().insertBefore(this)
+ 		$(clone).attr('name','types'+value)
+ 		$(clone).removeAttr('disabled')
+ 		$(clone).find("option:selected").removeAttr('selected')
+
+ 		
+ 	})
+ </script>
+
+
+{% endblock %}

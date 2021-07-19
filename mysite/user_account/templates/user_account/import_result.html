@@ -1,0 +1,41 @@
+{% extends 'user_index.html' %}
+
+
+
+{% block content %}
+<form  method="POST" >
+<table class="table table-bordered table-sm">
+	<tr>
+		<td>Фамилия</td>
+		<td>Имя</td>
+		<td>Отчество</td>
+		<td>Пол</td>
+		<td>Дата рождения</td>
+		<td>Класс</td>
+		<td>Логин</td>
+		<td>Пароль</td>
+		<td>Импорт</td>
+	</tr>
+	{% for user in users %}
+	<tr>
+		<td>{{ user.0 }}</td>
+		<td>{{ user.1 }}</td>
+		<td>{{ user.2 }}</td>
+		<td>{{ user.3 }}</td>
+		<td>{{ user.4|date:'d.m.Y' }}</td>
+		<td>{{ user.8.class_number }}{{ user.8.letter }}</td>
+		<td>{{ user.5 }}</td>
+		<td>{{ user.6 }}</td>
+		<td>
+			<input  name="users" class="" type="checkbox" value="{{ user.7 }}" id="flexCheckChecked" checked>
+			<input style="display: none"  name="users_classes" class="" type="checkbox" value="{{ user.8.pk }}" id="flexCheckChecked" checked>
+		</td>
+	</tr>
+	{% endfor %}
+</table>
+
+{% csrf_token %}
+<button class="btn btn-success mt-3" name="add" >Добавить в систему</button>
+
+</form>
+{% endblock %}

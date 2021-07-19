@@ -1,0 +1,32 @@
+{% extends 'user_index.html' %}
+{% block h2 %}
+Профили звонков
+{% endblock %}
+
+
+{% block content %}
+	
+		<table class="table table-sm table-bordered ">
+			<thead>
+				<tr>
+					<td>
+						Наименование
+					</td>
+					<td>
+						Действие
+					</td>
+				</tr>
+
+			</thead>
+			{% for bell_profile in bell_profiles %}
+			<tr>
+				<td>{{ bell_profile.title }}</td>
+				<td><a href="">Редактировать</a></td>
+			</tr>
+			{% endfor %}
+		</table>
+	
+
+	<a class="btn btn-success" href="{% url 'Bell_profile_create' %}">Добавить</a>
+   
+{% endblock %}
