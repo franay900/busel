@@ -18,32 +18,19 @@
     </div>
   </div>
 
-  <div class="container container-fluid">
+  <div class="container">
     <!-- Example row of columns -->
     <div class="row">
     {% for news in news %}
-      <div class="card mb-4 shadow-sm">
-          {% if news.photo %}
-            <img src="{{ news.photo.url }}">
-            {% else %}
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">{{ news.title }}</text></svg>
-            {% endif %}
-            <div class="card-body">
-              <p class="card-text">{{ news.content }}</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Просмотреть</button>
-
-                </div>
-                <small class="text-muted">{{ news.created_at|date:"d.m.Y" }}</small>
-              </div>
-            </div>
-          </div>
+      <div class="col-md-4">
+        <h2>{{ news.title }}</h2>
+        <p>{{ news.content }}</p>
+        <p><a class="btn btn-secondary" href="#" role="button">Подробнее</a></p>
+      </div>
     {% endfor %}
     </div>
 
     <hr>
-
 <footer class="container">
   <p>© ПК "Бусел" 2020-2021</p>
 </footer>
