@@ -51,6 +51,12 @@
         <a class="nav-link disabled" href="#">Заявка на участие в тестировании</a>
       </li>
 
+        {% if request.user.is_superuser %}
+        <li class="nav-item">
+        
+        <a class="nav-link" href="{% url 'add_news' %}">Добавить новость</a>
+        </li>
+        {% endif %}
     </ul>
       <a class="btn btn-outline-success my-2 my-sm-0" href="{% url 'login' %}" >Вход</a>
 

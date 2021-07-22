@@ -53,6 +53,7 @@ class Registration(UpdateView):
         return UserNet.objects.get(pk=self.request.user.pk)
     def form_valid(self, form):
         user = form.save(commit=False)
+        user.registration=True
         user.set_password(self.request.POST.get("password"))
         user.save()
         return super().form_valid(form)

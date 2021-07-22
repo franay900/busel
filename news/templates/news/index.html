@@ -7,31 +7,32 @@
 {% endblock %}
 
 {% block content %}
-    		{% for item in news %}
-    			<div class="card mb-3">
-				  <div class="card-header">
-				    Категория: <a href="{{ item.category.get_absolute_url }}">{{ item.category.title }}</a>
-				  </div>
-				  <div class="card-body">
-				  	<div class="media">
-				  		{% if item.photo %}
-				  		<img src="{{ item.photo.url }}" width="350px" class="mr-3">
-				  		{% else %}
-				  		<img src="https://www.entakiralikcadir.com/wp-content/uploads/blank-00cc00-768x768.png" width="350px" class="mr-3">
-				  		{% endif %}
-				  		<div class="media-body">
-				  			<h5 class="card-title">{{ item.title }}</h5>
-				    		<p class="card-text">{{ item.content }}</p>
-				    		<a href="{{ item.get_absolute_url }}" class="btn btn-primary">Читать дальше</a>
-				  		</div>
-				  	</div>
-				    
-				  </div>
-				  <div class="card-footer text-muted">
-				    {{ item.created_at |date:"d E Y H:i:s"}}
-				  </div>
-				</div>
-    		
-    	
-    	{% endfor %}
+
+
+    		<div class="jumbotron">
+    <div class="container">
+      <h1 class="display-3">Добро пожаловать!</h1>
+      <p>ПК "Бусел" - это комплекс приложений для оценки качества образования и мониторинга учебного процеcса. Включает в себя весь необходимый функционал для образовательных организаций.
+Разрабатывается с мая 2020 года. В настоящий момент система находится на этапе тестирования и готовится к официальному запуску.</p>
+      <p><a class="btn btn-primary btn-lg" href="#" role="button">Узнать больше »</a></p>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Example row of columns -->
+    <div class="row">
+    {% for news in news %}
+      <div class="col-md-4">
+        <h2>{{ news.title }}</h2>
+        <p>{{ news.content }}</p>
+        <p><a class="btn btn-secondary" href="#" role="button">Подробнее</a></p>
+      </div>
+    {% endfor %}
+    </div>
+
+    <hr>
+<footer class="container">
+  <p>© ПК "Бусел" 2020-2021</p>
+</footer>
+  </div>
 {% endblock %}
