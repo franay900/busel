@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '84xz4~A15HrFd*B5ec???9IetrvZXZq~ELH*UP5T4ACT0~La{Xou'
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1','91.240.85.244']
+ALLOWED_HOSTS = ['127.0.0.1','91.240.85.244','busel.ga']
 
 
 STATIC_ROOT=os.path.join(BASE_DIR,'static')
