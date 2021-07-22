@@ -388,7 +388,7 @@ class ImportStudent(View):
     def get(self,request):
         context={}
         context['title']='Импорт пользователей'
-        context['file']=FileTemplates.objects.filter(name='Шаблон для импорта пользователей').first()
+        context['file']=FileTemplates.objects.filter(name='Шаблон для импорта учеников').first()
         return render(request,'classes/import_user.html',context)
     def post(self,request):
         context={}
