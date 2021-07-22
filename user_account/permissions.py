@@ -20,7 +20,7 @@ class AdminPermissionMixin:
 		return super().dispatch(request,*args,**kwargs)
 class RegisterMixin():
 	def has_permissions(self):
-		if self.request.user.registration:
+		if self.request.user.registration==True:
 			return True
 	def dispatch(self,request,*args,**kwargs):
 		if not self.has_permissions() and not self.request.user.is_superuser:
