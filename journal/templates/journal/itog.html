@@ -124,9 +124,11 @@ $('.itog').on('click',function(event){
     }
 });
   $('#mark').on('focusout',function(){
+    var min_mark=parseInt('{{ request.user.institution.system_mark.min_mark }}')
+    var max_mark=parseInt('{{ request.user.institution.system_mark.max_mark }}')
     var url='{% url 'Mark' %}'
     var tocken='{{ csrf_token }}'
-    save_mark(this,url,tocken)
+    save_mark(this,url,tocken,min_mark,max_mark)
 
   })
 

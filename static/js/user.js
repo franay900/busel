@@ -31,12 +31,13 @@ $('#two').click(function(){
 
 }
 
-function save_mark(self,url,tocken){
+function save_mark(self,url,tocken,min,max){
+  
     $(self).css('display','none')
     var old_mark=$(self).attr('old_mark')
     var new_mark=$(self).val()
     var attendance=0
-    if ((new_mark>=1 & new_mark<=5 ) | (old_mark!='' & new_mark=='') | new_mark=='н' | new_mark=='н/а' ){
+    if ((new_mark>=min & new_mark<=max ) | (old_mark!='' & new_mark=='') | new_mark=='н' | new_mark=='н/а' ){
       
 	    var td_id=$(self).attr('td')
       var student=$('#'+td_id).attr('student')
@@ -105,7 +106,7 @@ function save_mark(self,url,tocken){
         $('.'+student).each(function(){
            var mark=$(this).text()
            
-           if (mark>=1 & mark<=5){
+           if (mark>=1 & mark<=100){
               mark_sum=mark_sum+parseInt(mark)
               mark_lenght=mark_lenght+1
            }

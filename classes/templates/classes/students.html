@@ -18,8 +18,8 @@
      		<td>{{ i.user.last_name  }}  {{ i.user.first_name }} {{ i.user.middle_name }}</td>
 
         <td>{{ i.class_pk }}</td>
-     		<td><a href="{{ i.get_absolute_url }}">Редактировать</a></td>
-     		<td><a href="{{ i.ban }}">Заблокировать</a></td>
+     		<td><a href="{{ i.user.get_absolute_url }}">Редактировать</a></td>
+     		<td><a href="{{ i.user.ban }}">Заблокировать</a></td>
      	</tr>
      	{% endfor %}
    </table>

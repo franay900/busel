@@ -8,10 +8,10 @@
    <table class="table table-bordered table-sm mt-3">
     <thead class="thead-light">
      <tr>
-    	<th>№</th>
-       <th>ФИО</th>
-       <th>Логин</th>
-       <th colspan="2">Действие</th>       
+    	<th style="text-align: center">№</th>
+       <th style="text-align: center">ФИО</th>
+       <th style="text-align: center">Логин</th>
+       <th style="text-align: center" colspan="2">Действие</th>       
      </tr>
      </thead>
      	{% for i in users %}
@@ -20,11 +20,11 @@
      		<td>{{ i.last_name  }}  {{ i.first_name }} {{ i.middle_name }}</td>
 
         <td>{{ i.username }}</td>
-     		<td><a href="{{ i.get_absolute_url }}">Редактировать</a></td>
-     		<td><a href="{{ i.ban }}">Заблокировать</a></td>
+     		<td style="text-align: center"><a href="{{ i.get_absolute_url }}">Редактировать</a></td>
+     		<td style="text-align: center"><a href="{{ i.ban }}">{%if i != request.user%} Заблокировать{% endif %}</a></td>
      	</tr>
      	{% endfor %}
    </table>
-   <a class="btn btn-success" href="{% url 'AddUser' %}">Добавить</a> 
-   <a class="btn btn-danger" href="{% url 'ImportUser' %}">Импорт</a>
+   <a class="btn btn-outline-success" href="{% url 'AddUser' %}">Добавить</a> 
+   <a class="btn btn-outline-danger" href="{% url 'ImportUser' %}">Импорт</a>
 {% endblock %}

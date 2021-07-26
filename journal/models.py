@@ -1,7 +1,7 @@
 from django.db import models
 from institutions.models import Institutions,Periods
 from classes.models import Load,Classes,Student
-
+from user_account.models import UserNet
 
 
 class LessonType(models.Model):
@@ -23,7 +23,8 @@ class Lessons(models.Model):
     subject_pk = models.ForeignKey(Load, on_delete=models.CASCADE,null=True, verbose_name='Предмет')
     date_homework=models.ForeignKey('Lessons',on_delete=models.SET_NULL,verbose_name='Дата дз',null=True,blank=True)
     types=models.ManyToManyField(LessonType)
-
+    teacher=models.ForeignKey(UserNet, on_delete=models.SET_NULL, verbose_name="Учитель",
+                                       null=True)
 
 
 class Marks(models.Model):

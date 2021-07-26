@@ -10,6 +10,7 @@ admin.site.register(TypeInstitutions)
 admin.site.register(BellProfile)
 admin.site.register(BellTimetable)
 admin.site.register(Subject)
+admin.site.register(SystemMarks)
 
 
 

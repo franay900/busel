@@ -332,7 +332,7 @@ class TimetableWeek(AdminPermissionMixin,View):
                         weekday=date_week.isoweekday()
                         get_lesson=SubjectTemplate.objects.filter(profile__id=post_week,day=weekday)
                         for lesson in get_lesson:
-                            lesson_save=Lessons.objects.create(number=lesson.lesson,date=date_week,class_pk=self.get_class(),subject_pk=lesson.subject_pk)
+                            lesson_save=Lessons.objects.create(number=lesson.lesson,date=date_week,class_pk=self.get_class(),subject_pk=lesson.subject_pk,teacher=lesson.subject_pk.teacher)
         messages.success(request,'Уроки успешно распределены')
         return redirect(request.META.get('HTTP_REFERER'))
 

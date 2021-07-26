@@ -120,6 +120,11 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
+# STATIC_ROOT=os.path.join(BASE_DIR,'static')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR,'static')
+
+]
 
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 MEDIA_URL='/media/'
@@ -130,8 +135,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 
 try:
-    from .prod_setting import *
+    from .local_setting import *
     
 except ImportError:
-    from .local_settings  import *
+    from .prod_setting  import *
 

@@ -4,12 +4,12 @@ from user_account.models import *
 class InstitutionsInfoForm(forms.ModelForm):
 	class Meta:
 		model=Institutions
-		fields=['title','short_title','typeInstitutions','year']
+		fields=['title','short_title','system_mark','year']
 	def __init__(self,*args,**kwargs):
 		super().__init__(*args,**kwargs)
 		for field in self.fields:
 			self.fields[field].widget.attrs['class']='form-control'
-		self.fields['typeInstitutions'].disabled=True
+
 
 class PeriodsForm(forms.ModelForm):
 	class Meta:

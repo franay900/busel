@@ -267,9 +267,11 @@ $('.day').on('click',function(event){
     }
 });
   $('#mark').on('focusout',function(){
+    var min_mark=parseInt('{{ request.user.institution.system_mark.min_mark }}')
+    var max_mark=parseInt('{{ request.user.institution.system_mark.max_mark }}')
     var url='{% url 'Mark' %}'
     var tocken='{{ csrf_token }}'
-    save_mark(this,url,tocken)
+    save_mark(this,url,tocken,min_mark,max_mark)
 
   })
 
@@ -277,24 +279,29 @@ $('.day').on('click',function(event){
 
   $('.mark_tr').each(function(){
 
-           var mark_sum=0
-           var mark_lenght=0
-           var mark=$(this).children('td').text()
-           var student=$(this).children('td').attr('student')
-           for (i = 0; i < mark.length; i +=1 ) {
-              if(parseInt(mark[i])>0){
-              mark_sum=mark_sum+parseInt(mark[i])
-              mark_lenght+=1
-            }
-          }
-           var ball=mark_sum/mark_lenght
+    var mark_sum=0
+    var mark_lenght=0
+    
+    var student=$(this).children('td').attr("student")
+    $('.'+student).each(function(){
+      var mark=$(this).text()
            
-           ball=ball.toFixed(2)
-           
-           if(ball>0){
-              $('#ball'+student).text(ball)
-         }
-         
+           if (mark>=1 & mark<=100){
+              mark_sum=mark_sum+parseInt(mark)
+              mark_lenght=mark_lenght+1
+           }
+
+
+    });
+        var ball=mark_sum/mark_lenght
+        ball=ball.toFixed(2)
+        if (ball>0){
+        $('#ball'+student).text(ball)
+      }
+        else{
+          $('#ball'+student).text('')
+        }
+        
   });
 
 </script>
