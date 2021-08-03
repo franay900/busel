@@ -14,7 +14,6 @@ from pathlib import Path
 
 import os
 
-ALLOWED_HOSTS = ['127.0.0.1','91.240.85.244','busel.ga']
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
@@ -24,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '84xz44(&t+k=#dkwpdn_z92x8e07p4r07&x^0j_@sv1mhg54_&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -121,11 +120,6 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
-# STATIC_ROOT=os.path.join(BASE_DIR,'static')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR,'static')
-
-]
 
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 MEDIA_URL='/media/'
@@ -136,8 +130,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 
 try:
-    from .local_setting import *
+    from .prod_settings import *
     
 except ImportError:
-    from .prod_setting  import *
-
+    from .local_settings import *

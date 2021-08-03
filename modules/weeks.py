@@ -13,7 +13,7 @@ def get_all_weeks(start_date, end_date):
             continue
         if current_week_start > end_date:
             break
-        yield [current_week_start.strftime('%d.%m.%Y'), (current_week_start + one_week - one_day).strftime('%d.%m.%Y')]
+        yield [current_week_start.strftime('%d.%m.%Y'), (current_week_start + one_week - one_day).strftime('%d.%m.%Y'),current_week_start.strftime('%Y-%m-%d'),(current_week_start + one_week - one_day).strftime('%Y-%m-%d') ]
         current_week_start += one_week
 def get_dates(start,end):
     d1 = datetime.strptime(start, '%d.%m.%Y').date()
