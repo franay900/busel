@@ -32,3 +32,10 @@ def check_weeks(context, start=None, end=None):
     check_lessons=Lessons.objects.filter(date__range=[datetime.strptime(str(start), '%d.%m.%Y').strftime('%Y-%m-%d'),datetime.strptime(str(end), '%d.%m.%Y').strftime('%Y-%m-%d')],class_pk=class_)
     if not check_lessons:
         return True
+
+
+@register.simple_tag(name='get_bells', takes_context=True)
+def get_bells(context,lesson=None):
+    day=datetime.strptime(context['date'],'%Y-%m-%d').isoweekday()
+    bells=BellTimetable.objects.filter(profile=context['class'].bell_profile,day=day,lesson=lesson)
+    return bells

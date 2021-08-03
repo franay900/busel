@@ -1,0 +1,76 @@
+{% extends 'user_index.html' %}
+{% load timetable %}
+
+
+{% block content %}
+
+<div class="row">
+  <div class="col">
+    <form method="GET" id="date_form">
+      <input class="form-control form-control-sm" style="width: auto" type="date"  value="{{ date }}" id="date" name="date">
+    </form>
+  </div>
+  <div class="col  ">
+    <a href="{% url 'DeleteLessons' class_pk=class.pk %}?begin={{date}}&end={{date}}" class="btn  btn-outline-danger btn-sm float-right" type="submit">Удалить уроки на весь день</a>
+  </div>
+</div>
+
+{% if lessons %}
+<form method="POST">
+{% csrf_token %}
+<table class="table table-sm table-bordered mt-3">
+  <tr>
+    <td id="" style="width:5%">Номер</td>
+    <td id="" style="width: 10%">Время</td>
+    <td style="width: 40%">Урок</td>
+    <td style="width: 40%">Учитель</td>
+    <td >Кабинет</td>
+  </tr>
+  {% for lesson in lessons %}
+  {% get_bells lesson=lesson.number as bell %}
+  <tr>
+    <td >{{ lesson.number }}</td>
+    <td id="split">{{ bell.0.start }}-{{ bell.0.end }}</td>
+    <td><select teacher="0" class="form-control form-control-sm load" name="lesson{{ lesson.pk }}" >\
+      <option value="">Нет урока</option>
+      {% for load in loads %}
+      <option value="{{ load.pk }}" teacher="{{load.teacher.pk}}" {% if lesson.subject_pk == load %} selected="" {% endif %}>{{ load.subject_pk }} {% if load.subgroup %}({{ load.subgroup.name}}){% endif %}</option>
+      {% endfor %}
+    </select></td>
+    <td><select class="form-control form-control-sm" name="teacher{{ lesson.pk }}">
+      <option pk="0">-</option>
+      {% for teacher in teachers %}
+      <option value="{{ teacher.pk }}" pk="{{teacher.pk}}" {% if lesson.teacher == teacher %} selected="" {% endif %}>{{ teacher }}</option>
+      {% endfor %}
+    </select></td>
+    <td><select class="form-control form-control-sm" disabled="" name="" id=""></select></td>
+  </tr>
+  {% endfor %}
+</table>
+
+<button name="by" value="1234" class="btn  btn-outline-success mt-3" type="submit">Сохранить</button>
+</form>
+{% else %}
+<div class="alert alert-danger mt-3" role="alert">
+  Уроков на выбранный день не обнаружено
+</div>
+{% endif %}
+
+<script >
+  $('#date').on('change', function(event) {
+    $('#date_form').submit()
+
+  })
+  $('.load').on('change', function(event){
+    tr=$(this).closest('tr')
+    teacher=$(tr).find("td:eq(2) select option:selected").attr('teacher')
+    selected_option=$(tr).find("td:eq(3) select option:selected").removeAttr("selected")
+    loads=$(tr).find("td:eq(3) select").find("[pk='"+teacher+"']").attr("selected",'true')
+ 
+
+  })
+
+  
+</script>
+
+{% endblock %}

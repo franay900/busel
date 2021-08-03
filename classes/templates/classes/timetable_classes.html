@@ -17,7 +17,7 @@
 			<td>{{ i.period_profile }}</td>
 			<td><a href="{{ i.timetable_templates }}">Шаблоны</a></td>
 			<td><a href="{{ i.timetable_weeks }}">Распределение уроков</a></td>
-			<td><a href="">Редактирование уроков</a></td>
+			<td><a href="{% url 'EditLesson' class_pk=i.pk %}">Редактирование уроков</a></td>
 		</tr>
 		{% endfor %}
 	</table>
