@@ -1,319 +1,38 @@
-{% load static %}
+{% extends 'base.html' %}
+{% block title %}
+	{{title}}
+{% endblock %}
+{% block sidebar %}
+{% include 'inc/sidebar.html' %}	
+{% endblock %}
 
-<!DOCTYPE html>
-<html lang="en">
+{% block content %}
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>ПК "Бусел"</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
-
-  <!-- Favicons -->
-  <link href="{% static 'assets/img/favicon.ico' %}" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Roboto:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
-  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-  <link href="{% static 'assets/vendor/icofont/icofont.min.css' %}" rel="stylesheet">
-  <link href="{% static 'assets/vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
-  <link href="{% static 'assets/vendor/owl.carousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
-  <link href="{% static 'assets/vendor/venobox/venobox.css' %}" rel="stylesheet">
-  <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">
-
-  <!-- Template Main CSS File -->
-  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
-
-  <!-- =======================================================
-  * Template Name: BizLand - v1.2.1
-  * Template URL: https://bootstrapmade.com/bizland-bootstrap-business-template/
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
-</head>
-
-<body>
-
-  <!-- ======= Top Bar ======= -->
-  <div id="topbar" class="d-none d-lg-flex align-items-center fixed-top">
-    <div class="container d-flex">
-      <div class="contact-info mr-auto">
-        <i class="icofont-envelope"></i> <a href="mailto:contact@example.com">support@busel.ga</a>
-        
-      </div>
-      <div class="social-links">
-        <a href="#" class="twitter"><i class="icofont-twitter"></i></a>
-        <a href="#" class="facebook"><i class="icofont-facebook"></i></a>
-        <a href="#" class="instagram"><i class="icofont-instagram"></i></a>
-        <a href="#" class="skype"><i class="icofont-skype"></i></a>
-        <a href="#" class="linkedin"><i class="icofont-linkedin"></i></i></a>
-      </div>
+    		<div class="jumbotron">
+    <div class="container">
+      <h1 class="display-3">Добро пожаловать!</h1>
+      <p>ПК "Бусел" - это комплекс приложений для оценки качества образования и мониторинга учебного процеcса. Включает в себя весь необходимый функционал для образовательных организаций.
+Разрабатывается с мая 2020 года. В настоящий момент система находится на этапе тестирования и готовится к официальному запуску.</p>
+      <p><a class="btn btn-primary btn-lg" href="#" role="button">Узнать больше »</a></p>
     </div>
   </div>
 
-  <!-- ======= Header ======= -->
-  <header id="header" class="fixed-top">
-    <div class="container d-flex align-items-center">
-
-      <h1 class="logo mr-auto"><a href="index.html">Бусел<span>.</span></a></h1>
-      <!-- Uncomment below if you prefer to use an image logo -->
-      <!-- <a href="index.html" class="logo mr-auto"><img src="assets/img/logo.png" alt=""></a>-->
-
-      <nav class="nav-menu d-none d-lg-block">
-        <ul>
-          <li class="active"><a href="index.html">Главная</a></li>
-          <li><a href="#about">О системе</a></li>
-          <li><a href="#services">Описание модулей</a></li>
-          <li><a href="#portfolio">О разработчиках</a></li>
-          <li><a href="#team">Поддержка</a></li>
-          <li><a href="{% url 'login' %}">Вход в систему</a>
-
-      </nav><!-- .nav-menu -->
-
-    </div>
-  </header><!-- End Header -->
-
-  <!-- ======= Hero Section ======= -->
-  <section id="hero" class="d-flex align-items-center">
-    <div class="container" data-aos="zoom-out" data-aos-delay="100">
-      <h1>Добро пожаловать <span>ПК "Бусел"</spa>
-      </h1>
-      <h2>Удобная система оценки качества образования.</h2>
-      <div class="d-flex">
-        <a href="#about" class="btn-get-started scrollto">Узнать больше</a>
-        <a href="" class="venobox btn-watch-video" data-vbtype="video" data-autoplay="true"> Видео <i class="icofont-play-alt-2"></i></a>
+  <div class="container">
+    <!-- Example row of columns -->
+    <div class="row">
+    {% for news in news %}
+      <div class="col-md-4">
+        <h2>{{ news.title }}</h2>
+        <p>{{ news.content }}</p>
+        <p><a class="btn btn-secondary" href="#" role="button">Подробнее</a></p>
       </div>
-    </div>
-  </section><!-- End Hero -->
-
-  <main id="main">
-
-    <!-- ======= Featured Services Section ======= -->
-    <section id="featured-services" class="featured-services">
-      <div class="container" data-aos="fade-up">
-
-        <div class="row">
-          <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0">
-            <div class="icon-box" data-aos="fade-up" data-aos-delay="100">
-              <div class="icon"><i class="bx bxl-dribbble"></i></div>
-              <h4 class="title"><a href="">Обратная связь</a></h4>
-              <p class="description">В случае некорректной работы какого-либо модуля вы можете обратиться к разработчикам проекта</p>
-            </div>
-          </div>
-
-          <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0">
-            <div class="icon-box" data-aos="fade-up" data-aos-delay="200">
-              <div class="icon"><i class="bx bx-file"></i></div>
-              <h4 class="title"><a href="">Защита данных</a></h4>
-              <p class="description">Система защищена от несакционированного доступа</p>
-            </div>
-          </div>
-
-          <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0">
-            <div class="icon-box" data-aos="fade-up" data-aos-delay="300">
-              <div class="icon"><i class="bx bx-tachometer"></i></div>
-              <h4 class="title"><a href="">Прогрузка сайта</a></h4>
-              <p class="description">Еженедельно мы мониторим нагрузку на сервер </p>
-            </div>
-          </div>
-
-          <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0">
-            <div class="icon-box" data-aos="fade-up" data-aos-delay="400">
-              <div class="icon"><i class="bx bx-world"></i></div>
-              <h4 class="title"><a href="">Удобство</a></h4>
-              <p class="description">Мы прислушиваемся к вашему мнению и делаем так, как вам удобно</p>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </section><!-- End Featured Services Section -->
-
-    <!-- ======= About Section ======= -->
-    <section id="about" class="about section-bg">
-      <div class="container" data-aos="fade-up">
-
-        <div class="section-title">
-          <h2>О нас</h2>
-          <h3>Описание системы <span>ПК "Бусел"</span></h3>
-          <p>Уже более одного года мы занимаемся разработкой данной системы.</p>
-        </div>
-
-        <div class="row">
-          <div class="col-lg-6" data-aos="zoom-out" data-aos-delay="100">
-            <img src="{% static 'assets/img/about.png' %}" class="img-fluid" alt="">
-          </div>
-          <div class="col-lg-6 pt-4 pt-lg-0 content  flex-column justify-content-center" data-aos="fade-up" data-aos-delay="100">
-            <p class="font-italic">
-              ПК "Бусел" - это комплекс приложений для оценки качества образования и мониторинга учебного процеcса. Включает в себя весь необходимый функционал для образовательных организаций. Разработка проекта не стоит на месте. Мы периодически устраиваем голосвания за тот или иной модуль. Сотвественно, мы прислушиваемся к вашему мнению. Цель проекта - сделать максимально простым, а самое главное удобным веб-сайт. 
-
-            </p>
-            <ul>
-
-          </div>
-        </div>
-
-      </div>
-    </section><!-- End About Section -->
-
-   
-
-   
-
-
-    </section><!-- End Clients Section -->
-
-    <!-- ======= Services Section ======= -->
-    <section id="services" class="services">
-      <div class="container" data-aos="fade-up">
-
-        <div class="section-title">
-          <h2>Модули</h2>
-          <h3>Функционал <span>ПК "Бусел"</span></h3>
-          <p>Ниже мы описали функционал, который на данный момент присутствуем в системе.</p>
-        </div>
-
-        <div class="row">
-          <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
-            <div class="icon-box">
-              <div class="icon"><i class="bx bxl-dribbble"></i></div>
-              <h4><a href="">Системы оценивания</a></h4>
-              <p>На данный момент мы поддерживаем несколько систем оцениваниия</p>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-md-0" data-aos="zoom-in" data-aos-delay="200">
-            <div class="icon-box">
-              <div class="icon"><i class="bx bx-file"></i></div>
-              <h4><a href="">Отчеты</a></h4>
-              <p>Есть возможность проконтролировать качество знаний</p>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-lg-0" data-aos="zoom-in" data-aos-delay="300">
-            <div class="icon-box">
-              <div class="icon"><i class="bx bx-tachometer"></i></div>
-              <h4><a href="">Расписание</a></h4>
-              <p>Удобный способ ввода учебных занятий</p>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4" data-aos="zoom-in" data-aos-delay="100">
-            <div class="icon-box">
-              <div class="icon"><i class="bx bx-world"></i></div>
-              <h4><a href="">Учебный план</a></h4>
-              <p>Этот модуль необходим для ввода учебной нагрузки</p>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4" data-aos="zoom-in" data-aos-delay="200">
-            <div class="icon-box">
-              <div class="icon"><i class="bx bx-slideshow"></i></div>
-              <h4><a href="">Классный журнал</a></h4>
-              <p>С недавнего времени поддерживается ввод оценок с клавиатуры</p>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4" data-aos="zoom-in" data-aos-delay="300">
-            <div class="icon-box">
-              <div class="icon"><i class="bx bx-arch"></i></div>
-              <h4><a href="">Импорт пользователей</a></h4>
-              <p>Теперь чтобы ввести пользователей в систему достаточно заполить файл Ms Excel</p>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </section><!-- End Services Section -->
-
-
-
-
-  <!-- ======= Footer ======= -->
-  <footer id="footer">
-
-    <div class="footer-newsletter">
-
+    {% endfor %}
     </div>
 
-    <div class="footer-top">
-      <div class="container">
-        <div class="row">
-
-          <div class="col-lg-3 col-md-6 footer-contact">
-            <h3>Бусел<span>.</span></h3>
-            <p>
-
-              <strong>Email:</strong> support@busel.ga<br>
-            </p>
-          </div>
-
-          <div class="col-lg-3 col-md-6 footer-links">
-            <h4>Навигация</h4>
-            <ul>
-              <li><i class="bx bx-chevron-right"></i> <a href="#">Главная</a></li>
-              <li><i class="bx bx-chevron-right"></i> <a href="#">О системе</a></li>
-              <li><i class="bx bx-chevron-right"></i> <a href="#">Описание модулей</a></li>
-              <li><i class="bx bx-chevron-right"></i> <a href="#">О разработчиках</a></li>
-              <li><i class="bx bx-chevron-right"></i> <a href="#">Поддержка</a></li>
-            </ul>
-          </div>
-
-
-
-          <div class="col-lg-3 col-md-6 footer-links">
-            <h4>Социальные сети</h4>
-            <div class="social-links mt-3">
-              <a href="#" class="twitter"><i class="bx bxl-twitter"></i></a>
-              <a href="#" class="facebook"><i class="bx bxl-facebook"></i></a>
-              <a href="#" class="instagram"><i class="bx bxl-instagram"></i></a>
-              <a href="#" class="google-plus"><i class="bx bxl-skype"></i></a>
-              <a href="#" class="linkedin"><i class="bx bxl-linkedin"></i></a>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    <div class="container py-4">
-      <div class="copyright">
-        &copy; Copyright <strong><span>Бусел</span></strong>. All Rights Reserved
-      </div>
-      <div class="credits">
-        <!-- All the links in the footer should remain intact. -->
-        <!-- You can delete the links only if you purchased the pro version. -->
-        <!-- Licensing information: https://bootstrapmade.com/license/ -->
-        <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/bizland-bootstrap-business-template/ -->
-    
-      </div>
-    </div>
-  </footer><!-- End Footer -->
-
-  <div id="preloader"></div>
-  <a href="#" class="back-to-top"><i class="icofont-simple-up"></i></a>
-
-  <!-- Vendor JS Files -->
-  <script src="{% static 'assets/vendor/jquery/jquery.min.js' %}"></script>
-  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-  <script src="{% static 'assets/vendor/jquery.easing/jquery.easing.min.js' %}"></script>
-  <script src="{% static 'assets/vendor/waypoints/jquery.waypoints.min.js' %}"></script>
-  <script src="{% static 'assets/vendor/counterup/counterup.min.js' %}"></script>
-  <script src="{% static 'assets/vendor/owl.carousel/owl.carousel.min.js' %}"></script>
-  <script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
-  <script src="{% static 'assets/vendor/venobox/venobox.min.js' %}"></script>
-  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
-
-  <!-- Template Main JS File -->
-  <script src="{% static 'assets/js/main.js' %}"></script>
-
-</body>
-
-</html>
+    <hr>
+<footer class="container">
+  <p>© ПК "Бусел" 2020-2021</p>
+</footer>
+  </div>
+{% endblock %}

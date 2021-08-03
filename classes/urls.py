@@ -9,8 +9,6 @@ urlpatterns=[
 	path('add_сurriculum/',СurriculumCreateView.as_view() ,name="AddCurriculum"),
 	path('load/',LoadView.as_view() ,name="Load"),
 	path('load/<int:pk>/',LoadView.as_view() ,name="LoadPk"),
-	path('student/add/',AddStudent.as_view() ,name="StudentAdd"),
-	path('student/import/',ImportStudent.as_view() ,name="StudentImport"),
 	path('timetable/classes/',Timetable.as_view() ,name="TimetableClasses"),
 	path('timetable/templates/<int:pk>/',TimetableTemplatesView.as_view() ,name="TimetableTemplates"),
 	path('timetable/add_template/',AddTimetableTemplate.as_view() ,name="AddTimetableTemplate"),
@@ -19,9 +17,9 @@ urlpatterns=[
 	path('timetable/weeks/<int:pk>/',TimetableWeek.as_view() ,name="TimetableWeek"),
 	path('timetable/weeks/<int:period>/<int:pk>/',TimetableWeek.as_view() ,name="TimetableWeekPk"),
 	path('student/list/',StudentListView.as_view() ,name="StudentList"),
-	path('edit_lesson/<int:class_pk>/',EditLessons.as_view() ,name="EditLesson"),
-	path('delete_lessons/<int:class_pk>/',DeleteLessons.as_view() ,name="DeleteLessons"),
-
+	path('student/add/',AddStudent.as_view() ,name="StudentAdd"),
+	path('student/import/',ImportStudent.as_view() ,name="StudentImport"),
+	
 	
 ]
 

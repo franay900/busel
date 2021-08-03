@@ -1,19 +1,54 @@
 from django.shortcuts import render
-from django.views.generic import View, ListView
+from django.views.generic import View
 from user_account.permissions import AdminPermissionMixin
 from classes.models import Load, Classes, Student
 from institutions.models import Periods, BellProfile
 from django.http import HttpResponseForbidden,HttpResponse
 from .models import *
-from .utils import Journal,TimetableSettigns
 from django.http import JsonResponse
 
 
-class JournalView(View,Journal):
+class JournalView(View):
     
     template_name = 'journal/journal.html'
-    
+    def get_classes(self):
+        return Classes.objects.filter(institution=self.request.user.institution)
+    def get_class(self):
+    	
+        if 'load' in self.request.POST:
+            load=self.request.POST.get("load")
+            get_load=Load.objects.get(pk=load)
+            return Classes.objects.get(pk=get_load.class_pk.pk)
+        else:
+            return Classes.objects.filter(institution=self.request.user.institution).first()
+    def get_load(self):
+        check_admin=self.request.user.groups.filter(pk__in=[1]).first()
 
+
+        if 'load' in self.request.POST:
+            load=self.request.POST.get("load")
+            return Load.objects.get(pk=load)
+        else:
+            if check_admin:
+
+                return Load.objects.filter(class_pk__in=self.get_classes()).first()
+            else:
+                return Load.objects.filter(class_pk=self.get_class(),teacher=self.request.user).order_by('class_pk','subject_pk').first()
+    def get_loads(self):
+        check_admin=self.request.user.groups.filter(pk__in=[1]).first()
+
+        if check_admin:
+            return Load.objects.filter(class_pk=self.get_classes().first()).order_by('class_pk','subject_pk','subgroup')
+        else:
+            return Load.objects.filter(teacher=self.request.user).order_by('class_pk','subject_pk','subgroup')
+    def get_period(self):
+        if 'period' in self.request.POST:
+            period=self.request.POST.get("period")
+            periods=Periods.objects.get(pk=period)
+            return periods
+        else:
+            return Periods.objects.filter(profile=self.get_class().period_profile)
+ 
 
     def get(self, request, *args, **kwargs):
 
@@ -21,41 +56,42 @@ class JournalView(View,Journal):
         context['title'] = 'Журнал'
         context['loads']=self.get_loads()
         context['load_pk']=self.get_load()
-        context['students']=self.get_student()
+        context['students']=Student.objects.filter(class_pk=self.get_class(),user__isnull=False).order_by('user')
         date_start=self.get_period().first().start
         date_end=self.get_period().first().end
-        context['lessons']=Lessons.objects.filter(subject_pk=self.get_load(),date__range=[date_start,date_end]).order_by("date")
+        context['lessons']=Lessons.objects.filter(subject_pk=self.get_load(),date__range=[date_start,date_end]).order_by("pk","date")
         context['period']=self.get_period().first()
         context['periods']=self.get_period()
         context['classes']=self.get_classes()
-        context['scores']=self.count_average_score()
         return render(request, self.template_name, context)
     def post(self, request, *args, **kwargs):
         context={}
         context['title'] = 'Журнал'
-        context['lessons']=self.get_lessons()
+        date_start=self.get_period().start
+        date_end=self.get_period().end
+        context['lessons']=Lessons.objects.filter(subject_pk=self.get_load(),date__range=[date_start,date_end]).order_by("pk","date")
         context['period']=self.get_period()
         context['periods']=Periods.objects.filter(profile=self.get_period().profile)
         context['loads']=self.get_loads()
         context['load_pk']=self.get_load()
-        context['students']=self.get_student()
+        context['students']=Student.objects.filter(class_pk=self.get_class(),user__isnull=False).order_by('user')
+        context['loads']=self.get_loads()
         context['classes']=self.get_classes()
         date_start=self.get_period().start
         date_end=self.get_period().end
-        context['scores']=self.count_average_score()
         return render(request, self.template_name, context)
 
 def check_period(self,load):
 
-    get_load=Load.objects.get(pk=load)
-    get_class=Classes.objects.get(pk=get_load.class_pk.pk)
-    filter_periods=Periods.objects.filter(profile=get_class.period_profile)
-    periods=[]
-    for period in filter_periods:
-        periods.append(period.pk)
+	get_load=Load.objects.get(pk=load)
+	get_class=Classes.objects.get(pk=get_load.class_pk.pk)
+	filter_periods=Periods.objects.filter(profile=get_class.period_profile)
+	periods=[]
+	for period in filter_periods:
+		periods.append(period.pk)
 
 
-    return HttpResponse(periods)
+	return HttpResponse(periods)
 
 class LessonTopics(View):
     def get(self, request, *args, **kwargs):
@@ -67,7 +103,7 @@ class LessonTopics(View):
         context={}
         context['title']='Темы уроков и дз'
         context['period']=period
-        context['lessons']=Lessons.objects.filter(subject_pk=load).order_by("date")
+        context['lessons']=Lessons.objects.filter(subject_pk=load).order_by("pk","date")
         context['load']=load
         context['types']=LessonType.objects.all()
         context['BellProfile']=BellProfile.objects.get(pk=get_class.bell_profile.pk)
@@ -83,7 +119,7 @@ class LessonTopics(View):
         context={}
         context['title']='Темы уроков и дз'
         context['period']=period
-        context['lessons']=Lessons.objects.filter(subject_pk=load).order_by("date")
+        context['lessons']=Lessons.objects.filter(subject_pk=load).order_by("pk","date")
         context['load']=load
         context['types']=LessonType.objects.all()
         context['BellProfile']=BellProfile.objects.get(pk=get_class.bell_profile.pk)
@@ -180,9 +216,38 @@ class Mark(View):
 
 
 
-class ItogView(View,Journal):
+class ItogView(View):
     
     template_name = 'journal/itog.html'
+    def get_class(self,*args,**kwargs):
+        
+        if 'load' in self.request.POST:
+            load=self.request.POST.get("load")
+            get_load=Load.objects.get(pk=load)
+            return Classes.objects.get(pk=get_load.class_pk.pk)
+        else:
+
+            load=self.kwargs.get("load")
+            get_load=Load.objects.get(pk=load)
+            return Classes.objects.get(pk=get_load.class_pk.pk)
+    def get_load(self,*args,**kwargs):
+        if 'load' in self.request.POST:
+            load=self.request.POST.get("load")
+            return Load.objects.get(pk=load)
+        else:
+            load=self.kwargs.get("load")
+            return Load.objects.get(pk=load)
+    def get_period(self):
+        if 'period' in self.request.POST:
+            period=self.request.POST.get("period")
+            periods=Periods.objects.get(pk=period)
+            return periods
+        else:
+            period=self.kwargs.get("period")
+            periods=Periods.objects.get(pk=period)
+            return Periods.objects.filter(profile=self.get_class().period_profile)
+ 
+
     def get(self, request, *args, **kwargs):
         context={}
         context['title'] = 'Итоговые оценки'
@@ -227,4 +292,3 @@ def get_loads(request,class_pk):
         'names':names,
     }
     return JsonResponse(response)
-

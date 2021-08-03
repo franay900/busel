@@ -5,19 +5,18 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import UpdateView, ListView, CreateView, DeleteView, View
-from django.http import HttpResponseForbidden,HttpResponse
 from user_account.models import UserNet
 from user_account.permissions import AdminPermissionMixin
 from .forms import *
 from .models import *
 from journal.models import *
-from .utils import TimetableSettigns
 from institutions.permissions import InstitutionsMixin
+from multi_form_view import MultiFormView
+from django.http import HttpResponseForbidden,HttpResponse
+from modules.weeks import get_all_weeks, get_dates
 from modules.users import get_user, generate_login
-from modules.weeks import get_dates
 import random
 import re
-
 
 
 class ClassView(AdminPermissionMixin, CreateView):
@@ -115,13 +114,28 @@ class СurriculumCreateView(AdminPermissionMixin, CreateView):
         return reverse('Curriculum')
 
 
-class LoadView(AdminPermissionMixin, TimetableSettigns, View):
+class LoadView(AdminPermissionMixin, View):
     form_class = СurriculumForm
     template_name = 'classes/load.html'
 
     def get_success_url(self):
         return reverse('Load')
+    def get_class(self):
+        try:
+            if 'pk' in self.kwargs:
+                class_info=Classes.objects.get(pk=self.kwargs['pk'])
+            else:
+                class_info=Classes.objects.filter(institution=self.request.user.institution).first()
+        except Classes.DoesNotExist:
+            class_info=None
 
+        return class_info 
+    def get_info(self):
+        info_class=self.get_class()
+        if info_class!=None:
+            subjects=СurriculumSubject.objects.filter(class_number=info_class.class_number,profile=info_class.сurriculum)
+        else: subjects=None
+        return subjects
     def get(self, request, *args, **kwargs):
         context = {}
         context['subjects'] = self.get_info()
@@ -176,9 +190,11 @@ class Timetable(AdminPermissionMixin,ListView):
         context['classes'] = Classes.objects.filter(institution=self.request.user.institution.pk)
         return context
 
-class TimetableTemplatesView(AdminPermissionMixin,TimetableSettigns,ListView):
+class TimetableTemplatesView(AdminPermissionMixin,ListView):
     model = TimetableTemplates
     template_name = 'classes/timetable_templates.html'
+    def get_class(self):
+        return Classes.objects.get(pk=self.kwargs['pk'])
     def get_context_data(self):
         context = super().get_context_data()
         context['title'] = 'Шаблоны расписания '+str(self.get_class().class_number)+str(self.get_class().letter)+' класса'
@@ -188,8 +204,10 @@ class TimetableTemplatesView(AdminPermissionMixin,TimetableSettigns,ListView):
             institution=self.request.user.institution.pk,year=self.request.user.institution.year.pk)
         return context
 
-class AddTimetableTemplate(AdminPermissionMixin, TimetableSettigns, View):
+class AddTimetableTemplate(AdminPermissionMixin, View):
     template_name = 'classes/timetable_add_template.html'
+    def get_class(self):
+        return Classes.objects.get(pk=self.request.POST.get("class"))
     def post(self,request):
         context={}
         context['days'] = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
@@ -240,6 +258,8 @@ class UpdateTimetableTemplate(AdminPermissionMixin,View):
         template.name=profile_name
         template.save()
 
+        i=0
+
         get_template_subjects=SubjectTemplate.objects.filter(profile=template)
         for subject in get_template_subjects:
             loads=request.POST.getlist(str(subject.day)+str((subject.lesson)))
@@ -262,9 +282,21 @@ class UpdateTimetableTemplate(AdminPermissionMixin,View):
 
         return redirect(class_get.timetable_templates())
 
-class TimetableWeek(AdminPermissionMixin, TimetableSettigns, View):
+class TimetableWeek(AdminPermissionMixin,View):
     template_name = 'classes/timetable_weeks.html'
-
+    def get_class(self):
+        return Classes.objects.get(pk=self.kwargs['pk'])
+    def get_period(self):
+        if 'period' in self.kwargs:
+            period= Periods.objects.get(pk=self.kwargs['period'])
+        else:
+            period= Periods.objects.filter(profile=self.get_class().period_profile).first()
+        return period
+    def get_weeks(self):
+        d_start = str(self.get_period().start)
+        d_end = str(self.get_period().end)
+        weeks = [*get_all_weeks(d_start, d_end)]
+        return weeks
     def get(self, request, *args, **kwargs):
         context={}
         context['class_pk']=self.get_class()
@@ -285,7 +317,6 @@ class TimetableWeek(AdminPermissionMixin, TimetableSettigns, View):
         return render(request, self.template_name,context)
     def post(self, request, *args, **kwargs):
         context={}
-
         context['class_pk']=self.get_class()
         profile=PeriodProfile.objects.get(pk=self.get_class().period_profile.pk)
         i=0
@@ -304,29 +335,6 @@ class TimetableWeek(AdminPermissionMixin, TimetableSettigns, View):
                             lesson_save=Lessons.objects.create(number=lesson.lesson,date=date_week,class_pk=self.get_class(),subject_pk=lesson.subject_pk,teacher=lesson.subject_pk.teacher)
         messages.success(request,'Уроки успешно распределены')
         return redirect(request.META.get('HTTP_REFERER'))
-class EditLessons(AdminPermissionMixin,TimetableSettigns,View):
-    template_name='classes/timetable_editlesson.html'
-
-    def get(self,request,class_pk):
-        context={}
-        context['title']='Редактирование уроков'
-        context['date']=self.get_date()
-        context['lessons']=self.get_lessons()
-        context['class']=self.get_class()
-        context['loads']=self.get_loads()
-        context['teachers']=UserNet.objects.filter(institution=request.user.institution,groups=2,is_active=True)
-        return render(request, self.template_name, context)
-    def post(self,request,class_pk):
-        self.save_edit_timetable()
-
-        return redirect(request.META.get('HTTP_REFERER'))
-class DeleteLessons(AdminPermissionMixin, View):
-    def get(self,request,class_pk):
-        begin=request.GET.get("begin")
-        end=request.GET.get("end")
-        lesson=Lessons.objects.filter(class_pk=class_pk,date__gte=begin,date__lte=end).delete()
-        return redirect(request.META.get('HTTP_REFERER'))
-
 
 #Ученики
 class StudentListView(AdminPermissionMixin, ListView):
@@ -425,5 +433,3 @@ class ImportStudent(View):
         context['title']='Результат импорта'
         context['users']=arr
         return render(request,'user_account/import_result.html',context)
-
-
