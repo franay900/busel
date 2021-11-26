@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from institutions.models import TypeInstitutions
-
+from django.contrib.auth.forms import SetPasswordForm
    
 class UserEditForm(forms.ModelForm):
     
@@ -59,3 +59,13 @@ class RegisterForm(forms.ModelForm):
         super().__init__(*args,**kwargs)
         for field in self.fields:
             self.fields[field].widget.attrs['class']='form-control'
+
+
+class SetPassword(SetPasswordForm):
+    # Your declared form fields here
+    ...
+
+    def __init__(self, *args, **kwargs):
+        super(SetPassword, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'

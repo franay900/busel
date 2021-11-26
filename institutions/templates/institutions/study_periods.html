@@ -1,4 +1,5 @@
 {% extends 'user_index.html' %}
+{% load study_tags %}
 {% block h2 %}
 Профили учебных периодов
 {% endblock %}
@@ -7,29 +8,30 @@
 {% block content %}
 	<table class="table table-bordered   table-sm">
 		<tr>
-			<td>
+			<td style="width:25%">
 				Наименование
 			</td>
-			<td>
+			<td style="width:25%">
 				Учебный год
 			</td>
-
-			<td colspan="3">
+			<td style="width:20%">Статус</td>
+			<td colspan="2" style="width:30%;text-align: center" >
 				Действие
 			</td>
 		</tr>
 		{% for i in period_profile %}
+		{% check_status bell_profile_pk=i.pk as status %}
 		<tr>
 			<td>{{ i.title }}</td>
 			<td>{{ i.year }}</td>
-			<td><a class=""  href="" >Просмотр</a></td>
-			<td><a href="" >Редактировать</a></td>
-			<td><a href="{{ i.delete_url }}" >Удалить</a></td>
+			<td>{% if status %}Используется{% else %}Не используется{% endif %}</td>
+			<td style="width:15%"><a href="{{ i.update_url }}" >Редактировать</a></td>
+			<td style="width:15%">{% if not status %}<a href="{{ i.delete_url }}" >Удалить </a>{% endif %}</td>
 		</tr>
 		{% endfor %}
 	</table>
 	{{ period_p }}
-	<a class="btn btn-success" href="{% url 'AddPeriods' %}">Добавить</a>
+	<a class="btn btn-outline-success" href="{% url 'AddPeriods' %}">Добавить</a>
 
    
 {% endblock %}
