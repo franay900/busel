@@ -28,7 +28,7 @@
 		<tr>
 			<td>{{ curriculum.title }}</td>
 			<td>{{ curriculum.year }}</td>
-			<td>{% if status %}Используется{% else %}Не используется{% endif %}</td>
+			<td>{% if not status %}Используется{% else %}Не используется{% endif %}</td>
 			<td style="width:16.25%">
 				<a href="{{curriculum.curriculum_edit}}" style="width:16.25%">Редактировать</a>
 			</td>
