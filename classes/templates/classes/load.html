@@ -14,12 +14,12 @@
 
 	<form method="POST" action="">
 	{% csrf_token %}
-	<table class="rtable mt-3">
+	<table class="styled-table">
 		<thead>
 		<tr>
-			<th>Предмет</th>
-			<th>Подгруппа</th>
-			<th>Преподаватель</th>
+			<td>Предмет</td>
+			<td>Подгруппа</td>
+			<td>Преподаватель</td>
 		</tr>
 		</thead>
 		{% for subject in subjects %}
@@ -61,8 +61,6 @@
 		{% endif %}
 		{% endfor %}
 	</table>
-	<div>
-	<button type="submit" class="button-41">Сохранить</button>
-	</div>
+	<button type="submit" class="btn btn-success">Сохранить</button>
 	</form>
 {% endblock %}

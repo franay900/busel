@@ -19,18 +19,16 @@ class JournalView(View,Journal):
 
         context={}
         context['title'] = 'Журнал'
-        if self.get_loads():
-            
-            context['loads']=self.get_loads()
-            context['load_pk']=self.get_load()
-            context['students']=self.get_student()
-            date_start=self.get_period().first().start
-            date_end=self.get_period().first().end
-            context['lessons']=Lessons.objects.filter(subject_pk=self.get_load(),date__range=[date_start,date_end]).order_by("date")
-            context['period']=self.get_period().first()
-            context['periods']=self.get_period()
-            context['classes']=self.get_classes()
-            context['scores']=self.count_average_score()
+        context['loads']=self.get_loads()
+        context['load_pk']=self.get_load()
+        context['students']=self.get_student()
+        date_start=self.get_period().first().start
+        date_end=self.get_period().first().end
+        context['lessons']=Lessons.objects.filter(subject_pk=self.get_load(),date__range=[date_start,date_end]).order_by("date")
+        context['period']=self.get_period().first()
+        context['periods']=self.get_period()
+        context['classes']=self.get_classes()
+        context['scores']=self.count_average_score()
         return render(request, self.template_name, context)
     def post(self, request, *args, **kwargs):
         context={}
@@ -55,12 +53,9 @@ def check_period(self,load):
     periods=[]
     for period in filter_periods:
         periods.append(period.pk)
-    response = {
-        'period':periods,
 
-    }
 
-    return JsonResponse(response)
+    return HttpResponse(periods)
 
 class LessonTopics(View):
     def get(self, request, *args, **kwargs):
@@ -193,7 +188,7 @@ class ItogView(View,Journal):
         context['title'] = 'Итоговые оценки'
         context['loads']=Load.objects.filter(teacher=request.user).order_by('class_pk','subject_pk')
         context['load_pk']=self.get_load()
-        context['students']=self.get_student()
+        context['students']=Student.objects.filter(class_pk=self.get_class(),user__isnull=False).order_by('user')
         date_start=self.get_period().first().start
         date_end=self.get_period().first().end
         context['period']=self.get_period().first()
@@ -209,6 +204,8 @@ class ItogView(View,Journal):
         context['loads']=Load.objects.filter(teacher=request.user).order_by('class_pk','subject_pk')
         context['load_pk']=self.get_load()
         context['students']=Student.objects.filter(class_pk=self.get_class(),user__isnull=False).order_by('user')
+        date_start=self.get_period().start
+        date_end=self.get_period().end
         return render(request, self.template_name, context)
 
 def get_loads(request,class_pk):
@@ -217,11 +214,9 @@ def get_loads(request,class_pk):
     load_list=[]
     urls=[]
     names=[]
-    pk_array=[]
     for load in loads:
         load_list.append(load.pk)
         urls.append(load.periods())
-        pk_array.append(str(load.pk))
         if load.subgroup:
             names.append(str(load.subject_pk.subject.title+' ('+load.subgroup.name+')'))
         else:
@@ -230,7 +225,6 @@ def get_loads(request,class_pk):
         'loads':load_list,
         'url':urls,
         'names':names,
-        'pk_array':pk_array,
     }
     return JsonResponse(response)
 

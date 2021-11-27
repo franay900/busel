@@ -5,11 +5,13 @@ Django==3.2
 django-cors-headers==3.7.0
 django-import-export==2.5.0
 django-multi-form-view==2.0.1
+django-multiform==0.1
 et-xmlfile==1.1.0
 MarkupPy==1.14
 odfpy==1.4.1
 openpyxl==3.0.7
 Pillow==8.2.0
+psycopg2==2.8.6
 pytz==2021.1
 PyYAML==5.4.1
 six==1.16.0

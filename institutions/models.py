@@ -96,8 +96,7 @@ class PeriodProfile(models.Model):
 
     def delete_url(self):
         return reverse('Delete_profile_periods', kwargs={"pk": self.pk})
-    def update_url(self):
-        return reverse('StudyPeriodsUpdate', kwargs={"profile_pk": self.pk})
+
     def __str__(self):
         return self.title
 

@@ -38,9 +38,8 @@ class SubgroupsForm(forms.ModelForm):
 
 	def __init__(self,*args,**kwargs):
 		self.class_number2=kwargs.pop('class_number')
-		self.profile=kwargs.pop('profile')
 		super().__init__(*args,**kwargs)
-		self.fields['subject_pk'].queryset = СurriculumSubject.objects.filter(class_number=self.class_number2, profile=self.profile)
+		self.fields['subject_pk'].queryset = СurriculumSubject.objects.filter(class_number=self.class_number2)
 		for field in self.fields:
 			self.fields[field].widget.attrs['class']='form-control'
 class StudentForm(forms.ModelForm):

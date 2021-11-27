@@ -2,17 +2,14 @@ import random
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
-from django.views.generic import UpdateView, ListView, CreateView, DeleteView, View
+from django.views.generic import UpdateView, ListView, CreateView, DeleteView
 from user_account.models import UserNet
 from user_account.permissions import AdminPermissionMixin
 from .forms import *
 from .models import *
 from .permissions import InstitutionsMixin
-from .utils import Study_Periods
-from django.contrib.auth.mixins import PermissionRequiredMixin
 
 
 class InstitutionsHomeView(AdminPermissionMixin, UpdateView):
@@ -36,10 +33,10 @@ class InstitutionsHomeView(AdminPermissionMixin, UpdateView):
         return Institutions.objects.get(pk=self.request.user.institution.pk)
 
 
-class StudyPeriodsView(PermissionRequiredMixin,ListView):
+class StudyPeriodsView(AdminPermissionMixin,ListView):
     model = PeriodProfile
     template_name = 'institutions/study_periods.html'
-    permission_required = 'institutions.view_periodprofile'
+
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
         period_profile = PeriodProfile.objects.filter(institution=self.request.user.institution.pk,year=self.request.user.institution.year.pk)
@@ -100,20 +97,6 @@ class DeleteProfilePeriods(InstitutionsMixin,AdminPermissionMixin, DeleteView):
         return self.post(request, *args, **kwargs)
 
 
-class StudyPeriodsUpdateView(View, Study_Periods):
-    template_name = 'institutions/study_periods_edit.html'
-    def get(self,request,profile_pk):
-        context={}
-        context['title']='Редактирование учебных периодов'
-        context['periods']=self.get_periods()
-        context['period_profile']=self.get_period_profile()
-        return render(request,self.template_name,context)
-    def post(self,request,profile_pk):
-        self.get_update_period()
-
-        return redirect('StudyPeriods')
-
-#Звонки
 class BellProfileView(AdminPermissionMixin, ListView):
     model = BellProfile
     template_name = 'institutions/bell_profile.html'
@@ -170,7 +153,6 @@ class SubjectView(AdminPermissionMixin, CreateView):
         context['title'] = 'Учебные предметы'
         context['subjects'] = Subject.objects.filter(
             Q(institution=self.request.user.institution.pk) | Q(institution=None)).order_by('title')
-        context['institution']=self.request.user.institution
         return context
 
     def get_success_url(self):

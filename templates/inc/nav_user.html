@@ -1,29 +1,13 @@
  {% load user_tags %}
 
+ <nav class="navbar navbar-expand-lg navbar-light bg-light" >
+  <a class="navbar-brand" href="#">Бусел </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
-<style>
-  .nav-link img {
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  margin: -8px 0;
-  float: left;
-  margin-right: 10px;
-}
-
-nav{
-  background-color:white;
-}
-
-
-</style>
-
-<nav class="navbar navbar-expand-xl navbar-light bg-light" style="height:52px">
-  <a class="navbar-brand" href="#">
-    <img src="https://psv4.userapi.com/c532036/u289653120/docs/d39/f9d9cfb29da5/Logotip_Besel-removebg-preview_1_photo-resizer_ru.png?extra=6faNrAKau8R9JYm_6K9H_qqiS9Iw4OvxwqDuYC5bgKDpgbFK0Ak0t5DtC7jjSj0nchaTgeKtpgISNtJeiGIeT2dKkiL8BRjIsdwpS53f0jEPfFQmJYL3HVM_g0KfgIeE5G4BwuH_BuyJdEaBvzXR_vGs"  alt="">
-    
-  </a>
-   <ul class="navbar-nav mr-auto">
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
       <li class="nav-item ">
         <a class="nav-link" href="{% url 'HomePageUserAccount' %}">Главная <span class="sr-only">(current)</span></a>
       </li>
@@ -48,23 +32,17 @@ nav{
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="{% url 'Class' %}">Список классов</a>
-          <a class="dropdown-item" href="{% url 'SubgroupView' %}">Подгруппы</a>
           <a class="dropdown-item" href="{% url 'Load' %}">Учебная нагрузка</a>
           <a class="dropdown-item" href="{% url 'TimetableClasses' %}">Расписание</a>
-
-          
-        </div>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Пользователи
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{% url 'users' %}">Сотрудники</a>
-          <a class="dropdown-item" href="{% url 'StudentList' %}">Обучающиеся</a>
         </div>
       </li>
 
+      <li class="nac-item">
+        <a class="nav-link" href="{% url 'users' %}">Сотрудники</a>
+      </li>
+      <li class="nac-item">
+        <a class="nav-link" href="{% url 'StudentList' %}">Обучающиеся</a>
+      </li>
       <li class="nac-item">
         <a class="nav-link" href="{% url 'JournalView' %}">Журнал организации</a>
       </li>
@@ -85,32 +63,15 @@ nav{
       </li>
   {% endif %}
     </ul>
+    <span class="navbar-text">
+      {% if request.user.is_authenticated %}
+      Добро пожаловать,{{ user.username }} | <a href="{% url 'logout' %}">Выход</a>
+      {% else %}
+      <a href="{% url 'login' %}" >Вход</a> | 
 
-    <div class="navbar-nav ml-auto">
-
-      <div class="nav-item dropdown">
-        <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle user-action">
-
-           
-
-           {% if request.user.avatar %}
-    
-     <img class="avatar" alt="Avatar" src="{{ request.user.avatar.url }}" alt="" height="36px">
-    {% else %}
-    <img class="avatar" alt="Avatar" src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="" height="36px" >
-    {% endif %}
-            {{ request.user.last_name }} {{ request.user.first_name }} {{ request.user.middle_name }}
-          </a>
-        <div class="dropdown-menu">
-          <!---
-          <a href="#" class="dropdown-item"><i class="fa fa-user-o"></i> Profile</a></a>
-          <a href="#" class="dropdown-item"><i class="fa fa-calendar-o"></i> Calendar</a></a>
-          <a href="#" class="dropdown-item"><i class="fa fa-sliders"></i> Settings</a></a>
-          <div class="dropdown-divider"></div>
-        -->
-          <a href="{% url 'logout' %}" class="dropdown-item"><i class="fa fa-sign-out" aria-hidden="true"></i> Выход</a></a>
-        </div>
-      </div>
-    </div>
+      {% endif %}
+         
+        
+      </span>
   </div>
 </nav>

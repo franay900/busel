@@ -5,12 +5,8 @@ from .views import *
 urlpatterns=[
 	path('class_view/',ClassView.as_view() ,name="Class"),
 	path('class_edit/<int:pk>/',class_edit_view ,name="ClassEdit"),
-	path('subgroup/',SubgroupView.as_view() ,name="SubgroupView"),
-	path('subgroup/<int:pk>/',SubgroupView.as_view() ,name="SubgroupViewPk"),
 	path('сurriculum/',СurriculumView.as_view() ,name="Curriculum"),
-	path('сurriculum_edit/<int:pk>',СurriculumUpdateView.as_view() ,name="CurriculumEdit"),
 	path('add_сurriculum/',СurriculumCreateView.as_view() ,name="AddCurriculum"),
-	path('сurriculum_delete/<int:pk>',DeleteCurriculum.as_view() ,name="DeleteCurriculum"),
 	path('load/',LoadView.as_view() ,name="Load"),
 	path('load/<int:pk>/',LoadView.as_view() ,name="LoadPk"),
 	path('student/add/',AddStudent.as_view() ,name="StudentAdd"),

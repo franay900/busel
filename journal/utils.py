@@ -1,5 +1,5 @@
 from .models import Load
-from classes.models import Classes, Student, StudentSubgroup
+from classes.models import Classes, Student
 from institutions.models import Periods
 from journal.models import Lessons, Marks
 from django.db.models import Q, Sum
@@ -7,12 +7,14 @@ from django.db.models import Q, Sum
 
 class Journal():
 
+	def get_student(self):
+		return Student.objects.filter(class_pk=self.get_class(),user__isnull=False).order_by('user')
 
 	def check_admin(self):
 		return self.request.user.groups.filter(pk__in=[1]).first()
 
 	def get_classes(self):
-	    return Classes.objects.filter(institution=self.request.user.institution).order_by('class_number','letter')
+	    return Classes.objects.filter(institution=self.request.user.institution)
 
 	def get_class(self):
 	    if 'load' in self.request.POST:
@@ -22,25 +24,6 @@ class Journal():
 	    else:
 	        return Classes.objects.filter(institution=self.request.user.institution).first()
 
-
-	def get_student(self):
-		
-		if not self.get_load().subgroup:
-			return Student.objects.filter(class_pk=self.get_class(),user__isnull=False).order_by('user')
-		else:
-
-			subgroup_list=StudentSubgroup.objects.filter(subject=self.get_load().subject_pk, subgroup=self.get_load().subgroup).values_list('student')
-			return Student.objects.filter(pk__in=subgroup_list)
-
-	def get_loads(self):
-
-	    if self.check_admin():
-	        return Load.objects.filter(class_pk=self.get_class()).order_by('class_pk', 'subject_pk',
-	                                                                                 'subgroup')
-	    else:
-	        lessons=Lessons.objects.filter(teacher=self.request.user,class_pk__in=self.get_classes()).distinct('subject_pk').values_list('subject_pk')
-	        return Load.objects.filter(Q(pk__in=lessons) | Q(teacher=self.request.user)).order_by('class_pk', 'subject_pk', 'subgroup')
-
 	def get_load(self):
 
 
@@ -49,10 +32,21 @@ class Journal():
 	        return Load.objects.get(pk=load)
 	    else:
 	        if self.check_admin():
-	            return Load.objects.filter(class_pk=self.get_class()).first()
+	            return Load.objects.filter(class_pk__in=self.get_classes()).first()
 
 	        else:
-	            return self.get_loads().first()
+	            return Load.objects.filter(class_pk=self.get_class(), teacher=self.request.user).order_by('class_pk',
+	                                                                                                      'subject_pk').first()
+
+	def get_loads(self):
+
+	    if self.check_admin():
+	        return Load.objects.filter(class_pk=self.get_classes().first()).order_by('class_pk', 'subject_pk',
+	                                                                                 'subgroup')
+	    else:
+	        lessons=Lessons.objects.filter(teacher=self.request.user,class_pk__in=self.get_classes()).distinct('subject_pk').values_list('subject_pk')
+	        return Load.objects.filter(Q(pk__in=lessons) or Q(teacher=self.request.user)).order_by('class_pk', 'subject_pk', 'subgroup')
+
 	def get_period(self):
 	    if 'period' in self.request.POST:
 	        period = self.request.POST.get("period")
@@ -79,7 +73,10 @@ class Journal():
 		scores=[]
 		# get_all_lessons=Lessons.objects.filter(subject_pk=self.get_load(),date__range=[date_start,date_end]).order_by("date")
 		for student in self.get_student():
+			
+
 			scores.append(student.pk)
+
 		return scores
 
 class TimetableSettigns():

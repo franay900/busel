@@ -11,20 +11,19 @@ from user_account.permissions import AdminPermissionMixin
 from .forms import *
 from .models import *
 from journal.models import *
-from .utils import TimetableSettigns, CurruculumMixin
+from .utils import TimetableSettigns
 from institutions.permissions import InstitutionsMixin
 from modules.users import get_user, generate_login
 from modules.weeks import get_dates
 import random
 import re
-from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.db.models import Q
-from journal.utils import Journal
 
-class ClassView(PermissionRequiredMixin, CreateView):
+
+
+class ClassView(AdminPermissionMixin, CreateView):
     form_class = ClassForm
     template_name = 'classes/class.html'
-    permission_required = 'classes.view_classes'
+
     def get_success_url(self):
         return reverse('Class')
 
@@ -51,7 +50,7 @@ def class_edit_view(request,pk):
     class_info=Classes.objects.get(pk=pk)
     if class_info.institution.pk==request.user.institution.pk:
         info_form=ClassForm(instance=class_info,teacher=request.user.institution)
-        subgroups_form=SubgroupsForm(class_number=class_info.class_number, profile=class_info.сurriculum)
+        subgroups_form=SubgroupsForm(class_number=class_info.class_number)
         if request.method=="POST":
             if 'info' in request.POST:
                 in_form=ClassForm(request.POST,instance=class_info,teacher=request.user.institution)
@@ -60,7 +59,7 @@ def class_edit_view(request,pk):
                     messages.success(request, 'Информация обновлена!')
                     return redirect(request.META.get('HTTP_REFERER'))
             if 'subroups' in request.POST:
-                sub_form=SubgroupsForm(request.POST,class_number=class_info.class_number, profile=class_info.сurriculum)
+                sub_form=SubgroupsForm(request.POST,class_number=class_info.class_number)
                 sub_form.instance.class_pk=class_info
                 if sub_form.is_valid():
                     sub_form.save()
@@ -71,64 +70,9 @@ def class_edit_view(request,pk):
     
     else:
         return HttpResponseForbidden()
-
-class SubgroupView(View,Journal):
-    form_class = ClassForm
-    template_name = 'classes/subgroup.html'
-    def get_student(self):
-        return Student.objects.filter(class_pk=self.get_class(),user__isnull=False).order_by('user')
-    def get_class(self):
-        try:
-            if 'pk' in self.kwargs:
-                class_info=Classes.objects.get(pk=self.kwargs['pk'])
-            else:
-                class_info=Classes.objects.filter(institution=self.request.user.institution).first()
-        except Classes.DoesNotExist:
-            class_info=None
-
-        return class_info
-    def get_subgroups(self):
-        return Subgroups.objects.filter(class_pk=self.get_class())
-
-
-    def get_context(self):
-        context = {}
-        context['title'] = 'Подгруппы '+str(self.get_class().class_number)+str(self.get_class().letter)+' класса'
-        context['classes']=self.get_classes()
-        context['students']=self.get_student()
-        context['class']=self.get_class()
-        context['subgroup_list']=self.get_subgroups()
-        context['subgroups']=self.get_subgroups().distinct('subject_pk')
-        return context
-
-    def get(self, request, *args, **kwargs):
-        
-        return render(request, self.template_name,self.get_context())
-
-    def post(self, request, *args, **kwargs):
-        
-
-        for subgroup in self.get_subgroups().distinct('subject_pk'):
-            subgroup_pk=subgroup.subject_pk.pk
-            for student in self.get_student():
-                student_pk=student.pk
-                sub=self.request.POST.get("sub"+str(subgroup_pk)+str(student_pk))
-                if sub:
-                    select_sub=Subgroups.objects.get(pk=sub)
-                    check_sub=StudentSubgroup.objects.filter(student=student_pk, subject=select_sub.subject_pk )
-                    if check_sub:
-                        
-                        check_sub.update(subgroup=  sub )
-                    else:
-                        sub_save=StudentSubgroup.objects.create(student=student,  subgroup_id=sub,subject=select_sub.subject_pk)
-
-        return redirect(request.META.get('HTTP_REFERER'))
-
-
-
 class СurriculumView(ListView):
     model = Сurriculum
-    template_name = 'classes/curriculum.html'
+    template_name = 'classes/сurriculum.html'
 
     def get_context_data(self):
         context = super().get_context_data()
@@ -137,60 +81,38 @@ class СurriculumView(ListView):
             institution=self.request.user.institution.pk,year=self.request.user.institution.year.pk)
         return context
 
-class СurriculumCreateView(AdminPermissionMixin, CurruculumMixin, CreateView):
+class СurriculumCreateView(AdminPermissionMixin, CreateView):
     form_class = СurriculumForm
     template_name = 'classes/add_curriculum.html'
 
     def get_context_data(self):
-
-        context=super().get_context_data()
-        context['title']='Добавление учебного плана'
-        c_def=self.get_curriculum_context(title='Добавление учебного плана')
-        return dict(list(context.items())+list(c_def.items()))
+        context = super().get_context_data()
+        context['title'] = 'Добавление учебных планов'
+        context['class'] = [10, 11]
+        context['subjects'] = Subject.objects.filter(
+            Q(institution=self.request.user.institution.pk) | Q(institution=None)).order_by('title')
+        return context
 
     def form_valid(self, form):
         form.instance.institution_id = self.request.user.institution.pk
         form.instance.year_id = self.request.user.institution.year.pk
 
+        сurriculum_profile = form.save()
+        subjects = Subject.objects.filter(
+            Q(institution=self.request.user.institution.pk) | Q(institution=None)).order_by('title')
+        for subject in subjects:
 
+            for a in range(12):
+                hour = self.request.POST.get("h" + str(subject.id) + str(a))
+                if hour:
+                    curriculum_subject = СurriculumSubject.objects.create(profile=сurriculum_profile,
+                                                                          class_number=a,
+                                                                          subject=subject,
+                                                                          hour=hour)
         return super().form_valid(form)
 
     def get_success_url(self):
-        self.form_save()
         return reverse('Curriculum')
-
-class СurriculumUpdateView(AdminPermissionMixin, CurruculumMixin, UpdateView):
-    model=Сurriculum
-    form_class = СurriculumForm
-    template_name = 'classes/add_curriculum.html'
-    def get_context_data(self):
-
-        context=super().get_context_data()
-        context['title']='Редактирование учебного плана'
-        c_def=self.get_curriculum_context(title='Редактирование учебного плана')
-        return dict(list(context.items())+list(c_def.items()))
-
-    def form_valid(self, form):
-        form.instance.institution_id = self.request.user.institution.pk
-        form.instance.year_id = self.request.user.institution.year.pk
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        self.form_save()
-        return reverse('Curriculum')
-class DeleteCurriculum(InstitutionsMixin,AdminPermissionMixin, DeleteView):
-    template_name = 'institutions/curriculum.html'
-
-    def get_object(self, **kwargs):
-        id_ = self.kwargs.get("pk")
-        return get_object_or_404(Сurriculum, id=id_)
-
-    def get_success_url(self):
-        return reverse('Curriculum')
-
-    def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
-
 
 
 class LoadView(AdminPermissionMixin, TimetableSettigns, View):

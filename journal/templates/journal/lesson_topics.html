@@ -5,14 +5,14 @@
 {% block content %}
 <form action="" method="POST">
 {% csrf_token %}
-<table class="rtable">
+<table class="styled-table">
 	<thead>
 	<tr>
-		<th style="width:3%">№</th>
-		<th style="width:10%">Дата</th>
-		<th style="width: 25%">Тема урока</th>
-		<th style="width:25%">Домашнее задание</th>
-		<th style="width:20%">Тип урока</th>
+		<td style="width:3%">№</td>
+		<td style="width:10%">Дата</td>
+		<td style="width: 25%">Тема урока</td>
+		<td style="width:25%">Домашнее задание</td>
+		<td style="width:20%">Тип урока</td>
 	</tr>
 	</thead>
 	{% for lesson in lessons %}
@@ -58,9 +58,8 @@
 	{% endif %}
 	{% endfor %}
 </table>
-<div>
 <button type="submit" class="btn btn-primary ">Сохранить</button>
-</div>
+
 </form>
 
  <script type="text/javascript">

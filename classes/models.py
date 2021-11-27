@@ -54,13 +54,10 @@ class Subgroups(models.Model):
 # Учебный план
 
 class Сurriculum(models.Model):
-    title = models.CharField(max_length=40, verbose_name='Наименование профиля')
+    title = models.CharField(max_length=150, verbose_name='Наименование профиля')
     institution = models.ForeignKey(Institutions, on_delete=models.PROTECT, verbose_name='Организация')
     year = models.ForeignKey(Year, on_delete=models.PROTECT, verbose_name='Учебный год')
-    def curriculum_edit(self):
-        return reverse('CurriculumEdit', kwargs={"pk": self.pk})
-    def curriculum_delete(self):
-        return reverse('DeleteCurriculum', kwargs={"pk": self.pk})
+
     def __str__(self):
         return self.title
 
@@ -110,12 +107,3 @@ class Student(models.Model):
 
     def __str__(self):
         return self.user.first_name
-
-
-class StudentSubgroup(models.Model):
-    student=models.ForeignKey(Student, on_delete=models.SET_NULL, verbose_name="Ученик",
-                                       null=True)
-    subject=models.ForeignKey(СurriculumSubject, on_delete=models.SET_NULL, verbose_name="Предмет",
-                                       null=True)
-    subgroup=models.ForeignKey(Subgroups, on_delete=models.SET_NULL, verbose_name="Подгруппа",
-                                       null=True)

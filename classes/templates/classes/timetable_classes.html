@@ -7,17 +7,17 @@
 {% block content %}
 	<table class="table table-sm table-bordered">
 		<tr>
-			<td style="width: 5%">Класс</td>
-			<td style="width: 35%">Учебный план</td>
-			<td style="width:48%;text-align: center;" colspan="3">Действие</td>
+			<td>Класс</td>
+			<td>Профиль учебных периодов</td>
+			<td colspan="3">Действие</td>
 		</tr>
 		{% for i in classes %}
 		<tr>
 			<td>{{ i.class_number }}{{ i.letter }}</td>
-			<td >{{ i.сurriculum }}</td>
-			<td style="width:16%"><a href="{{ i.timetable_templates }}">Шаблоны</a></td>
-			<td style="width: 16%"><a href="{{ i.timetable_weeks }}">Распределение уроков</a></td>
-			<td style="width: 16%"><a href="{% url 'EditLesson' class_pk=i.pk %}">Редактирование уроков</a></td>
+			<td>{{ i.period_profile }}</td>
+			<td><a href="{{ i.timetable_templates }}">Шаблоны</a></td>
+			<td><a href="{{ i.timetable_weeks }}">Распределение уроков</a></td>
+			<td><a href="{% url 'EditLesson' class_pk=i.pk %}">Редактирование уроков</a></td>
 		</tr>
 		{% endfor %}
 	</table>

@@ -3,9 +3,6 @@
 {% load user_tags %}
 
 {% block content %}
-
-
-{% if loads %}
 <form method="POST">
   {% csrf_token %}
   {% if not request.user|teacher %}
@@ -13,7 +10,7 @@
     <div class="col">
        <select class="custom-select custom-select-sm "  name="load" id="classes" style="width:auto">
            {% for class in classes %}
-            <option  {% if load_pk.class_pk.pk == class.pk %} selected="" {% endif %}  value="{{ class.pk }}" value="" url="{% url 'GetLoad' class_pk=class.pk %}">{{ class.class_number }}{{ class.letter }}</option>
+            <option {% if load_pk.class_pk == class.pk %} selected="" {% endif %}  value="{{ class.pk }}" value="" url="{% url 'GetLoad' class_pk=class.pk %}">{{ class.class_number }}{{ class.letter }}</option>
           {% endfor %}
        </select>
     </div>
@@ -26,7 +23,7 @@
            {% for load in loads %}
            
 
-            <option  {% if load_pk.pk == load.pk %} selected="" {% endif %}   url="{% url 'CheckPeriod' load=load.pk %}" value="{{ load.pk }}" value="">{{ load.subject_pk }} {% if load.subgroup %} ({{ load.subgroup.name }}) {% endif %}</option>
+            <option {% if load_pk.pk == load.pk %} selected="" {% endif %}   url="{% url 'CheckPeriod' load=load.pk %}" value="{{ load.pk }}" value="">{{ load.subject_pk }} {% if load.subgroup %} ({{ load.subgroup.name }}) {% endif %}</option>
           {% endfor %}
           {% else %}
           {% for load in loads %}
@@ -51,7 +48,7 @@
 
 
 <div class="row mt-3">
-  <div class="col">
+  <div class="col-xs">
     <a href="{% url 'LessonTopics' load=load_pk.pk period=period.pk %}" class="btn btn-primary btn-sm">Темы уроков и дз</a>
   </div>
   <div class="col">
@@ -60,13 +57,12 @@
 </div>
 
 <div class="row mt-3" id="tables" >
-
-  <div style="width: 150px;margin-left: 15px;" class="col-3 mycol" style="" style=""> 
+  <div style="width: 150px" class="col-3 mycol" style="" style=""> 
     <table class="myTable" style=>
       <thead>
       <tr>
         <th id="row-2" style="width: 30px">№</thd>
-        <th id="row-2" style="text-align:center;">Фамилия, имя</th>
+        <th id="row-2">Фамилия, имя</th>
       </tr>
      
       </thead>
@@ -74,7 +70,7 @@
         {% for student in students %}
           <tr style=" max-height: 32px;">
             <td style="height:32px;max-height:32px" class="student">{{ forloop.counter }}</td>
-            <td style="height:32px;max-height:32px;" class="student">{{ student.user.last_name }} {{ student.user.first_name }}</td>
+            <td style="height:32px;max-height:32px" class="student">{{ student.user.last_name }} {{ student.user.first_name }}</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -156,7 +152,7 @@
 </div>
 
 </div>
-<input style="display: none;" id="mark" class="form-control" type="text" autocomplete="off">
+<input style="display: none;" id="mark" class="form-control" type="text">
 <style>
 .mycol {padding-left: 0; padding-right:0;}
 tbody td{
@@ -202,21 +198,20 @@ function select(url){
   success: function (result) {  
   $('#periods option').remove();
   name_period=''
-
-  if (result.period.length==2){
+  if (result.length==2){
   name_period=' полугодие'
   }
-  if (result.period.length==4){
+  if (result.length==4){
   name_period=' четверть'
   }
-  if (result.period.length==3){
+  if (result.length==3){
   name_period=' триместр'
   }
-  for(var i = 1; i<=result.period.length; i++){ //data[1] contains no of sem
-  $('#periods').append('<option value="' + result.period[i-1] + '">' + i+name_period +'</option>');
-  }
+  for(var i = 1; i<=result[1]; i++){ //data[1] contains no of sem
+  $('#periods').append('<option value="' + result[i-1] + '">' + i+name_period +'</option>');
   }
 
+  }
 
   });
 
@@ -229,7 +224,6 @@ $(document).on('change', 'select#loads', function () {
 
 
 $(document).on('change', 'select#classes', function () {
-
 var url = $(this.options[this.selectedIndex]).attr("url"); 
 $.ajax({
 type: "GET",
@@ -240,7 +234,7 @@ $('#loads option').remove();
 
 for (var i = 1; i <= result.loads.length; i++) {
 
- $('#loads').append('<option url="'+ result.url[i-1] + '"' + 'value="' + result.pk_array[i-1]  + '">' + result.names[i-1] +'</option>');
+ $('#loads').append('<option url="'+ result.url[i-1]  + '">' + result.names[i-1] +'</option>');
 }
 var load_first=$("#loads option:first").attr("url")
 select(load_first)
@@ -251,7 +245,8 @@ select(load_first)
 
 });
     
-
+</script>
+<script>
 
 
 $('.itog').on('click',function(event){
@@ -260,7 +255,7 @@ $('.itog').on('click',function(event){
 })
 
 $('.day').on('click',function(event){
-      
+    
     click_mark(this)
 })
 
@@ -277,47 +272,40 @@ $('.day').on('click',function(event){
     var url='{% url 'Mark' %}'
     var tocken='{{ csrf_token }}'
     save_mark(this,url,tocken,min_mark,max_mark)
+
   })
 
  
 
   $('.mark_tr').each(function(){
 
-           var mark_sum=0
-           var mark_lenght=0
-           var mark=$(this).children('td').text()
-           var student=$(this).children('td').attr('student')
-           for (i = 0; i < mark.length; i +=1 ) {
-              if(parseInt(mark[i])>0){
-              mark_sum=mark_sum+parseInt(mark[i])
-              mark_lenght+=1
-            }
-          }
-           var ball=mark_sum/mark_lenght
+    var mark_sum=0
+    var mark_lenght=0
+    
+    var student=$(this).children('td').attr("student")
+    $('.'+student).each(function(){
+      var mark=$(this).text()
            
-           ball=ball.toFixed(2)
-           
-           if(ball>0){
-              $('#ball'+student).text(ball)
-         }
-         
+           if (mark>=1 & mark<=100){
+              mark_sum=mark_sum+parseInt(mark)
+              mark_lenght=mark_lenght+1
+           }
+
+
+    });
+        var ball=mark_sum/mark_lenght
+        ball=ball.toFixed(2)
+        if (ball>0){
+        $('#ball'+student).text(ball)
+      }
+        else{
+          $('#ball'+student).text('')
+        }
+        
   });
-
-
-
-  var count_nov=$('table').find('.day11').length;
-
-
 
 </script>
 
 
-{% else %}
-
-<div class="alert alert-warning" role="alert">
-  На вашем аккаунте отсутствует учебная нагрузка.
-</div>
-
-{% endif %}
 
 {% endblock %}
