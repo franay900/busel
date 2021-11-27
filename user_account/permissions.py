@@ -5,15 +5,14 @@ from django.shortcuts import redirect
 class AdminPermissionMixin:
 	def has_permissions(self):
 		user_pk=self.request.user.pk
-
 		try:
 			user=UserNet.objects.get(pk=user_pk,groups__in=[1])
-			return user.groups!=0 and self.request.user.first_name
+			return user.groups
 		except:
 			pass
-			
 		if self.request.user.is_superuser:
 			return True
+
 	def dispatch(self,request,*args,**kwargs):
 		if not self.has_permissions():
 			return HttpResponseForbidden()

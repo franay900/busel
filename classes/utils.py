@@ -2,9 +2,10 @@ from classes.models import Classes, BellTimetable
 from journal.models import Lessons
 from .models import СurriculumSubject, Load
 from modules.weeks import get_all_weeks, get_dates
-from institutions.models import Periods
+from institutions.models import Periods, Subject
 from user_account.models import UserNet
 from datetime import datetime
+from django.db.models import Q
 
 
 class TimetableSettigns():
@@ -18,6 +19,9 @@ class TimetableSettigns():
             class_info=None
 
         return class_info 
+
+    def get_classes(self):
+        return Classes.objects.filter(institution=self.request.user.institution).order_by('class_number','letter')
     def get_info(self):
         info_class=self.get_class()
         if info_class!=None:
@@ -69,3 +73,47 @@ class TimetableSettigns():
 
 
         return
+
+
+class CurruculumMixin:
+    def get_curriculum_context(self,**kwargs):
+        context=kwargs
+        context = super().get_context_data()
+        context['class'] = [10, 11]
+        context['subjects'] = Subject.objects.filter(
+            Q(institution=self.request.user.institution.pk) | Q(institution=None)).order_by('title')
+        context['profile']=self.object
+        return context
+    def form_save(self):
+
+        subjects = Subject.objects.filter(
+            Q(institution=self.request.user.institution.pk) | Q(institution=None)).order_by('title')
+        for subject in subjects:
+
+            for a in range(12):
+                hour = self.request.POST.get("h" + str(subject.id) + str(a))
+                if hour:
+                    hour=int(hour)
+                else:
+                    hour=None
+                if hour is not None and hour>0:
+                    try:
+                        get_subject=СurriculumSubject.objects.filter(profile=self.object,
+                                                                          class_number=a,
+                                                                          subject=subject).first()
+                        get_subject.hour=hour
+                        get_subject.save()
+                    except:
+                        curriculum_subject = СurriculumSubject.objects.create(profile=self.object,
+                                                                          class_number=a,
+                                                                          subject=subject,
+                                                                          hour=hour)
+                else:
+                    try:
+                        get_subject=СurriculumSubject.objects.filter(profile=self.object,
+                                                                          class_number=a,
+                                                                          subject=subject).first()
+
+                        get_subject.delete()
+                    except:
+                        pass

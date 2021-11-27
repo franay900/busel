@@ -32,7 +32,7 @@ $('#two').click(function(){
 }
 
 function save_mark(self,url,tocken,min,max){
-  
+    
     $(self).css('display','none')
     var old_mark=$(self).attr('old_mark')
     var new_mark=$(self).val()
@@ -128,6 +128,7 @@ function save_mark(self,url,tocken,min,max){
 
 
 function click_mark(self){
+
   var td=$(self)
   var td_id=td.attr('id')
   var old_mark=$(self).html()
@@ -142,6 +143,7 @@ function click_mark(self){
   mark.css({'display':'block','width':dayWidth,'height':dayHeight}).offset({'top':dayTop,'left':dayLeft}).focus()
 
   mark.attr({'old_mark':old_mark,'td':td_id})
+  
 }
 
 

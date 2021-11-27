@@ -1,0 +1,108 @@
+{% extends 'user_index.html' %}
+{% load subgroup_tags %}
+
+
+
+{% block content %}
+
+
+
+
+
+
+  <select onchange="top.location=this.value" class="custom-select custom-select-sm" style="width:auto" name="" id="">
+    {% for classes in classes %}
+    <option  {% if class.pk == classes.pk %} selected="" {% endif %} value="{% url 'SubgroupViewPk' pk=classes.pk %}">{{ classes.class_number }}{{ classes.letter }}</option>
+    {% endfor %}
+  </select>
+
+{% if subgroups and students %}
+<form method="post" action="">
+	{% csrf_token %}
+  <table class="rtable mt-3">
+  	<thead>
+  	<tr>
+  		<th rowspan="2">№</th>
+  		<th rowspan="2">Фамилия,имя</th>
+  		{% for subgroup in subgroups %}
+  		<th   id="s{{subgroup.subject_pk.pk}}" colspan="2" style="text-align: center;">{{subgroup.subject_pk}}</th>
+  		{% endfor %}
+  	</tr>
+  	<tr>
+
+  		{% for subgroup in subgroup_list %}
+  		<th class="subgroup" subject="{{subgroup.subject_pk.pk}}">{{ subgroup.name }}</th>
+  		{% endfor %}
+  	</tr>
+	</thead>
+
+	
+	<tbody>
+		{% for student in students %}
+  		<tr>
+  			<td>{{ forloop.counter }}</td>
+  			<td>{{ student.user.last_name }} {{ student.user.first_name }}</td>
+  			{% for subgroup in subgroup_list %}
+
+        {% subgroup_check student=student subject=subgroup as subgroup_check %}
+        
+  				<td >
+  					<input  type="radio" name="sub{{ subgroup.subject_pk.pk }}{{ student.pk }}" value="{{subgroup.pk}}" {% if subgroup_check.subgroup.subject_pk.pk == subgroup.subject_pk.pk %}checked{% endif %} >
+  				</td>
+  			{% endfor %}
+  		</tr>
+  		{% endfor %}
+	</tbody>
+
+  </table>
+<button class="button-41" type="submit">Сохранить</button>
+
+ </form>
+{% endif %}
+
+{% if not subgroups %}
+
+<div class="alert alert-warning mt-3" role="alert">
+  Для данного класса не обнаружено подгрупп!
+</div>
+
+
+
+
+{% elif not students %}
+
+<div class="alert alert-warning mt-3" role="alert">
+  В данном классе отсутсвуют ученики!
+</div>
+
+
+
+{% endif %}
+
+<script type="text/javascript">
+	var new_subject=0
+	var a=1
+
+
+	  $('.subgroup').each(function(){
+
+	  	var subject=$(this).attr('subject')
+
+	  	a++
+	  	
+	  	if(new_subject!=subject){
+			
+	  		$('#s'+new_subject).attr('colspan',a)
+	  		a=0
+	  	
+	  	}
+
+	  	new_subject=subject
+
+       
+  });
+	  a=a+1
+	  $('#s'+new_subject).attr('colspan',a)
+</script>
+
+{% endblock %}

@@ -2,10 +2,10 @@ import random
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
 from django.contrib.auth import login, logout
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, View
-from .forms import UserEditForm,RegisterForm
+from .forms import UserEditForm,RegisterForm,SetPassword
 from .permissions import AdminPermissionMixin,RegisterMixin
 from user_account.models import UserNet,FileTemplates
 from .utils import *
@@ -23,28 +23,55 @@ class HomePageAccountView(RegisterMixin,LoginRequiredMixin, ListView):
     template_name = 'user_account/index.html'
 
 
-class UsersView(AdminPermissionMixin,UserMixin, ListView):
+class UsersView(PermissionRequiredMixin,UserMixin, ListView):
     model = UserNet
     template_name = 'user_account/users.html'
-
+    permission_required = 'user_account.view_usernet'
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
         c_def = self.getUserByInstitutions(title='Сотрудники')
         return dict(list(context.items()) + list(c_def.items()))
 
 
-class UserEditView(SuccessMessageMixin,InstitutionsMixin,AdminPermissionMixin,UpdateView):
+def user_edit_view(request,user_id):
+    user=UserNet.objects.get(pk=user_id)
+    password_form=SetPassword(user=user)
+    form=UserEditForm(instance=user,user=user.institution.typeInstitutions)
+    if request.method=="POST":
+        save_form=UserEditForm(request.POST,instance=user,user=user.institution.typeInstitutions)
+        if save_form.is_valid():
+            form=save_form
+            user=form.save()
+            messages.success(request,'Информация обновлена')
+
+        save_password=SetPassword(data=request.POST,user=user)
+        if save_password.is_valid():
+            save_password.save()
+            messages.success(request,"Пароль успешно обновлен")
+        else:
+            messages.error(request,"Ошибка!")
+        
+    context={"form":form,'password_form':password_form,'title':'Редактирование пользователя'}
+    return render(request,'classes/student.html',context)
+
+
+class UserEditView(PermissionRequiredMixin,SuccessMessageMixin,InstitutionsMixin,UpdateView):
     model = UserNet
     form_class = UserEditForm
-    template_name = 'user_account/user_update.html'
+    template_name = 'classes/student.html'
     pk_url_kwarg = 'user_id'
     success_message = 'Информация обновлена'
     error_message='Ошибка'
+    permission_required = 'user_account.change_usernet'
+    login_url='login'
     def get_form_kwargs(self):
         kwargs = super(UserEditView, self).get_form_kwargs()
         kwargs['user'] =kwargs['instance'].institution.typeInstitutions
         return kwargs
-
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['title'] = 'Личная карточка пользователя'
+        return context
 
 class Registration(UpdateView):
     form_class = RegisterForm

@@ -14,7 +14,7 @@ from pathlib import Path
 
 import os
 
-ALLOWED_HOSTS = ['127.0.0.1','147.78.65.166','busel.ga']
+ALLOWED_HOSTS = ['127.0.0.1','91.240.85.244','busel.ga']
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'classes',
     'journal',
     'reports',
-    
 ]
 
 MIDDLEWARE = [
@@ -137,7 +136,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 
 try:
-    from .local_setting import *
+    from .local_settings import *
     
 except ImportError:
     from .prod_setting  import *
