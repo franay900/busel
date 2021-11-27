@@ -160,7 +160,7 @@ class ImportUsers(View):
                 birth_day=users[row][4].value
                 login=generate_login()[0]
                 password=generate_login()[1]
-                if first_name and last_name and patronymic:
+                if first_name and last_name and patronymic and gender and birth_day:
                     user_pk=UserNet.objects.create_user(is_active=False,username=login,password=password,last_name=last_name,first_name=first_name,middle_name=patronymic,gender=gender,birth_day=birth_day,institution=self.request.user.institution)
                     user_pk.groups.set([2])
                     arr.append([last_name,first_name,patronymic,gender,birth_day,login,password,user_pk.pk])
