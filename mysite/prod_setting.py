@@ -22,7 +22,7 @@ DATABASES = {
 
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'busel',
-        'USER' : 'admin_busel',
+        'USER' : 'busel_admin',
         'PASSWORD' : 'masterAdminBusel#345',
         'HOST' : 'localhost',
         'PORT' : '5432',
