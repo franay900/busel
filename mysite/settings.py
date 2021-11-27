@@ -136,8 +136,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 
 try:
-    from .local_settings import *
+    from .local_setting import *
     
 except ImportError:
     from .prod_setting  import *
-
