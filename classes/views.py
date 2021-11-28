@@ -485,20 +485,20 @@ class ImportStudent(View):
             for row in range(2,users.max_row+1):
                 last_name=users[row][0].value
                 first_name=users[row][1].value
-                patronymic=users[row][2].value
-                gender=users[row][3].value
-                birth_day=users[row][4].value
-                class_=users[row][5].value
-                letter=re.sub("[0-9]", "", class_)
-                class_=class_.rsplit('-')
-                class_ = "".join(c for c in class_[0] if  c.isdecimal())
-                class_find=Classes.objects.filter(institution=request.user.institution,class_number=class_,letter=letter).first()
-                login=generate_login()[0]
-                password=generate_login()[1]
                 if last_name:
-                        user_pk=UserNet.objects.create_user(is_active=False,username=login,password=password,last_name=last_name,first_name=first_name,middle_name=patronymic,gender=gender,birth_day=birth_day,institution=self.request.user.institution)
-                        user_pk.groups.set([3])
-                        arr.append([last_name,first_name,patronymic,gender,birth_day,login,password,user_pk.pk,class_find])
+                    patronymic=users[row][2].value
+                    gender=users[row][3].value
+                    birth_day=users[row][4].value
+                    class_=users[row][5].value
+                    letter=re.sub("[0-9]", "", class_)
+                    class_=class_.rsplit('-')
+                    class_ = "".join(c for c in class_[0] if  c.isdecimal())
+                    class_find=Classes.objects.filter(institution=request.user.institution,class_number=class_,letter=letter).first()
+                    login=generate_login()[0]
+                    password=generate_login()[1]
+                    user_pk=UserNet.objects.create_user(is_active=False,username=login,password=password,last_name=last_name,first_name=first_name,middle_name=patronymic,gender=gender,birth_day=birth_day,institution=self.request.user.institution)
+                    user_pk.groups.set([3])
+                    arr.append([last_name,first_name,patronymic,gender,birth_day,login,password,user_pk.pk,class_find])
                     
 
         context['title']='Результат импорта'
