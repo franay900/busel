@@ -495,9 +495,10 @@ class ImportStudent(View):
                 class_find=Classes.objects.filter(institution=request.user.institution,class_number=class_,letter=letter).first()
                 login=generate_login()[0]
                 password=generate_login()[1]
-                user_pk=UserNet.objects.create_user(is_active=False,username=login,password=password,last_name=last_name,first_name=first_name,middle_name=patronymic,gender=gender,birth_day=birth_day,institution=self.request.user.institution)
-                user_pk.groups.set([3])
-                arr.append([last_name,first_name,patronymic,gender,birth_day,login,password,user_pk.pk,class_find])
+                if last_name:
+                        user_pk=UserNet.objects.create_user(is_active=False,username=login,password=password,last_name=last_name,first_name=first_name,middle_name=patronymic,gender=gender,birth_day=birth_day,institution=self.request.user.institution)
+                        user_pk.groups.set([3])
+                        arr.append([last_name,first_name,patronymic,gender,birth_day,login,password,user_pk.pk,class_find])
                     
 
         context['title']='Результат импорта'
