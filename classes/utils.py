@@ -93,7 +93,7 @@ class CurruculumMixin:
             for a in range(12):
                 hour = self.request.POST.get("h" + str(subject.id) + str(a))
                 if hour:
-                    hour=int(hour)
+                    hour=float(hour)
                 else:
                     hour=None
                 if hour is not None and hour>0:
