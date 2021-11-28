@@ -67,7 +67,7 @@ class Сurriculum(models.Model):
 
 class СurriculumSubject(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    hour = models.IntegerField(null=True)
+    hour = models.FloatField(null=True)
     class_number = models.IntegerField()
     profile = models.ForeignKey(Сurriculum, on_delete=models.CASCADE)
 
