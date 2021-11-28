@@ -414,7 +414,7 @@ class StudentListView(AdminPermissionMixin, ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
         context['title'] = 'Обучающиеся'
-        users=UserNet.objects.filter(institution=self.request.user.institution, groups=3)
+        users=UserNet.objects.filter(institution=self.request.user.institution, groups=4)
         context['users']=Student.objects.filter(user__in=users)
         return context
 class AddStudent(AdminPermissionMixin, SuccessMessageMixin, CreateView):
