@@ -5,7 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 SECRET_KEY = '84xz4~A15HrFd*B5ec???9IetrvZXZq~ELH*UP5T4ACT0~La{Xou'
-DEBUG = True
+DEBUG = False
 
 
 
