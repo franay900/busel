@@ -91,9 +91,11 @@ class CurruculumMixin:
         for subject in subjects:
 
             for a in range(12):
-                hour = self.request.POST.get("h" + str(subject.id) + str(a))
+                hour = self.request.POST.get("h" + str(subject.id)+ "c" + str(a))
                 if hour:
-                    hour=float(hour)
+
+                    hour=float(hour.replace(',', '.'))
+                    print(hour,a)
                 else:
                     hour=None
                 if hour is not None and hour>0:

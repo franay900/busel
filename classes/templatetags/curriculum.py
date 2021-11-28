@@ -1,5 +1,6 @@
 from django import template
 from classes.models import Сurriculum,СurriculumSubject, Classes
+from django.template.defaultfilters import floatformat
 
 
 
@@ -21,3 +22,15 @@ def get_curriculum_subject(context, subject_pk,class_number):
 
 	except:
 		pass
+
+
+def formatted_float(value):
+    value = floatformat(value, arg=4)
+    value=str(value).replace(',','.')
+    if value:
+    	value='{0:g}'.format(round(float(value),1)) 
+    	
+    return value
+
+
+register.filter('formatted_float', formatted_float)
