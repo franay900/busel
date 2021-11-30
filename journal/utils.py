@@ -15,12 +15,20 @@ class Journal():
 	    return Classes.objects.filter(institution=self.request.user.institution).order_by('class_number','letter')
 
 	def get_class(self):
-	    if 'load' in self.request.POST:
-	        load = self.request.POST.get("load")
-	        get_load = Load.objects.get(pk=load)
-	        return Classes.objects.get(pk=get_load.class_pk.pk)
-	    else:
-	        return Classes.objects.filter(institution=self.request.user.institution).first()
+
+		if 'load' in self.request.POST or 'load' in self.kwargs:
+	    	
+			if 'load' in self.request.POST:
+
+				load = self.request.POST.get("load")
+			if 'load' in self.kwargs:
+				load = self.kwargs["load"]
+			get_load = Load.objects.get(pk=load)
+			return Classes.objects.get(pk=get_load.class_pk.pk)
+
+		else:
+
+			return Classes.objects.filter(institution=self.request.user.institution).first()
 
 
 	def get_student(self):

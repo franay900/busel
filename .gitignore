@@ -2,3 +2,5 @@ logs/
 config/
 media/
 static/
+mysite/settings.py
+mysite/prod_setting.py

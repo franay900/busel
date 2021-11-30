@@ -6,6 +6,9 @@
 
 
 {% if loads %}
+
+
+
 <form method="POST">
   {% csrf_token %}
   {% if not request.user|teacher %}
@@ -19,6 +22,7 @@
     </div>
   </div>
   {% endif %}
+
   <div class="row mt-3">
     <div class="col">
         <select class="custom-select custom-select-sm "  name="load" id="loads">
@@ -57,6 +61,12 @@
   <div class="col">
     <a  href="{% url 'ItogView' load=load_pk.pk period=period.pk %}" class="btn btn-primary mr-3 btn-sm">Итоговая ведомость</a>
   </div>
+</div>
+
+<div class="alert alert-secondary mt-3" role="alert">
+  <strong>Классный руководитель: </strong>{{ load_pk.class_pk.class_teacher }}<br>
+  <strong>Учитель: </strong>{{ load_pk.teacher }} 
+  
 </div>
 
 <div class="row mt-3" id="tables" >
@@ -223,7 +233,9 @@ function select(url){
 }
 
 $(document).on('change', 'select#loads', function () {
-  var url = $(self.options[self.selectedIndex]).attr("url"); 
+  var url = $("select#loads option:selected").attr("url")
+
+
   select(url)
 });
 
