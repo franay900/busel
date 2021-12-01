@@ -2,3 +2,4 @@ logs/
 config/
 media/
 static/
+*/__pycache__/*
