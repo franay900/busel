@@ -11,7 +11,7 @@
 
 <form method="POST">
   {% csrf_token %}
-  {% if not request.user|teacher %}
+  {% if type_journal == 'school' %}
   <div class="row">
     <div class="col">
        <select class="custom-select custom-select-sm "  name="load" id="classes" style="width:auto">
@@ -26,7 +26,7 @@
   <div class="row mt-3">
     <div class="col">
         <select class="custom-select custom-select-sm "  name="load" id="loads">
-          {% if not request.user|teacher %}
+          {% if type_journal == 'school' %}
            {% for load in loads %}
            
 
@@ -48,7 +48,7 @@
        </select>
     </div>
     <div class="col">
-      <button class=" btn btn-sm btn-primary">Показать</button>
+      <button class=" btn btn-sm btn-secondary">Показать</button>
     </div>
   </div>
 </form>
@@ -56,11 +56,10 @@
 
 <div class="row mt-3">
   <div class="col">
-    <a href="{% url 'LessonTopics' load=load_pk.pk period=period.pk %}" class="btn btn-primary btn-sm">Темы уроков и дз</a>
+    <a href="{% url 'LessonTopics' load=load_pk.pk period=period.pk %}" class="btn btn-secondary btn-sm">Темы уроков и дз</a>
+    <a  href="{% url 'ItogView' load=load_pk.pk period=period.pk %}" class="btn btn-secondary mr-3 btn-sm">Итоговая ведомость</a>
   </div>
-  <div class="col">
-    <a  href="{% url 'ItogView' load=load_pk.pk period=period.pk %}" class="btn btn-primary mr-3 btn-sm">Итоговая ведомость</a>
-  </div>
+
 </div>
 
 <div class="alert alert-secondary mt-3" role="alert">
@@ -90,7 +89,7 @@
       </tbody>
     </table>
 </div>
-<div id="scroll" class="mycol" style=";max-width: 546px;overflow-x: scroll;">
+<div id="scroll" class="mycol sc3" style=";max-width: 546px;overflow-x: scroll;">
     <table style="width:auto" id="table2"  class="myTable">
       <thead>
         
@@ -100,7 +99,15 @@
         <th class="month" colspan="0" id="oct" style="display: none;">Октябрь</th>
         <th class="month" colspan="0" id="nov" style="display: none;">Ноябрь</th>
         <th class="month" colspan="0" id="dec" style="display: none;">Декабрь</th>
-       
+        
+
+        <th class="month" colspan="0" id="jan" style="display: none;">Январь</th>
+        <th class="month" colspan="0" id="feb" style="display: none;">Февраль</th>
+        <th class="month" colspan="0" id="march" style="display: none;">Март</th>
+
+
+        <th class="month" colspan="0" id="ap" style="display: none;">Апрель</th>
+        <th class="month" colspan="0" id="may" style="display: none;">Май</th>
       </tr>
       
       <tr>
@@ -198,6 +205,19 @@ text-align: center;
 }
 #mark{
   position: static;
+}
+
+.sc3::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.sc3::-webkit-scrollbar-track {
+  background-color: transparent;
+  border-radius: 10px;
+}
+.sc3::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 10px;
 }
 </style>
 <script type="text/javascript">

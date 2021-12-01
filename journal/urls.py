@@ -3,7 +3,9 @@ from .views import *
 
 
 urlpatterns=[
-	path('',JournalView.as_view() ,name="JournalView"),
+	path('journal/school',SchoolJournalView.as_view() ,name="JournalView"),
+
+	path('journal/my',MyJournalView.as_view() ,name="MyJournal"),
 	path('check_period/<int:load>',check_period ,name="CheckPeriod"),
 	path('lesson_topics/<int:load>/<int:period>/',LessonTopics.as_view() ,name="LessonTopics"),
 	path('save_mark/',Mark.as_view() ,name="Mark"),

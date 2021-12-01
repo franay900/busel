@@ -181,4 +181,34 @@ function click_mark(self){
     $(dec).attr('colspan',count_dec).show()
     }
 
+
+
+
+    var count_jan=$('table').find('.day01').length;
+
+    if (count_jan){
+    $(jan).attr('colspan',count_jan).show()
+    }
+
+
+    var count_feb=$('table').find('.day02').length;
+    if (count_feb){
+    $(feb).attr('colspan',count_feb).show()
+    }
+
+    var count_mar=$('table').find('.day03').length;
+    if (count_mar){
+    $(march).attr('colspan',count_mar).show()
+    }
+
+
+    var count_ap=$('table').find('.day04').length;
+    if (count_ap){
+    $(ap).attr('colspan',count_mar).show()
+    }
+
+    var count_may=$('table').find('.day03').length;
+    if (count_may){
+    $(may).attr('colspan',count_may).show()
+    }
 })

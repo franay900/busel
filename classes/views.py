@@ -76,7 +76,7 @@ class SubgroupView(View,Journal):
     form_class = ClassForm
     template_name = 'classes/subgroup.html'
     def get_student(self):
-        return Student.objects.filter(class_pk=self.get_class(),user__isnull=False).order_by('user')
+        return Student.objects.filter(class_pk=self.get_class(),user__isnull=False,user__is_active=True).order_by('user')
     def get_class(self):
         try:
             if 'pk' in self.kwargs:
@@ -414,8 +414,8 @@ class StudentListView(AdminPermissionMixin, ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
         context['title'] = 'Обучающиеся'
-        users=UserNet.objects.filter(institution=self.request.user.institution, groups=4)
-        context['users']=Student.objects.filter(user__in=users)
+        users=UserNet.objects.filter(institution=self.request.user.institution, groups__name='Ученик', is_active=True)
+        context['users']=Student.objects.filter(user__in=users).order_by('user__last_name')
         return context
 class AddStudent(AdminPermissionMixin, SuccessMessageMixin, CreateView):
     form_class = StudentForm

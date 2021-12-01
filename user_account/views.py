@@ -14,6 +14,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from institutions.permissions import InstitutionsMixin
 from modules.users import get_user, generate_login
 from django.contrib import messages
+from django.http import HttpResponseForbidden,HttpResponseRedirect
 
 
 class HomePageAccountView(RegisterMixin,LoginRequiredMixin, ListView):
@@ -35,30 +36,30 @@ class UsersView(PermissionRequiredMixin,UserMixin, ListView):
 
 def user_edit_view(request,user_id):
     user=UserNet.objects.get(pk=user_id)
-    password_form=SetPassword(user=user)
-    form=UserEditForm(instance=user,user=user.institution.typeInstitutions)
-    if request.method=="POST":
-        save_form=UserEditForm(request.POST,instance=user,user=user.institution.typeInstitutions)
-        if save_form.is_valid():
-            form=save_form
-            user=form.save()
-            messages.success(request,'Информация обновлена')
+    if user.institution== request.user.institution:
+        password_form=SetPassword(user=user)
+        form=UserEditForm(instance=user,user=user.institution.typeInstitutions)
+        if request.method=="POST":
+            save_form=UserEditForm(request.POST,request.FILES or None,instance=user,user=user.institution.typeInstitutions)
+            if save_form.is_valid():
+                form=save_form
+                user=form.save()
+                messages.success(request,'Информация обновлена')
 
-        save_password=SetPassword(data=request.POST,user=user)
-        if save_password.is_valid():
-            save_password.save()
-            messages.success(request,"Пароль успешно обновлен")
-        else:
-            messages.error(request,"Ошибка!")
-        
-    context={"form":form,'password_form':password_form,'title':'Редактирование пользователя'}
-    return render(request,'classes/student.html',context)
+            save_password=SetPassword(data=request.POST,user=user)
+            if save_password.is_valid():
+                save_password.save()
+                messages.success(request,"Пароль успешно обновлен")
 
-
+            
+        context={"form":form,'password_form':password_form,'title':'Редактирование пользователя'}
+        return render(request,'user_account/user_update.html',context)
+    else:
+        return HttpResponseForbidden()
 class UserEditView(PermissionRequiredMixin,SuccessMessageMixin,InstitutionsMixin,UpdateView):
     model = UserNet
     form_class = UserEditForm
-    template_name = 'classes/student.html'
+    template_name = 'classes/user_update.html'
     pk_url_kwarg = 'user_id'
     success_message = 'Информация обновлена'
     error_message='Ошибка'
@@ -129,7 +130,7 @@ class BanUser(View):
         user_get=UserNet.objects.get(pk=user_id)
         user_get.is_active=False
         user_get.save()
-        return redirect('users')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 class ImportUsers(View):
     def get(self,request):

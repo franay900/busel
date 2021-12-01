@@ -18,7 +18,7 @@ class UserEditForm(forms.ModelForm):
         model = UserNet
         fields=['last_name','first_name','middle_name','gender','birth_day','groups','avatar','email']
         
-        avatar = forms.ImageField()
+   
         widgets={
 	    	'last_name':forms.TextInput(attrs={'class':'form-control'}),
 	    	'first_name':forms.TextInput(attrs={'class':'form-control'}),

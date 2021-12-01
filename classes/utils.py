@@ -8,6 +8,7 @@ from datetime import datetime
 from django.db.models import Q
 
 
+
 class TimetableSettigns():
     def get_class(self):
         try:

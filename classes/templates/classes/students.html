@@ -3,23 +3,26 @@
 
 
 {% block content %}
-   <table class="table table-bordered table-sm ">
+   <table class="rtable ">
     <thead class="thead-light">
      <tr>
     	<th>№</th>
-       <th>ФИО</th>
+       <th style="text-align: center">ФИО</th>
+       <th>Пол</th>
+       <th>Дата рождения</th>
        <th>Класс</th>
-       <th colspan="2">Действие</th>       
+       <th style="text-align: center" colspan="2">Действие</th>       
      </tr>
      </thead>
      	{% for i in users %}
      	<tr>
      		<td>{{ forloop.counter }}</td>
      		<td>{{ i.user.last_name  }}  {{ i.user.first_name }} {{ i.user.middle_name }}</td>
-
+        <td>{{ i.user.gender }}</td>
+        <td>{{ i.user.birth_day }}</td>
         <td>{{ i.class_pk }}</td>
-     		<td><a href="{{ i.user.get_absolute_url }}">Редактировать</a></td>
-     		<td><a href="{{ i.user.ban }}">Заблокировать</a></td>
+     		<td><a >В разработке</a></td>
+     		<td><a href="{{ i.user.ban }}">Отчислить</a></td>
      	</tr>
      	{% endfor %}
    </table>
