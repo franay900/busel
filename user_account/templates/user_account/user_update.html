@@ -1,254 +1,67 @@
 {% extends 'user_index.html' %}
 
+{% block h2 %}
 
+{% endblock %}
 
 {% block content %}
 
-
-
-<form action="" method="POST" enctype='multipart/form-data'>
-<div class="container light-style flex-grow-1 container-p-y">
-
-{% csrf_token %}
-
-    <div class="card overflow-hidden">
-      <div class="row no-gutters row-bordered row-border-light">
-        <div class="col-md-3 pt-0">
-          <div class="list-group list-group-flush account-settings-links">
-            <a class="list-group-item list-group-item-action active" data-toggle="list" href="#account-general">Основная информация</a>
-            <a class="list-group-item list-group-item-action" data-toggle="list" href="#account-change-password">Смена пароля</a>
-            <a class="list-group-item list-group-item-action" data-toggle="list" href="#account-info">Учебная нагрузка</a>
-            <a class="list-group-item list-group-item-action" data-toggle="list" href="#account-social-links">Классное руководство</a>
-            <a class="list-group-item list-group-item-action disabled" data-toggle="list" href="#account-connections">Аттестация</a>
-            <a class="list-group-item list-group-item-action disabled" data-toggle="list" href="#account-notifications">ИС "Контингент"</a>
-          </div>
+   <form  method="POST" action="" enctype="multipart/form-data"> 
+     
+     {% csrf_token %}
+     <div class="container py-2">
+    <div class="row my-2">
+        <!-- edit form column -->
+        <div class="col-lg-4">
+            <h2 class="text-center font-weight-light">Профиль пользователя</h2>
         </div>
-        <div class="col-md-9">
-          <div class="tab-content">
-            <div class="tab-pane fade active show" id="account-general">
-
-              {% for i in form %}
-              {% if i == form.avatar %}
-              <div class="card-body media align-items-center">
-                {% if form.instance.avatar %}
-                    <img src="{{ form.instance.avatar.url }}" class="d-block ui-w-80">
-                {% else %}
-                  <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="" class="d-block ui-w-80">
-                {% endif %}
-                
-                <div class="media-body ml-4">
-                  {{ i }}
-                  <div class="text small mt-1">Поддерживаются файлы форматов: JPG, PNG</div>
-                </div>
-              </div>
-              {% endif %}
-              {% endfor %}
-              <hr class="border-light m-0">
-
-              <div class="card-body">
-                {% for i in form %}
-                {% if i != form.avatar %}
-                <div class="form-group">
-                  <label class="form-label">{{ i.label }}</label>
-                  {{ i  }}
+        <div class="col-lg-8">
+            
+        </div>
+        <div class="col-lg-8 order-lg-1 personal-info">
+            {% for i in form %}
+            {% if i != form.avatar %}
+                <div class="form-group row">
+                    <label class="col-lg-3 col-form-label form-control-label">{{ i.label }}:</label>
+                    <div class="col-lg-9">
+                        {{ i }}
+                        <small style="color:red" id="passwordHelpBlock" class="form-text text-muted text-danger">
+              {{ i.errors }}
+            </small>
+                    </div>
                 </div>
                 {% endif %}
                 {% endfor %}
-              </div>
-              <div class="text-right mt-3">
-      <button type="submit" class="btn btn-primary">Сохранить</button>&nbsp;
-      <button type="button" class="btn btn-secondary">Отмена</button>
-    </div>
-            </div>
-          </form>
-            <div class="tab-pane fade" id="account-change-password">
-              <div class="card-body pb-2">
-                <form method="POST" >
-                  {% csrf_token %}
-
-               {% for i in password_form %}
-                <div class="form-group">
-                  <label class="form-label">{{ i.label }}</label>
-                  {{ i  }}
+                 <div class="form-group row">
+                    <div class="col-lg-9 ml-auto text-right">
+                        <input type="reset" class="btn btn-outline-secondary" value="Отмена" />
+                        <input type="submit" class="btn btn-primary" value="Сохранить" />
+                    </div>
                 </div>
-                {% endfor %}
-               
-              </div>
-               <div class="text-right mt-3">
-      <button type="submit" class="btn btn-primary">Сохранить</button>&nbsp;
-
-    </div>
-            </form>
-            </div>
-            <div class="tab-pane fade" id="account-info1">
-              <div class="card-body pb-2">
-
-                <div class="form-group">
-                  <label class="form-label">Bio</label>
-                  <textarea class="form-control" rows="5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris nunc arcu, dignissim sit amet sollicitudin iaculis, vehicula id urna. Sed luctus urna nunc. Donec fermentum, magna sit amet rutrum pretium, turpis dolor molestie diam, ut lacinia diam risus eleifend sapien. Curabitur ac nibh nulla. Maecenas nec augue placerat, viverra tellus non, pulvinar risus.</textarea>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Birthday</label>
-                  <input type="text" class="form-control" value="May 3, 1995">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Country</label>
-                  <select class="custom-select">
-                    <option>USA</option>
-                    <option selected="">Canada</option>
-                    <option>UK</option>
-                    <option>Germany</option>
-                    <option>France</option>
-                  </select>
-                </div>
-
-
-              </div>
-              <hr class="border-light m-0">
-              <div class="card-body pb-2">
-
-                <h6 class="mb-4">Contacts</h6>
-                <div class="form-group">
-                  <label class="form-label">Phone</label>
-                  <input type="text" class="form-control" value="+0 (123) 456 7891">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Website</label>
-                  <input type="text" class="form-control" value="">
-                </div>
-
-              </div>
-      
-            </div>
-            <div class="tab-pane fade" id="account-social-links1">
-              <div class="card-body pb-2">
-
-                <div class="form-group">
-                  <label class="form-label">Twitter</label>
-                  <input type="text" class="form-control" value="https://twitter.com/user">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Facebook</label>
-                  <input type="text" class="form-control" value="https://www.facebook.com/user">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Google+</label>
-                  <input type="text" class="form-control" value="">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">LinkedIn</label>
-                  <input type="text" class="form-control" value="">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Instagram</label>
-                  <input type="text" class="form-control" value="https://www.instagram.com/user">
-                </div>
-
-              </div>
-            </div>
-            <div class="tab-pane fade" id="account-connections1">
-              <div class="card-body">
-                <button type="button" class="btn btn-twitter">Connect to <strong>Twitter</strong></button>
-              </div>
-              <hr class="border-light m-0">
-              <div class="card-body">
-                <h5 class="mb-2">
-                  <a href="javascript:void(0)" class="float-right text-muted text-tiny"><i class="ion ion-md-close"></i> Remove</a>
-                  <i class="ion ion-logo-google text-google"></i>
-                  You are connected to Google:
-                </h5>
-                nmaxwell@mail.com
-              </div>
-              <hr class="border-light m-0">
-              <div class="card-body">
-                <button type="button" class="btn btn-facebook">Connect to <strong>Facebook</strong></button>
-              </div>
-              <hr class="border-light m-0">
-              <div class="card-body">
-                <button type="button" class="btn btn-instagram">Connect to <strong>Instagram</strong></button>
-              </div>
-            </div>
-            <div class="tab-pane fade" id="account-notifications">
-              <div class="card-body pb-2">
-
-                <h6 class="mb-4">Activity</h6>
-
-                <div class="form-group">
-                  <label class="switcher">
-                    <input type="checkbox" class="switcher-input" checked="">
-                    <span class="switcher-indicator">
-                      <span class="switcher-yes"></span>
-                      <span class="switcher-no"></span>
-                    </span>
-                    <span class="switcher-label">Email me when someone comments on my article</span>
-                  </label>
-                </div>
-                <div class="form-group">
-                  <label class="switcher">
-                    <input type="checkbox" class="switcher-input" checked="">
-                    <span class="switcher-indicator">
-                      <span class="switcher-yes"></span>
-                      <span class="switcher-no"></span>
-                    </span>
-                    <span class="switcher-label">Email me when someone answers on my forum thread</span>
-                  </label>
-                </div>
-                <div class="form-group">
-                  <label class="switcher">
-                    <input type="checkbox" class="switcher-input">
-                    <span class="switcher-indicator">
-                      <span class="switcher-yes"></span>
-                      <span class="switcher-no"></span>
-                    </span>
-                    <span class="switcher-label">Email me when someone follows me</span>
-                  </label>
-                </div>
-              </div>
-              <hr class="border-light m-0">
-              <div class="card-body pb-2">
-
-                <h6 class="mb-4">Application</h6>
-
-                <div class="form-group">
-                  <label class="switcher">
-                    <input type="checkbox" class="switcher-input" checked="">
-                    <span class="switcher-indicator">
-                      <span class="switcher-yes"></span>
-                      <span class="switcher-no"></span>
-                    </span>
-                    <span class="switcher-label">News and announcements</span>
-                  </label>
-                </div>
-                <div class="form-group">
-                  <label class="switcher">
-                    <input type="checkbox" class="switcher-input">
-                    <span class="switcher-indicator">
-                      <span class="switcher-yes"></span>
-                      <span class="switcher-no"></span>
-                    </span>
-                    <span class="switcher-label">Weekly product updates</span>
-                  </label>
-                </div>
-                <div class="form-group">
-                  <label class="switcher">
-                    <input type="checkbox" class="switcher-input" checked="">
-                    <span class="switcher-indicator">
-                      <span class="switcher-yes"></span>
-                      <span class="switcher-no"></span>
-                    </span>
-                    <span class="switcher-label">Weekly blog digest</span>
-                  </label>
-                </div>
-
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
+        {% for i in form %}
+        {% if i == form.avatar %}
+        <div class="col-lg-4 order-lg-0 text-center">
+            {% if form.instance.avatar %}
+            <img src="{{ form.instance.avatar.url }}" class="mx-auto img-fluid " style="height:200px;width:300px" alt="avatar" />
+            {% endif %}
+            <h6 class="my-4">Загрузить новую фотографию</h6>
+            <div class="input-group px-xl-4">
+              <div class="custom-file">
+              {{ i }}
+              <label class="custom-file-label" for="validatedInputGroupCustomFile">{{ i.label }}</label>
+            </div>
+            </div>
+        </div>
+        {% endif %}
+                {% endfor %}
     </div>
+</div>
 
-    
-
-  </div>
   </form>
+<style>
+    #id_class{
+        width:auto;
+    }
+</style>
 {% endblock %}

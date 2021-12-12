@@ -7,7 +7,7 @@ from django.http import HttpResponseForbidden, HttpResponse
 from .models import *
 from .utils import Journal, TimetableSettigns
 from django.http import JsonResponse
-
+from django.http import HttpResponseRedirect
 
 class SchoolJournalView(View, Journal):
     template_name = 'journal/journal.html'
@@ -81,11 +81,23 @@ class LessonTopics(View):
             homework = request.POST.get("homework" + str(lesson.pk))
             date_homework = request.POST.get("date_homework" + str(lesson.pk))
             types = request.POST.getlist("types" + str(lesson.pk))
-            types_red = request.POST.getlist("typesRed" + str(lesson.pk))
-            if types:
-                for type_ in types:
-                    if type_:
-                        lesson.types.add(type_)
+            types_red = request.POST.getlist("typesred" + str(lesson.pk))
+
+            for type_red in types_red:
+                type_p=type_red.split('/')
+                new_type=type_p[1]
+                old_type=type_p[0]
+                get_type=lesson.types.filter(pk=old_type).first()
+
+                if old_type!=new_type:
+                    lesson.types.remove(get_type)
+                    if int(new_type)!=0:
+                        lesson.types.add(new_type)
+
+            for type_ in types:
+                if type_:
+                    
+                    lesson.types.add(type_)
 
             if date_homework:
                 get_lesson_homework = Lessons.objects.get(pk=date_homework)
@@ -96,6 +108,10 @@ class LessonTopics(View):
 
         return render(request, 'journal/lesson_topics.html', context)
 
+
+def returnview(request):
+   
+   return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 class Mark(View):
     def post(self, request, *args, **kwargs):

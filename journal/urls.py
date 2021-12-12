@@ -11,6 +11,7 @@ urlpatterns=[
 	path('save_mark/',Mark.as_view() ,name="Mark"),
 	path('itog/<int:load>/<int:period>',ItogView.as_view() ,name="ItogView"),
 	path('get_load/<int:class_pk>/',get_loads ,name="GetLoad"),
+	path('return',returnview ,name="returnview"),
 	
 ]
 

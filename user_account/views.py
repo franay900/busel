@@ -36,7 +36,7 @@ class UsersView(PermissionRequiredMixin,UserMixin, ListView):
 
 def user_edit_view(request,user_id):
     user=UserNet.objects.get(pk=user_id)
-    if user.institution== request.user.institution:
+    if user.institution== request.user.institution and UserNet.objects.get(pk=request.user.pk,groups__name="Администратор ОО"):
         password_form=SetPassword(user=user)
         form=UserEditForm(instance=user,user=user.institution.typeInstitutions)
         if request.method=="POST":
@@ -53,7 +53,7 @@ def user_edit_view(request,user_id):
 
             
         context={"form":form,'password_form':password_form,'title':'Редактирование пользователя'}
-        return render(request,'user_account/user_update.html',context)
+        return render(request,'user_account/new_user_update.html',context)
     else:
         return HttpResponseForbidden()
 class UserEditView(PermissionRequiredMixin,SuccessMessageMixin,InstitutionsMixin,UpdateView):
@@ -84,9 +84,10 @@ class Registration(UpdateView):
         user.registration=True
         user.set_password(self.request.POST.get("password"))
         user.save()
+        login(self.request, user)
         return super().form_valid(form)
     def get_success_url(self): 
-        return reverse('login')
+        return reverse('HomePageUserAccount')
 
 
 class AddUser(AdminPermissionMixin, SuccessMessageMixin, CreateView):

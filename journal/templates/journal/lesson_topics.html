@@ -24,7 +24,7 @@
 		<td>
 			<textarea name="homework{{ lesson.pk }}" class="form-control" id="" rows="">{% if lesson.homework %}{{ lesson.homework }}{% endif %}</textarea>
 			{% get_dates date=lesson.date  as dates %}
-			<select name="date_homework{{ lesson.pk }}"  class="custom-select custom-select-sm"  name="" id="">
+			<select name="date_homework{{ lesson.pk }}"  class="custom-select custom-select-sm mt-1"  name="" id="">
 				<option value="">---</option>
 				{% for date in dates %}
 				{% get_bell date=date as bell %}
@@ -35,7 +35,7 @@
 		<td>
 			
 			{% if not lesson.types.all  %}
-			<select  name="types{{ lesson.pk }}" id="t{{ lesson.pk }}" class="custom-select custom-select-sm">
+			<select  name="types{{ lesson.pk }}" id="t{{ lesson.pk }}" class="custom-select custom-select-sm mt-1">
 				<option value="">-</option>
 				{% for type in types %}
 				<option value="{{ type.pk }}">{{ type.name }}</option>
@@ -44,22 +44,26 @@
 			{% else %}
 
 			{% for type_lesson in lesson.types.all %}
-			<select disabled="0" red="types{ lesson.pk }}" id="t{{ lesson.pk }}" class="custom-select custom-select-sm">
-				<option value="">-</option>
+			<select name="typesred{{ lesson.pk }}" id="t{{ lesson.pk }}" class="custom-select custom-select-sm mt-1">
+				<option value="{{ type_lesson.pk }}/0">-</option>
 				{% for type in types %}
-				<option {% if type.pk == type_lesson.pk %} selected="" {% endif %} value="{{ type.pk }}">{{ type.name }}</option>
+				<option {% if type.pk == type_lesson.pk %} selected="" {% endif %} value="{{ type_lesson.pk }}/{{ type.pk }}">{{ type.name }}</option>
 				{% endfor %}
 			</select>
 			{% endfor %}
 			{% endif %}
-			<button type="button" id="append" value="{{ lesson.pk }}" class="btn btn-sm btn-success append">Добавить</button>
+			<button type="button" id="append" value="{{ lesson.pk }}" class="btn btn-sm btn-secondary mt-1 append">Добавить</button>
 		</td>
 	</tr>
 	{% endif %}
 	{% endfor %}
 </table>
 <div>
-<button type="submit" class="btn btn-primary ">Сохранить</button>
+
+
+<button type="submit" class="btn btn-outline-primary ">Сохранить</button>
+
+
 </div>
 </form>
 
@@ -71,6 +75,14 @@
  		$(clone).attr('name','types'+value)
  		$(clone).removeAttr('disabled')
  		$(clone).find("option:selected").removeAttr('selected')
+
+ 		var values=$(clone).find("option").attr('value')
+ 		$(clone).find("option").each(function()
+		{
+    		var values=$(this).val().split('/')[1]
+    		$(this).val(values)
+		});
+
 
  		
  	})

@@ -3,7 +3,61 @@
 
 
 {% block content %}
-   <table class="rtable ">
+
+
+{% if classes %}
+<div class="card mt-3">
+  <h5 class="card-header">Поиск учащихся</h5>
+  <div class="card-body">
+   <form class="needs-validation" novalidate method="get">
+  <div class="form-row">
+    <div class="col-md-4 mb-3">
+      <label for="validationCustom01">Фамилия</label>
+      <input type="text" class="form-control" id="validationCustom01" placeholder="" value="{% if surname %}{{ surname }}{%endif%}" required name="surname">
+      <div class="valid-feedback">
+        Looks good!
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <label for="validationCustom02">Имя</label>
+      <input type="text" class="form-control" id="validationCustom02" placeholder="" value="{% if name %}{{ name }}{%endif%}" required name="name">
+      <div class="valid-feedback">
+        Looks good!
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <label for="validationCustomUsername">Отчество</label>
+      <div class="input-group">
+
+        <input type="text" class="form-control" id="validationCustomUsername" placeholder="" aria-describedby="inputGroupPrepend" required value="{% if middle_name %}{{ middle_name }}{%endif%}" name="middle_name">
+        <div class="invalid-feedback">
+          Please choose a username.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-1 mb-3">
+      <label for="validationCustom03">Класс</label>
+
+      <select id="inputState" class="form-control" name="class_pk">
+        <option >...</option>
+        {% for class in classes %}
+        <option  {% if class.pk == class_pk %} selected {%endif%} value="{{ class.pk }}" >{{ class }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+  </div>
+
+  <button class="btn btn-secondary" type="submit"><i class="fa fa-search"></i> Поиск</button>
+</form>
+
+  </div>
+</div>
+
+
+   <table class="rtable mt-3">
     <thead class="thead-light">
      <tr>
     	<th>№</th>
@@ -14,9 +68,12 @@
        <th style="text-align: center" colspan="2">Действие</th>       
      </tr>
      </thead>
-     	{% for i in users %}
+     	{% for i in object_list  %}
+      {% if i.user %}
      	<tr>
-     		<td>{{ forloop.counter }}</td>
+     		<td>
+          {{forloop.counter0|add:page_obj.start_index }} 
+        </td>
      		<td>{{ i.user.last_name  }}  {{ i.user.first_name }} {{ i.user.middle_name }}</td>
         <td>{{ i.user.gender }}</td>
         <td>{{ i.user.birth_day }}</td>
@@ -24,8 +81,41 @@
      		<td><a >В разработке</a></td>
      		<td><a href="{{ i.user.ban }}">Отчислить</a></td>
      	</tr>
+      {% endif %}
      	{% endfor %}
    </table>
-   <a class="btn btn-success" href="{% url 'StudentAdd' %}">Добавить</a>
-   <a class="btn btn-danger" href="{% url 'StudentImport' %}">Импорт</a>
+
+<nav aria-label="...">
+  <ul class="pagination">
+    
+      
+    
+
+    
+    
+      <li class="page-item {% if not page_obj.has_previous %} disabled {% endif %}">
+            <a class="page-link" href="?page=1" tabindex="-1">Первая</a>
+      </li>
+
+       {% for page in page_obj.paginator.page_range %}
+        <li class="page-item {%  if page_obj.number == page   %} disabled {% endif %}"><a class="page-link" href="?page={{ page }}" >{{ page }}</a></li>
+    {% endfor %}
+
+
+
+  </ul>
+</nav>
+
+
+   <a class="btn btn-outline-success" href="{% url 'StudentAdd' %}">Добавить</a>
+   <a class="btn btn-outline-danger" href="{% url 'StudentImport' %}">Импорт</a>
+
+
+{% else %}
+<div class="alert alert-warning" role="alert">
+  На {{ request.user.institution.year }} не найдены классы.
+</div>
+
+{% endif %}
+
 {% endblock %}

@@ -15,8 +15,16 @@ def get_marks_itog(context,period,student,load):
 
 	return MarksItog.objects.filter(student__id=student,period__id=period,load__pk=load).first()
 
+
+@register.simple_tag(name='sball_count', takes_context=True)
+def sball_count(context,itog,student,load):
+	
+
+	return Marks.objects.filter()
+
 @register.simple_tag(name='get_itogs', takes_context=True)
 def get_itogs(context,itog,student,load):
 	
 
 	return MarksItog.objects.filter(student__id=student,itog=itog,load__pk=load).first()
+

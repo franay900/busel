@@ -408,15 +408,47 @@ class DeleteLessons(AdminPermissionMixin, View):
 
 #Ученики
 class StudentListView(AdminPermissionMixin, ListView):
+    paginate_by = 35
     model = Student
     template_name = 'classes/students.html'
+
+    def query(self):
+        surname=self.request.GET.get('surname')
+        name=self.request.GET.get('name')
+        middle_name=self.request.GET.get('middle_name')
+        class_pk=self.request.GET.get('class_pk')
+        return surname,name,middle_name,class_pk
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
         context['title'] = 'Обучающиеся'
-        users=UserNet.objects.filter(institution=self.request.user.institution, groups__name='Ученик', is_active=True)
-        context['users']=Student.objects.filter(user__in=users).order_by('user__last_name')
+        context['surname']=self.query()[0]
+        context['name']=self.query()[1]
+        context['middle_name']=self.query()[2]
+        if self.query()[3]:
+            context['class_pk']=int(self.query()[3])
+        context['classes']=Classes.objects.filter(institution=self.request.user.institution)
+        
         return context
+
+    def get_queryset(self):
+        
+        if self.query()[0] or self.query()[1] or self.query()[2]:
+            users=UserNet.objects.filter(institution=self.request.user.institution, groups__name='Ученик', is_active=True, 
+                last_name__iregex=r"[[:<:]]{0}".format(self.query()[0]), first_name__iregex=r"[[:<:]]{0}".format(self.query()[1])
+                , middle_name__iregex=r"[[:<:]]{0}".format(self.query()[2])
+
+                )
+
+            
+        else:
+            users=UserNet.objects.filter(institution=self.request.user.institution, groups__name='Ученик', is_active=True)
+
+        if self.query()[3]:
+            students=Student.objects.filter(user__in=users,class_pk=self.query()[3]).order_by('user__last_name')
+        else:
+            students=Student.objects.filter(user__in=users).order_by('user__last_name')
+        return students
 class AddStudent(AdminPermissionMixin, SuccessMessageMixin, CreateView):
     form_class = StudentForm
     template_name = 'user_account/user_update.html'
