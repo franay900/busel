@@ -129,3 +129,18 @@ class StudentSubgroup(models.Model):
                                        null=True)
     subgroup=models.ForeignKey(Subgroups, on_delete=models.SET_NULL, verbose_name="Подгруппа",
                                        null=True)
+
+class StudentShifting(models.Model):
+
+    Shift_CHOICES = (
+    (1, ("Зачисление")),
+    (2, ("Отчисление")),
+    (3, ("Перевод")),
+
+    )
+    student=models.ForeignKey(Student, on_delete=models.SET_NULL, verbose_name="Ученик",
+                                       null=True)
+
+
+    type_shift = models.IntegerField(null=False, choices=Shift_CHOICES)
+    date=models.DateTimeField(verbose_name='Дата Отчисления')

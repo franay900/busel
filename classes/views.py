@@ -470,7 +470,7 @@ class StudentListView(PermissionRequiredMixin, ListView):
             students=Student.objects.filter(user__in=users, class_pk__in=self.get_class()).order_by('user__last_name')
         return students
 class AddStudent(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
-    form_class = StudentForm
+    form_class = OldStudentForm
     template_name = 'user_account/user_update.html'
     permission_required = 'classes.add_student'
     def get_form_kwargs(self):
@@ -602,4 +602,15 @@ class StudentEditView(PermissionRequiredMixin,SuccessMessageMixin,View):
             if form2.is_valid():
                 form2.save()
             
+        return redirect(request.META.get('HTTP_REFERER'))
+
+class Deduction(PermissionRequiredMixin,SuccessMessageMixin,View):
+    permission_required = 'classes.delete_student'
+    def post(self,request, **kwargs):
+        date=self.request.POST.get("date")
+        student=self.request.POST.get("pk")
+        get_student=Student.objects.get(pk=student)
+        get_student.user.is_active=False
+        get_student.user.save()
+        StudentShifting.objects.create(student=get_student, type_shift=2, date=date)
         return redirect(request.META.get('HTTP_REFERER'))

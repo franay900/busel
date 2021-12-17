@@ -82,7 +82,7 @@
         {% if perms.classes.delete_student %}
      		<td>
           
-          <a class="delete_student" href="#" name="{{ i.user.last_name  }} {{ i.user.first_name }} ({{ i.class_pk }} класс)">Отчислить</a>
+          <a class="delete_student" href="#" pk="{{ i.pk }}" name="{{ i.user.last_name  }} {{ i.user.first_name }} ({{ i.class_pk }} класс)">Отчислить</a>
           
         </td>
         {% endif %}
@@ -137,15 +137,19 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+      <form action="{% url 'DeleteStudent' %}" method="POST">
+        {% csrf_token %}
       <div class="modal-body">
         <p>Выберите дату</p>
-        <input type="date" class="form-control form-control-sm">
+        <input type="date" name="date" id="date" class="form-control form-control-sm">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-        <button type="button" class="btn btn-danger">Отчислить</button>
+        <button type="submit" class="btn btn-danger">Отчислить</button>
+        <input  id="pk" name="pk" style="display: none;" type="text">
       </div>
     </div>
+    </form>
   </div>
 </div>
 
@@ -154,7 +158,10 @@
     const modal = new bootstrap.Modal(document.querySelector('#exampleModal'));
     modal.show();
     var name=$(this).attr('name')
+    var pk=$(this).attr('pk')
     $("#name_student").text(name)
+    $("#pk").attr('value',pk)
+    $("#date").val('')
   })
 
 </script>

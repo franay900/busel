@@ -21,6 +21,7 @@ urlpatterns=[
 	path('student/import/',ImportStudent.as_view() ,name="StudentImport"),
 	path('student/edit/<int:student_pk>',StudentEditView.as_view() ,name="StudentEdit"),
 	path('student/list/',StudentListView.as_view() ,name="StudentList"),
+	path('delete_student/',Deduction.as_view() ,name="DeleteStudent"),
 
 
 	path('timetable/classes/',Timetable.as_view() ,name="TimetableClasses"),
@@ -33,6 +34,7 @@ urlpatterns=[
 	
 	path('edit_lesson/<int:class_pk>/',EditLessons.as_view() ,name="EditLesson"),
 	path('delete_lessons/<int:class_pk>/',DeleteLessons.as_view() ,name="DeleteLessons"),
+
 
 	
 ]
