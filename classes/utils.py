@@ -12,7 +12,9 @@ from django.db.models import Q
 class TimetableSettigns():
     def get_class(self):
         try:
-            if 'pk' in self.kwargs:
+            if 'class_pk' in self.kwargs:
+                self.kwargs['pk']=self.kwargs['class_pk']
+            if 'pk' in self.kwargs :
                 class_info=Classes.objects.get(pk=self.kwargs['pk'])
             else:
                 class_info=Classes.objects.filter(institution=self.request.user.institution).first()

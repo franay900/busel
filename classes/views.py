@@ -21,6 +21,9 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db.models import Q
 from journal.utils import Journal
 
+
+
+
 class ClassView(PermissionRequiredMixin, CreateView):
     form_class = ClassForm
     template_name = 'classes/class.html'
@@ -75,11 +78,24 @@ def class_edit_view(request,pk):
 class SubgroupView(View,Journal):
     form_class = ClassForm
     template_name = 'classes/subgroup.html'
+    def get_classes(self):
+        
+
+        if not self.request.user.groups.filter(name__in=['Администратор ОО']):
+            return Classes.objects.filter(class_teacher=self.request.user).order_by('class_number','letter')
+        else:
+           
+            return Classes.objects.filter(institution=self.request.user.institution).order_by('class_number','letter')
     def get_student(self):
         return Student.objects.filter(class_pk=self.get_class(),user__isnull=False,user__is_active=True).order_by('user')
     def get_class(self):
+
+
         try:
-            if 'pk' in self.kwargs:
+            if not self.request.user.groups.filter(name__in=['Администратор ОО']):
+
+                class_info=self.get_classes().first()
+            elif 'pk' in self.kwargs:
                 class_info=Classes.objects.get(pk=self.kwargs['pk'])
             else:
                 class_info=Classes.objects.filter(institution=self.request.user.institution).first()
@@ -107,7 +123,7 @@ class SubgroupView(View,Journal):
 
     def post(self, request, *args, **kwargs):
         
-
+        print(self.get_class())
         for subgroup in self.get_subgroups().distinct('subject_pk'):
             subgroup_pk=subgroup.subject_pk.pk
             for student in self.get_student():
@@ -392,6 +408,7 @@ class EditLessons(AdminPermissionMixin,TimetableSettigns,View):
         context['lessons']=self.get_lessons()
         context['class']=self.get_class()
         context['loads']=self.get_loads()
+        print(self.get_class())
         context['teachers']=UserNet.objects.filter(institution=request.user.institution,groups=2,is_active=True)
         return render(request, self.template_name, context)
     def post(self,request,class_pk):
@@ -407,18 +424,22 @@ class DeleteLessons(AdminPermissionMixin, View):
 
 
 #Ученики
-class StudentListView(AdminPermissionMixin, ListView):
+class StudentListView(PermissionRequiredMixin, ListView):
     paginate_by = 35
     model = Student
     template_name = 'classes/students.html'
-
+    permission_required = 'classes.view_student'
     def query(self):
         surname=self.request.GET.get('surname')
         name=self.request.GET.get('name')
         middle_name=self.request.GET.get('middle_name')
         class_pk=self.request.GET.get('class_pk')
         return surname,name,middle_name,class_pk
-
+    def get_class(self):
+        if self.request.user.groups.filter(name__in=['Администратор ОО']):
+            return Classes.objects.filter(institution=self.request.user.institution)
+        else:
+            return Classes.objects.filter(class_teacher=self.request.user)
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
         context['title'] = 'Обучающиеся'
@@ -427,8 +448,7 @@ class StudentListView(AdminPermissionMixin, ListView):
         context['middle_name']=self.query()[2]
         if self.query()[3]:
             context['class_pk']=int(self.query()[3])
-        context['classes']=Classes.objects.filter(institution=self.request.user.institution)
-        
+        context['classes']=self.get_class()
         return context
 
     def get_queryset(self):
@@ -447,11 +467,12 @@ class StudentListView(AdminPermissionMixin, ListView):
         if self.query()[3]:
             students=Student.objects.filter(user__in=users,class_pk=self.query()[3]).order_by('user__last_name')
         else:
-            students=Student.objects.filter(user__in=users).order_by('user__last_name')
+            students=Student.objects.filter(user__in=users, class_pk__in=self.get_class()).order_by('user__last_name')
         return students
-class AddStudent(AdminPermissionMixin, SuccessMessageMixin, CreateView):
+class AddStudent(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
     form_class = StudentForm
     template_name = 'user_account/user_update.html'
+    permission_required = 'classes.add_student'
     def get_form_kwargs(self):
         kwargs = super(AddStudent, self).get_form_kwargs()
         kwargs['user'] =self.request.user
@@ -538,3 +559,47 @@ class ImportStudent(View):
         return render(request,'user_account/import_result.html',context)
 
 
+
+class StudentEditView(PermissionRequiredMixin,SuccessMessageMixin,View):
+    model = Student
+    form_class = StudentUserForm
+    second_form_class = StudentForm
+
+
+    template_name = 'classes/student.html'
+    pk_url_kwarg = 'student_pk'
+    success_message = 'Информация обновлена'
+    error_message='Ошибка'
+    permission_required = 'classes.change_student'
+    login_url='login'
+
+    def get_student(self):
+        return Student.objects.get(pk=self.kwargs['student_pk'])
+
+    def get(self,request, **kwargs):
+        context = {}
+        
+        
+        context['title'] = 'Личное дело учащегося'
+        if 'form' not in context:
+            context['form'] = self.form_class(instance=self.get_student().user)
+        if 'form2' not in context:
+            context['form2'] = self.second_form_class(instance=self.get_student())
+
+        return render(request, self.template_name, context)
+    
+
+    def post(self,request, **kwargs):
+
+
+        if 'first_name' in request.POST:
+            form=self.form_class(request.POST,request.FILES or None,instance=self.get_student().user)
+            if form.is_valid():
+                form.save()
+
+        if 'class_pk' in request.POST:
+            form2=self.second_form_class(request.POST,instance=self.get_student())
+            if form2.is_valid():
+                form2.save()
+            
+        return redirect(request.META.get('HTTP_REFERER'))

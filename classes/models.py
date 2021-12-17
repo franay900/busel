@@ -30,6 +30,14 @@ class Classes(models.Model):
                                        null=True)
     class_teacher=models.ForeignKey(UserNet, on_delete=models.SET_NULL, verbose_name="Классный руководитель",
                                        null=True)
+
+
+    CHANGE_CHOICES = (
+    (1, ("Первая смена")),
+    (2, ("Вторая смена")),
+
+    )
+    change=models.IntegerField(choices=CHANGE_CHOICES, default=1, verbose_name="Смена")   
     def get_absolute_url(self):
         return reverse('ClassEdit', kwargs={"pk": self.pk})
     def class_load(self):
@@ -108,6 +116,8 @@ class Student(models.Model):
                                        null=True)
     class_pk = models.ForeignKey(Classes, on_delete=models.CASCADE,null=True)
 
+    def edit(self):
+        return reverse('StudentEdit',kwargs={'student_pk':self.pk})
     def __str__(self):
         return self.user.first_name
 

@@ -8,6 +8,9 @@ from .models import *
 from .utils import Journal, TimetableSettigns
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect
+from datetime import datetime, timedelta
+
+
 
 class SchoolJournalView(View, Journal):
     template_name = 'journal/journal.html'
@@ -19,11 +22,21 @@ class SchoolJournalView(View, Journal):
         return render(request, self.template_name, self.get_context())
 
 
+class ClassesJournalView(View, Journal):
+    template_name = 'journal/journal.html'
+    type_journal='school'
+    def get_classes(self):
+        return Classes.objects.filter(class_teacher=self.request.user)
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.get_context())
+
+    def post(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.get_context())
+
 class MyJournalView(View, Journal):
     template_name = 'journal/journal.html'
     type_journal='my'
     def get(self, request, *args, **kwargs):
-        print(self.get_class())
 
         return render(request, self.template_name, self.get_context())
 
@@ -47,6 +60,10 @@ def check_period(self, load):
 
 
 class LessonTopics(View):
+
+    def get_load(self, **kwargs):
+        load = self.kwargs['load']
+        return Load.objects.get(pk=load)
     def get(self, request, *args, **kwargs):
         load_pk = self.kwargs.get("load")
         load = Load.objects.get(pk=load_pk)
@@ -190,7 +207,9 @@ class Mark(View):
 
 class ItogView(View, Journal):
     template_name = 'journal/itog.html'
-
+    def get_load(self, **kwargs):
+        load = self.kwargs['load']
+        return Load.objects.get(pk=load)
     def get(self, request, *args, **kwargs):
         context = {}
         context['title'] = 'Итоговые оценки'
@@ -237,3 +256,47 @@ def get_loads(request, class_pk):
         'pk_array': pk_array,
     }
     return JsonResponse(response)
+
+
+
+
+class TeacherTimeatable(View):
+
+    template_name='journal/timetable_tacher.html'
+
+    def get(self,request):
+        context={}
+        context['title']='Мое расписание'
+
+        day = datetime.today().strftime("%Y-%m-%d")
+        dt = datetime.strptime(day, '%Y-%m-%d')
+        start = dt - timedelta(days=dt.weekday())
+        end = start + timedelta(days=6)
+        
+
+        lessons=Lessons.objects.filter(teacher=request.user, date__range=[start,end])
+        #print(lessons)
+        arr1={}
+        changes=[[
+            {},{},{},{},{},{},{}
+
+
+        ],
+        [
+            {},{},{},{},{},{},{}
+
+
+        ]
+        ]
+
+        
+        for lesson in lessons:
+            
+            weekday=datetime.strptime(str(lesson.date), '%Y-%m-%d').weekday()
+            
+            changes[lesson.class_pk.change-1][lesson.number-1][weekday]=lesson
+
+            
+        
+        context['lessons']=changes
+        return render(request,self.template_name,context)

@@ -45,14 +45,15 @@ class Journal():
 
 		else:
 			if  self.type_journal=='school':
-				return Classes.objects.filter(institution=self.request.user.institution).first()
+				return self.get_classes().first()
 			else:
 				return Classes.objects.get(pk=self.get_loads().first().class_pk.pk)
 
 
 	def get_student(self):
-		
+
 		if not self.get_load().subgroup:
+
 			return Student.objects.filter(class_pk=self.get_class(),user__isnull=False,user__is_active=True).order_by('user')
 		else:
 
@@ -74,6 +75,8 @@ class Journal():
 	    if 'load' in self.request.POST:
 	        load = self.request.POST.get("load")
 	        return Load.objects.get(pk=load)
+	        
+
 	    else:
 	        if self.type_journal=='school':
 	            return Load.objects.filter(class_pk=self.get_class()).first()

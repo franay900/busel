@@ -6,7 +6,7 @@
 
 
 {% if classes %}
-<div class="card mt-3">
+<div class="card mt-">
   <h5 class="card-header">Поиск учащихся</h5>
   <div class="card-body">
    <form class="needs-validation" novalidate method="get">
@@ -65,7 +65,7 @@
        <th>Пол</th>
        <th>Дата рождения</th>
        <th>Класс</th>
-       <th style="text-align: center" colspan="2">Действие</th>       
+       <th style="text-align: center" {% if perms.classes.delete_student %} colspan="2" {% endif %}>Действие</th>       
      </tr>
      </thead>
      	{% for i in object_list  %}
@@ -78,8 +78,14 @@
         <td>{{ i.user.gender }}</td>
         <td>{{ i.user.birth_day }}</td>
         <td>{{ i.class_pk }}</td>
-     		<td><a >В разработке</a></td>
-     		<td><a href="{{ i.user.ban }}">Отчислить</a></td>
+     		<td><a href="{{ i.edit }}">Личное дело</a></td>
+        {% if perms.classes.delete_student %}
+     		<td>
+          
+          <a class="delete_student" href="#" name="{{ i.user.last_name  }} {{ i.user.first_name }} ({{ i.class_pk }} класс)">Отчислить</a>
+          
+        </td>
+        {% endif %}
      	</tr>
       {% endif %}
      	{% endfor %}
@@ -106,10 +112,10 @@
   </ul>
 </nav>
 
-
-   <a class="btn btn-outline-success" href="{% url 'StudentAdd' %}">Добавить</a>
-   <a class="btn btn-outline-danger" href="{% url 'StudentImport' %}">Импорт</a>
-
+  {% if perms.classes.add_student %}
+   <a class="btn btn-outline-primary" href="{% url 'StudentAdd' %}">Добавить</a>
+   <a class="btn btn-outline-warning" href="{% url 'StudentImport' %}">Импорт</a>
+  {% endif %}
 
 {% else %}
 <div class="alert alert-warning" role="alert">
@@ -117,5 +123,40 @@
 </div>
 
 {% endif %}
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="exampleModalLabel">Отчисление обучающегося <a id="name_student"></a></h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Выберите дату</p>
+        <input type="date" class="form-control form-control-sm">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-danger">Отчислить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $('.delete_student').on('click',function(event){
+    const modal = new bootstrap.Modal(document.querySelector('#exampleModal'));
+    modal.show();
+    var name=$(this).attr('name')
+    $("#name_student").text(name)
+  })
+
+</script>
 
 {% endblock %}

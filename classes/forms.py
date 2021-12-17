@@ -14,7 +14,7 @@ class ClassForm(forms.ModelForm):
 
 	class Meta:
 		model=Classes
-		fields=['class_number','letter','сurriculum','bell_profile','period_profile','class_teacher']
+		fields=['class_number','letter','сurriculum','bell_profile','change','period_profile','class_teacher']
 	def __init__(self,*args,**kwargs):
 		if 'edit' in kwargs:
 			self.edit=kwargs.pop('edit')
@@ -47,30 +47,46 @@ class StudentForm(forms.ModelForm):
     
     class Meta:
 
-        model = UserNet
+        model = Student
         CHOICES =(
             ("мужской", "мужской"),
             ("женский", "женский"),
  
         )
-        fields=['last_name','first_name','middle_name','avatar','email','birth_day','gender']
+        fields=['class_pk']
+        
+    def __init__(self, *args,**kwargs):
+    	super(StudentForm, self).__init__(*args, **kwargs)
+    	self.fields['class_pk'].widget.attrs['class']='form-control'
+    
+class StudentUserForm(forms.ModelForm):
+    
+    class Meta:
+        CHOICES =(
+            ("мужской", "мужской"),
+            ("женский", "женский"),
+ 
+        )
+  
+        model = UserNet
+        fields=['last_name','first_name','middle_name','gender','birth_day','avatar','email']
         avatar = forms.ImageField()
+   
         widgets={
 	    	'last_name':forms.TextInput(attrs={'class':'form-control'}),
-	    	'birth_day':forms.DateInput(attrs={'class':'form-control','type': 'date'}),
 	    	'first_name':forms.TextInput(attrs={'class':'form-control'}),
 	    	'middle_name':forms.TextInput(attrs={'class':'form-control'}),
-	    	'birth_day':forms.DateInput(attrs={'class':'form-control','type':'date'},format='%Y-%m-%d'),
-	    	'gender':forms.RadioSelect(choices=CHOICES),
+            'birth_day':forms.DateInput(attrs={'class':'form-control','type':'date'},format='%Y-%m-%d'),
+            'gender':forms.RadioSelect(choices=CHOICES),
             'email':forms.EmailInput(attrs={'class':'form-control'}),
             'avatar':forms.FileInput(attrs={'class':'','id':'validatedInputGroupCustomFile'}),
 	    }
     
     
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user')
-        super(StudentForm, self).__init__(*args, **kwargs)
-        self.fields['class']=forms.ModelChoiceField(label='Класс',queryset=Classes.objects.filter(institution=user.institution))
         
-        self.fields['class'].widget.attrs['class']='form-control'
+        super(StudentUserForm, self).__init__(*args, **kwargs)
 
+        
+
+        

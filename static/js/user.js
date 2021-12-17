@@ -156,6 +156,10 @@ function click_mark(self){
     if (size==4){
       $('#periods option').append(' четверть')
     }
+    if (size==3){
+      $('#periods option').append(' триместр')
+    }
+
     $('#scroll').scrollLeft(9999)
 
     var month=$('.month').css('height')

@@ -1,10 +1,8 @@
+li {
+    list-style-type: none; /* Убираем маркеры */
+   }
 
 
-
-
-.nav-link  {
-  
-}
 
 
 nav{
@@ -255,7 +253,7 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
 }
 
 .rtable th {
-  font-size: 11px;
+  font-size: 12px;
   text-align: left;
   text-transform: uppercase;
   background: #f2f0e6;
@@ -263,7 +261,7 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
 
 .rtable th,
 .rtable td {
-  padding: 6px 12px;
+  padding: 4px 12px;
   border: 1px solid #d9d7ce;
 }
 
@@ -318,29 +316,15 @@ body {
   margin: 0;
 
   color: #494b4d;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 20px;
 }
 
-h1, h2, h3 {
+h4 {
   margin: 0 0 10px 0;
   color: #1d97bf;
 }
 
-h1 {
-  font-size: 25px;
-  line-height: 30px;
-}
-
-h2 {
-  font-size: 20px;
-  line-height: 25px;
-}
-
-h3 {
-  font-size: 16px;
-  line-height: 20px;
-}
 
 table {
   margin-bottom: 30px;

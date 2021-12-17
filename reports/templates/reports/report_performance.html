@@ -1,0 +1,158 @@
+{% extends 'user_index.html' %}
+{% load mark_tag %}
+
+
+{% block content %}
+
+<form method="POST">
+  {% csrf_token %}
+
+
+  <div class="row mt-3">
+
+    <div class="col-1">
+       <select class="custom-select custom-select-sm "  name="class_pk" id="classes" style="width:auto">
+           {% for class_ in classes %}
+            <option  {% if class.pk == class_.pk %} selected="" {% endif %}   value="{{ class_.pk }}" url="{% url 'GetPeriods' class_pk=class_.pk %}">{{ class_.class_number }}{{ class_.letter }}</option>
+          {% endfor %}
+       </select>
+    </div>
+  
+    <div class="col">
+        <select class="custom-select custom-select-sm "  name="period" id="periods">
+          {% for periods in periods %}
+          <option {% if period.pk == periods.pk %} selected="" {% endif %} value="{{periods.pk}}">{{ forloop.counter }}</option>
+          {% endfor %}
+
+       </select>
+    </div>
+    <div class="col">
+      <button type="submit" class=" btn btn-sm btn-secondary">Показать</button>
+    </div>
+  </div>
+</form>
+
+<table class="rtable mt-3">
+	<thead>
+		<tr>
+		<th >№</th>
+		<th >Фамилия, имя</th>
+		{% for subject in subjects %}
+			<th class="vertical"><div class="vertical">{{ subject.subject.short_title }}</div></th>
+		{% endfor %}
+
+		</tr>
+
+	</thead>
+	<tbody>
+		{% for student in students %}
+		<tr>
+			<td>{{ forloop.counter }}</td>
+			<td>{{ student.user.last_name }} {{ student.user.first_name }}</td>
+			{% for subject in subjects %}
+
+      {% if period == 'year' %}
+      {% get_itog subject=subject.pk student=student.pk as itog %}
+      {% else %}
+      
+      {% get_itog subject=subject.pk student=student.pk period=period as itog %}
+      {% endif %}
+
+
+			<td>{% if itog.first %}{{ itog.first.mark }}{% endif %}</td>
+			{% endfor %}
+
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+
+
+<script type="text/javascript">
+ $(document).ready(function(event){   
+   var size=$('#periods option').length; 
+
+
+    $("#periods").append('<option {% if period == 'year' %}selected{% endif %}>Год</option>')
+})
+
+
+
+function select(url){
+
+  
+
+  $.ajax({
+  type: "GET",
+  url: url,
+  success: function (result) {  
+  $('#periods option').remove();
+  name_period=''
+
+  if (result.period.length==2){
+  name_period=' полугодие'
+  }
+  if (result.period.length==4){
+  name_period=' четверть'
+  }
+  if (result.period.length==3){
+  name_period=' триместр'
+  }
+  for(var i = 1; i<=result.period.length; i++){ //data[1] contains no of sem
+  $('#periods').append('<option value="' + result.period[i-1] + '">' + i+name_period +'</option>');
+  }
+  $("#periods").append('<option selected>Год</option>')
+  }
+
+
+  });
+
+}
+
+
+$(document).on('change', 'select#classes', function () {
+
+select($(this).find('option:selected').attr('url'))
+
+});
+
+$(function() {
+    var header_height = 0;
+    $('.table th span').each(function() {
+        if ($(this).outerWidth() > header_height) header_height = $(this).outerWidth();
+    });
+
+    $('.table').height(header_height);
+});
+
+
+</script>
+
+
+<style>
+
+div.vertical{
+  
+  transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg); /* Safari/Chrome */
+  -moz-transform: rotate(-90deg);    /* Firefox */
+  -o-transform: rotate(-90deg);      /* Opera */
+  -ms-transform: rotate(-90deg);     /* IE 9 */
+}
+
+th.vertical{
+  
+  max-width: 50px;
+  height: 115px;
+  line-height: 14px;
+  padding-top: 10%;
+  padding-bottom: : 0%;
+  
+  font-size: 9px;
+}
+.rtable td .rtable th{
+	padding: 2px 12px;
+}
+</style>
+{% endblock %}

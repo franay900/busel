@@ -14,7 +14,7 @@
       <th>Номер</th>
       <th>Литер</th>
       <th>Учебный план</td>
-      <th>Профиль учебный периодов</th>
+      <th>Смена</th>
       <th>Классный руководитель</th>
       <th colspan="2">Действие</th>
     </tr>
@@ -25,7 +25,7 @@
 					<td>{{ class.class_number }}</td>
 					<td>{{ class.letter }}</td>
 					<td>{{ class.сurriculum }}</td>
-					<td>{{ class.period_profile }}</td>
+					<td>{{ class.change }} смена</td>
 					<td>{{ class.class_teacher }}</td>
 					<td> <a href="{{ class.get_absolute_url  }}">Редактировать</a></td>
 					<td><a href="">Удалить</a></td>
@@ -39,7 +39,7 @@
 
 
 		<!-- Button trigger modal -->
-		<button type="button" class="button-41" data-toggle="modal" data-target="#exampleModal">
+		<button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#exampleModal">
   			Добавить
 		</button>
 		<form method="POST">

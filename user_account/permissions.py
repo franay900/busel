@@ -6,7 +6,7 @@ class AdminPermissionMixin:
 	def has_permissions(self):
 		user_pk=self.request.user.pk
 		try:
-			user=UserNet.objects.get(pk=user_pk,groups__in=[1])
+			user=UserNet.objects.get(pk=user_pk,groups__name__in=['Администратор ОО'])
 			return user.groups
 		except:
 			pass
@@ -17,6 +17,10 @@ class AdminPermissionMixin:
 		if not self.has_permissions():
 			return HttpResponseForbidden()
 		return super().dispatch(request,*args,**kwargs)
+
+
+
+
 class RegisterMixin():
 	def has_permissions(self):
 		if self.request.user.registration==True:

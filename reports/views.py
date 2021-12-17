@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.views.generic import View
 from user_account.models import UserNet
-from classes.models import Load
-from journal.models import Lessons,Marks
-
+from classes.models import Load,Classes, Periods, СurriculumSubject
+from journal.models import Lessons,Marks, MarksItog,Student
+from journal.utils import Journal
+from django.http import JsonResponse
 
 class ReportsView(View):
 	def get(self,request):
@@ -62,3 +63,57 @@ class ReportJournal(View):
 		context['title']="Отчет по ведению электронного журнала"
 		context['result']=lists
 		return render(request,'reports/report_journal.html',context)
+
+
+
+class ReportPerformance(View, Journal):
+
+	def get_itog_marks(self):
+		MarksItog.objects.filter()
+
+	def get_class(self):
+		if 'class_pk' in self.request.POST:
+			return Classes.objects.get(pk=self.request.POST.get('class_pk'))
+		else:
+			return self.get_classes().first()
+	def get_loads(self):
+		return СurriculumSubject.objects.filter(profile=self.get_class().сurriculum, class_number=self.get_class().class_number).order_by('subject')
+
+	def get_student(self):
+		return Student.objects.filter(class_pk=self.get_class(),user__isnull=False,user__is_active=True).order_by('user')
+	def get_context(self):
+		context={}
+		context['title']="Отчет успеваемости"
+		context['classes']=self.get_classes()
+		context['class']=self.get_class()
+		context['students']=self.get_student()
+		context['periods']=Periods.objects.filter(profile=self.get_class().period_profile)
+		context['subjects']=self.get_loads()
+		if 'period' not in self.request.POST or self.request.POST['period']=='Год':
+			context['period']='year'
+		else:
+			context['period']=self.get_period()
+		return context
+	def get(self,request, *args, **kwargs):
+
+		
+		return render(request,'reports/report_performance.html',self.get_context())
+	def post(self,request, *args, **kwargs):
+
+		
+		return render(request,'reports/report_performance.html',self.get_context())
+
+
+def get_period(self, class_pk):
+    
+    get_class = Classes.objects.get(pk=class_pk)
+    filter_periods = Periods.objects.filter(profile=get_class.period_profile)
+    periods = []
+    for period in filter_periods:
+        periods.append(period.pk)
+    response = {
+        'period': periods,
+
+    }
+
+    return JsonResponse(response)
