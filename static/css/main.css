@@ -261,7 +261,7 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
 
 .rtable th,
 .rtable td {
-  padding: 4px 12px;
+  padding: 6px 12px;
   border: 1px solid #d9d7ce;
 }
 
