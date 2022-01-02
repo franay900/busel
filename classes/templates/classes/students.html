@@ -41,7 +41,7 @@
       <label for="validationCustom03">Класс</label>
 
       <select id="inputState" class="form-control" name="class_pk">
-        <option >...</option>
+        <option value="None">...</option>
         {% for class in classes %}
         <option  {% if class.pk == class_pk %} selected {%endif%} value="{{ class.pk }}" >{{ class }}</option>
         {% endfor %}
@@ -113,8 +113,8 @@
 </nav>
 
   {% if perms.classes.add_student %}
-   <a class="btn btn-outline-primary" href="{% url 'StudentAdd' %}">Добавить</a>
-   <a class="btn btn-outline-warning" href="{% url 'StudentImport' %}">Импорт</a>
+   <a class="btn btn-success" href="{% url 'StudentAdd' %}"><i class="bi bi-person-plus"></i> Добавить</a>
+   <a class="btn btn-success" href="{% url 'StudentImport' %}"><i class="bi bi-file-earmark-arrow-up"></i> Импорт</a>
   {% endif %}
 
 {% else %}

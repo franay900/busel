@@ -1,52 +1,69 @@
  {% load user_tags %}
 {% load static %}
 
-<style>
-  .nav-link img {
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  margin: -8px 0;
-  float: left;
-  margin-right: 10px;
-}
-
-nav{
-  background-color:white;
-}
-
-
-</style>
-
-<nav class="navbar navbar-expand-xl navbar-dark  " style="height:45px;background-color:#1e1e3f">
+<nav class="navbar navbar-expand-lg navbar-dark" style="padding: 0">
   <a class="navbar-brand" href="#">
-    <img src="{% static 'img/busel2_0-logo.png' %}" style="width:40px; height:40px"  alt="">
+    <img class="logo" src="{% static 'img/busel2_0-logo_white.png' %}"  alt="">
    
   </a>
 
-  
-   <ul class="navbar-nav mr-auto">
-      <li class="nav-item ">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
-        <a class="nav-link" href="{% url 'HomePageUserAccount' %}"><i class="bi bi-house-door"></i> Главная <span class="sr-only">(current)</span></a>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent" >
+    <ul class="navbar-nav mr-auto" >
+     <li class="nav-item ">
+
+        <a class="nav-link "  href="{% url 'HomePageUserAccount' %}"><i class="bi bi-house-door"></i> Главная <span class="sr-only">(current)</span></a>
       </li>
-      {% if request.user|is_group %}
+
+      {% if perms.classes.view_сurriculum %} 
      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fa fa-building"></i> Организация
+        <a class="nav-link dropdown-toggle "  href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="bi bi-building"></i> Организация
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          {% if perms.institutions.view_institutions %} 
           <a class="dropdown-item" href="{% url 'institutionsHome' %}">Информация</a>
           <a class="dropdown-item" href="{% url 'StudyPeriods' %}">Учебные периоды</a>
-          <a class="dropdown-item" href="{% url 'Bell_profile_list' %}">Расписание звонков</a>
           <a class="dropdown-item" href="{% url 'Subject_list' %}">Учебные предметы</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="{% url 'Curriculum' %}">Учебные планы</a>
 
+          <a class="dropdown-item" href="{% url 'Bell_profile_list' %}">Расписание звонков</a>
+          
+          {% endif %}
+          
+          
+          <a class="dropdown-item" href="{% url 'Curriculum' %}">Учебные планы</a>
+          
+
+          
+        </div>
+          
+        
+          
+          {% endif %}
+
+
+           {% if perms.classes.change_student  %}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle " href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="bi bi-person-square"></i> Пользователи
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          {% if perms.user_account %}
+          <a class="dropdown-item" href="{% url 'users' %}">Сотрудники</a>
+          {% endif %}
+          <a class="dropdown-item" href="{% url 'StudentList' %}">Обучающиеся</a>
+          
         </div>
       </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+      {% endif %}
+
+      {% if perms.classes.view_load %}
+        <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle " href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="bi bi-easel"></i> Классы 
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -58,23 +75,23 @@ nav{
           
         </div>
       </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="bi bi-person-square"></i> Пользователи
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{% url 'users' %}">Сотрудники</a>
-          <a class="dropdown-item" href="{% url 'StudentList' %}">Обучающиеся</a>
-        </div>
-      </li>
+      {% endif  %}
+
+
+      {% if perms.journal %}
+      
+      
 
 
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-link dropdown-toggle " href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="bi bi-book-half"></i> Журналы
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          {% if perms.journal.change_lessons %}
           <a class="dropdown-item" href="{% url 'JournalView' %}">Журнал организации</a>
+          {% endif %}
+
           <a class="dropdown-item" href="{% url 'MyJournal' %}">Мой журнал</a>
         </div>
       </li>
@@ -82,35 +99,31 @@ nav{
 
 
       <li class="nac-item">
-         <a class="nav-link" href="{% url 'ReportsView' %}"><i class="bi bi-file-earmark-check"></i> Отчеты</a>
+         <a class="nav-link " href="{% url 'ReportsView' %}"><i class="bi bi-file-earmark-check"></i> Отчеты</a>
       </li>
        {% endif %}
 
        {% if request.user.is_superuser %}
       <li class="nac-item">
-        <a class="nav-link" href="{% url 'InstitutionCreate' %}">Реестр организаций</a>
+        <a class="nav-link " href="{% url 'InstitutionCreate' %}">Реестр организаций</a>
       </li>
 
        {% endif %}
-  {% if request.user|teacher %}
-  <li class="nac-item">
-        <a class="nav-link" href="{% url 'MyJournal' %}"><i class="bi bi-book-half"></i> Мой журнал</a>
-      </li>
-  {% endif %}
+
     {% if request.user|teacher %}
   <li class="nac-item">
-        <a class="nav-link" href="{% url 'TimetableTeacher' %}"><i class="bi bi-alarm"></i> Расписание</a>
+        <a class="nav-link " href="{% url 'TimetableTeacher' %}"><i class="bi bi-alarm"></i> Расписание</a>
       </li>
   
  {% endif %}
 
-    {% if request.user|class_manager %}
+    {% if not perms.classes.change_classes and  request.user|class_manager %}
     <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-link dropdown-toggle " href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="bi bi-easel"></i> Мой класс 
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{% url 'StudentList' %}">Обучающиеся</a>
+          
           <a class="dropdown-item" href="{% url 'SubgroupView' %}">Подгруппы</a>
           <a class="dropdown-item" href="{% url 'ClassJournal' %}">Классный журнал</a>
           
@@ -121,12 +134,12 @@ nav{
       {% endif %}
     </ul>
 
+  </div>
 
-
-    <div class="navbar-nav ml-auto">
+      <div class="navbar-nav ml">
 
       <div class="nav-item dropdown">
-        <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle user-action">
+        <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle user-action ">
 
            
 
@@ -134,22 +147,18 @@ nav{
     
      <img class="avatar" alt="Avatar" src="{{ request.user.avatar.url }}" alt="" height="36px">
     {% else %}
-    <img class="avatar" alt="Avatar" src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="" height="36px" >
+    <img class="avatar" alt="Avatar" src="{% static 'img/no-user-image-icon-27.jpg' %}" alt="" height="36px" >
     {% endif %}
             {{ request.user.last_name }} {{ request.user.first_name }} {{ request.user.middle_name }}
           </a>
         <div class="dropdown-menu">
-          <!---
-          <a href="#" class="dropdown-item"><i class="fa fa-user-o"></i> Profile</a></a>
-          <a href="#" class="dropdown-item"><i class="fa fa-calendar-o"></i> Calendar</a></a>
-          <a href="#" class="dropdown-item"><i class="fa fa-sliders"></i> Settings</a></a>
-          <div class="dropdown-divider"></div>
-        -->
-          <a href="{% url 'logout' %}" class="dropdown-item"><i class="bi bi-box-arrow-left"></i> </i> Выход</a>
+          
+      
+        
+          <a href="{% url 'logout' %}" class="dropdown-item "><i class="bi bi-box-arrow-left"></i> </i> Выход</a>
 
 
         </div>
       </div>
     </div>
-  </div>
 </nav>

@@ -2,7 +2,39 @@
 {% load dz_tags %}
 
 
+
+
+{% block h2 %}
+<i class="bi bi-layout-text-sidebar"></i> {{ title }} ({{ load.class_pk }}/{{ load.subject_pk }})
+{% endblock %}
 {% block content %}
+
+<div class="alert alert-info mt-3" role="alert">
+  <i class="bi bi-info-circle"></i> Не забудьте сохранить информацию!
+</div>
+
+{% if success %}
+<div class="position-fixed bottom-0 right-0 p-3" style="z-index: 5; right: 0; bottom: 0;">
+  <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+    <div class="toast-header bg-info text-white">
+       <i class="bi bi-exclamation-circle"></i> 
+      <strong class="mr-auto"> Внимание!</strong>
+      
+      <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="toast-body">
+      Изменения успешно внесены в систему!
+    </div>
+  </div>
+</div>
+
+<script>
+	$('.toast').toast('show');
+</script>
+
+{% endif %}
 <form action="" method="POST">
 {% csrf_token %}
 <table class="rtable">
@@ -52,7 +84,7 @@
 			</select>
 			{% endfor %}
 			{% endif %}
-			<button type="button" id="append" value="{{ lesson.pk }}" class="btn btn-sm btn-secondary mt-1 append">Добавить</button>
+			<button type="button" id="append" value="{{ lesson.pk }}" class="btn btn-sm btn-secondary mt-1 append">Добавить тип</button>
 		</td>
 	</tr>
 	{% endif %}
@@ -60,8 +92,12 @@
 </table>
 <div>
 
-
-<button type="submit" class="btn btn-outline-primary ">Сохранить</button>
+{% if success %}
+<button  type="button" class="btn btn-secondary" onclick="history.go(-2)"><i class="bi bi-reply"></i> Вернуться</button>
+{% else %}
+<button  type="button" class="btn btn-secondary" onclick="history.go(-1)"><i class="bi bi-reply"></i> Вернуться</button>
+{% endif %}
+<button type="submit" class="btn btn-primary "><i class="bi bi-pencil-square"></i> Обновить</button>
 
 
 </div>

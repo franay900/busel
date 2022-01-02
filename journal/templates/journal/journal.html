@@ -2,10 +2,49 @@
 {% load mark_tags %}
 {% load user_tags %}
 
+
+{% block h2 %}
+<i class="bi bi-layout-text-sidebar"></i> {{ title }} 
+{% endblock %}
+
 {% block content %}
 
 
 {% if loads %}
+
+
+
+<div class="position-fixed bottom-0 right-0 p-3" style="z-index: 5; right: 0; bottom: 0;">
+  <div  id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+    <div class="toast-header bg-danger text-white">
+       <i class="bi bi-exclamation-circle"></i> 
+      <strong class="mr-auto"> Внимание!</strong>
+      
+      <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="toast-body">
+      Данная отметка не поддерживается в системе!
+    </div>
+  </div>
+</div>
+
+<div class="position-fixed bottom-0 right-0 p-3" style="z-index: 5; right: 0; bottom: 0;">
+  <div  id="liveToast2" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+    <div class="toast-header bg-info text-white">
+       <i class="bi bi-exclamation-circle"></i> 
+      <strong class="mr-auto"> Внимание!</strong>
+      
+      <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="toast-body">
+      Для данного урока необходимо внести тип!
+    </div>
+  </div>
+</div>
 
 
 
@@ -68,46 +107,52 @@
   
 </div>
 
-<div class="row mt-3" id="tables" >
+<div class="row mt-3 myrow" id="tables" >
 
-  <div style="width: 150px;margin-left: 15px;" class="col-3 mycol" style="" style=""> 
-    <table class="myTable" style=>
+  <div style="" class="col-3 mycol2 no-margin"  style=""> 
+
+    
+    <table class="myTable" >
       <thead>
       <tr>
-        <th id="row-2" style="width: 30px">№</thd>
-        <th id="row-2" style="text-align:center;">Фамилия, имя</th>
+        <th id="start"  id="row-2" style="">№</th>
+        <th   id="row-2" style="text-align:center;">Фамилия, имя</th>
       </tr>
      
       </thead>
       <tbody>
         {% for student in students %}
-          <tr style=" max-height: 32px;">
-            <td style="height:32px;max-height:32px" class="student">{{ forloop.counter }}</td>
-            <td style="height:32px;max-height:32px;" class="student">{{ student.user.last_name }} {{ student.user.first_name }}</td>
+          <tr >
+            <td   class="student">{{ forloop.counter }}</td>
+            <td   class="student">{{ student.user.last_name }} {{ student.user.first_name }}</td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
+ 
+
 </div>
-<div id="scroll" class="mycol sc3" style=";max-width: 546px;overflow-x: scroll;">
-    <table style="width:auto" id="table2"  class="myTable">
+<div id="scroll" class="col-6 mycol " style="overflow-x: scroll;">
+
+     
+    <table style="" id="table2"  class="myTable  ">
       <thead>
         
       
       <tr>
-        <th class="month" colspan="0" id="sep" style="display: none;">Сентябрь</th>
-        <th class="month" colspan="0" id="oct" style="display: none;">Октябрь</th>
-        <th class="month" colspan="0" id="nov" style="display: none;">Ноябрь</th>
-        <th class="month" colspan="0" id="dec" style="display: none;">Декабрь</th>
+        <th class="month" colspan="0" id="sep" >Сентябрь</th>
+        <th class="month" colspan="0" id="oct" >Октябрь</th>
+        <th class="month" colspan="0" id="nov" >Ноябрь</th>
+        <th class="month" colspan="0" id="dec" >Декабрь</th>
         
 
-        <th class="month" colspan="0" id="jan" style="display: none;">Январь</th>
-        <th class="month" colspan="0" id="feb" style="display: none;">Февраль</th>
-        <th class="month" colspan="0" id="march" style="display: none;">Март</th>
+        <th class="month" colspan="0" id="jan" >Январь</th>
+        <th class="month" colspan="0" id="feb" >Февраль</th>
+        <th class="month" colspan="0" id="march" >Март</th>
 
 
-        <th class="month" colspan="0" id="ap" style="display: none;">Апрель</th>
-        <th class="month" colspan="0" id="may" style="display: none;">Май</th>
+        <th class="month" colspan="0" id="ap" >Апрель</th>
+        <th class="month" colspan="0" id="may" >Май</th>
       </tr>
       
       <tr>
@@ -135,11 +180,15 @@
         {% for lesson in lessons %}
         {% if lesson.types.all %}
         {% for lesson_type in lesson.types.all %}
+        {% if lesson.date >= student.date_of_enrollment %}
         {% get_marks lesosn=lesson.pk type_l=lesson_type.pk student=student.pk as mark %}
-        <td student="{{ student.pk }}" type="{{lesson_type.pk}}" lesson="{{lesson.pk}}" id="{{ lesson_type.pk }}{{ lesson.pk }}{{ student.pk }}" class="day {{ student.pk }}" markpk="{{mark.pk}}" >{% if mark.mark %}{{ mark.mark }}{% endif %}{%if mark.attendance == 1 %}н{% endif %}</td>
+        <td student="{{ student.pk }}" type="{{lesson_type.pk}}" lesson="{{lesson.pk}}" id="{{ lesson_type.pk }}{{ lesson.pk }}{{ student.pk }}" class="day {{ student.pk }}" markpk="{{mark.pk}}" ><a >{% if mark.mark %}{{ mark.mark }}{% endif %}{% if mark.mark2 %}/{{ mark.mark2 }}{% endif %} {%if mark.attendance == 1 %}н{% endif %}</a><input  style="display: none;width: 100%;height: 100%" class="mark"></td>
+        {% else %}
+        <td class="bg-light"></td>
+        {% endif %}
         {% endfor %}
         {% else %}
-        <td id="" ></td>
+        <td class="disabled_date" ></td>
         {% endif %}
         {% endfor %}
           </tr>
@@ -149,22 +198,29 @@
       </tbody>
     </table>
 
+
+
 </div>
-  <div  class="mycol"> 
+  <div  class="col-2 mycol no-margin"> 
     <table class="myTable" style=>
       <thead>
       <tr>
-        <th class="" rowspan="2" id="nrow-2" style="width: 90px">Средний балл</thd>
-        <th class=""  id="nrow-2 " style="width: 60px">Итоговая</th>
+        <th class="" rowspan="2" id="nrow-2" style="">Средний балл</thd>
+        <th style="width: 77px" class=""  id="nrow-2 " style="">Итоговая</th>
       </tr>
      
       </thead>
       <tbody>
         {% for student in students %}
           <tr>
-            <td id="ball{{ student.pk }}"></td>
+
+           
+            <td id="ball{{ student.pk }}">
+              
+            
+            </td>
             {% get_marks_itog period=period.pk student=student.pk load=load_pk.pk as mark_itog %}
-            <td period="{{ period.pk }}" id="i{{ student.pk }}" class="itog" student="{{ student.pk }}" load="{{ load_pk.pk }}" markpk="{{mark_itog.pk}}" >{% if mark_itog.mark %}{{ mark_itog.mark }}{% endif %}{% if mark_itog.not_certified == 1 %}н/а{% endif %}</td>
+            <td style="text-align: center" period="{{ period.pk }}" id="i{{ student.pk }}" class="itog" student="{{ student.pk }}" load="{{ load_pk.pk }}" markpk="{{mark_itog.pk}}" ><a style="text-align: center">{% if mark_itog.mark %}{{ mark_itog.mark }}{% endif %}{% if mark_itog.not_certified == 1 %}н/а{% endif %}</a><input  style="display: none;width: 100%;height: 100%" class="mark"></td>
           </tr>
         {% endfor %}
 
@@ -173,9 +229,20 @@
 </div>
 
 </div>
-<input style="display: none;" id="mark" class="" type="text" autocomplete="off">
+
+
+<div id="mark_div">
+  
+</div>
+
+
 <style>
+
+.month{
+  display: none;
+}
 .mycol {padding-left: 0; padding-right:0;}
+.mycol2 { padding-right:0;}
 tbody td{
 height: 32px;
 }
@@ -203,9 +270,23 @@ float:left;
 .day,.month,.date{
 text-align: center;
 }
-#mark{
-  position: static;
-      border: 1px solid #ccc;
+table td input{
+
+    
+    border: 1px!important;
+    display: block;
+    font-size: inherit;
+    font-weight: 400;
+    height: 100%;
+    line-height: 14px;
+    margin: 0!important;
+    outline: none!important;
+    padding: 0!important;
+    position: static;
+    text-align: center;
+    text-transform: uppercase;
+    width: 100%!important;
+    z-index: 2!important;
 }
 
 .sc3::-webkit-scrollbar {
@@ -220,8 +301,24 @@ text-align: center;
   background-color: rgba(0, 0, 0, 0.4);
   border-radius: 10px;
 }
+td{
+  margin:0px;
+  padding:0px;
+}
+
+
 </style>
 <script type="text/javascript">
+
+$('.itog').on('click',function(event){
+    
+    click_mark(this)
+})
+
+$('.day').on('click',function(event){
+    
+    click_mark(this)
+})
 
 function select(url){
 
@@ -287,32 +384,41 @@ select(load_first)
 
 
 
-$('.itog').on('click',function(event){
-    
-    click_mark(this)
-})
+$('.add-row').click(function () {
+        var $row = $('#mytable').find('tr.hidden').clone(true).removeClass('hidden');
+        $('#mytable').find('table').append($row);
+    });
 
-$('.day').on('click',function(event){
-      
-    click_mark(this)
-})
 
-   $('#mark').on('keypress',function(e) {
+   $('.mark').on('keypress',function(e) {
     code = (window.event) ? window.event.keyCode : e.which;
 
     if(code == 13) {
         $(this).blur()
     }
 });
-  $('#mark').on('focusout',function(){
+
+  $('.mark').on('focusout',function(){
+    var mark_input=$(this)
+    
     var min_mark=parseInt('{{ request.user.institution.system_mark.min_mark }}')
     var max_mark=parseInt('{{ request.user.institution.system_mark.max_mark }}')
     var url='{% url 'Mark' %}'
     var tocken='{{ csrf_token }}'
+    var mark=$(mark_input).val()
+    
+    
+        
     save_mark(this,url,tocken,min_mark,max_mark)
   })
 
  
+
+
+
+
+  var count_nov=$('table').find('.day11').length;
+
 
   $('.mark_tr').each(function(){
 
@@ -336,9 +442,56 @@ $('.day').on('click',function(event){
          
   });
 
+  
+    $('.disabled_date').on('click',function(event){
+      $('#liveToast2').toast('show');
+  })
 
 
-  var count_nov=$('table').find('.day11').length;
+jQuery(document).ready(function(){
+
+
+   
+$('td').keydown(function(evt){
+    if(evt.keyCode == 39){
+        event.preventDefault();
+        var cellindex = $(this).index()+1
+        var rowindex = $(this).parents('tr').index() 
+
+        var a= $(this).parents('table tbody').find('tr:eq('+rowindex+') td:eq('+cellindex+')')
+        $(this).children('input').focusout()
+        click_mark(a)
+    }
+
+    if(evt.keyCode == 38){
+        event.preventDefault();
+        var cellindex = $(this).index()
+        var rowindex = $(this).parents('tr').index()-1
+        var a= $(this).parents('table tbody').find('tr:eq('+rowindex+') td:eq('+cellindex+')')
+        $(this).children('input').focusout()
+        click_mark(a)
+    }
+    if(evt.keyCode == 37){
+        event.preventDefault();
+        var cellindex = $(this).index()-1
+        var rowindex = $(this).parents('tr').index()
+        var a= $(this).parents('table tbody').find('tr:eq('+rowindex+') td:eq('+cellindex+')')
+        $(this).children('input').focusout()
+        click_mark(a)
+    }
+    if(evt.keyCode == 40){
+        event.preventDefault();
+        var cellindex = $(this).index()
+        var rowindex = $(this).parents('tr').index()+1
+        var a= $(this).parents('table tbody').find('tr:eq('+rowindex+') td:eq('+cellindex+')')
+        $(this).children('input').focusout()
+        click_mark(a)
+    }
+    
+
+
+})
+});
 
 
 

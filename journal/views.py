@@ -9,6 +9,7 @@ from .utils import Journal, TimetableSettigns
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect
 from datetime import datetime, timedelta
+import time
 
 
 
@@ -19,8 +20,10 @@ class SchoolJournalView(View, Journal):
         return render(request, self.template_name, self.get_context())
 
     def post(self, request, *args, **kwargs):
+        
+        
         return render(request, self.template_name, self.get_context())
-
+        
 
 class ClassesJournalView(View, Journal):
     template_name = 'journal/journal.html'
@@ -93,6 +96,7 @@ class LessonTopics(View):
         context['load'] = load
         context['types'] = LessonType.objects.all()
         context['BellProfile'] = BellProfile.objects.get(pk=get_class.bell_profile.pk)
+        context['success']=True
         for lesson in lessons:
             topic = request.POST.get("topic" + str(lesson.pk))
             homework = request.POST.get("homework" + str(lesson.pk))
@@ -133,6 +137,7 @@ def returnview(request):
 class Mark(View):
     def post(self, request, *args, **kwargs):
         mark = request.POST['mark']
+        two_mark=request.POST['two_mark']
         attendance = request.POST['attendance']
         student = request.POST['student']
         lesson_type = request.POST['type']
@@ -143,15 +148,23 @@ class Mark(View):
         is_itog = request.POST['isitog']
         get_student = Student.objects.get(pk=student)
         mark_pk = 0
+
         if int(itog) == 0:
             get_lesson = Lessons.objects.get(pk=lesson)
             get_lesson_type = LessonType.objects.get(pk=lesson_type)
             if int(red_mark) == 0 and int(del_mark) == 0:
                 if int(mark) == 0:
+                    
+                    print(2)
                     create_mark = Marks.objects.create(student=get_student, lesson=get_lesson,
-                                                       lesson_type=get_lesson_type, attendance=attendance)
+                                                   lesson_type=get_lesson_type, attendance=attendance)
                 else:
-                    create_mark = Marks.objects.create(student=get_student, lesson=get_lesson,
+                    if int(two_mark)>0:
+                        
+                        create_mark = Marks.objects.create(student=get_student, lesson=get_lesson,
+                                                       lesson_type=get_lesson_type, mark2=two_mark, mark=mark)
+                    else:
+                        create_mark = Marks.objects.create(student=get_student, lesson=get_lesson,
                                                        lesson_type=get_lesson_type, mark=mark)
                 mark_pk = create_mark.pk
             if int(red_mark) != 0 and int(del_mark) == 0:
@@ -160,8 +173,15 @@ class Mark(View):
                     get_mark.attendance = attendance
                     get_mark.mark = 0
                 else:
+                    if int(two_mark)>0:
+                        get_mark.mark2=two_mark
+
                     get_mark.mark = mark
                     get_mark.attendance = 0
+
+                    if int(two_mark)==0:
+                        print(two_mark)
+                        get_mark.mark2=0
                 get_mark.save()
                 mark_pk = get_mark.pk
 
@@ -184,6 +204,7 @@ class Mark(View):
                                                        load=get_load)
                 mark_pk = mark_pk.pk
             if int(red_mark) != 0 and int(del_mark) == 0:
+
                 get_mark = MarksItog.objects.get(pk=red_mark)
                 if int(mark) == 0:
                     get_mark.not_certified = attendance
@@ -191,9 +212,10 @@ class Mark(View):
                 else:
                     get_mark.mark = mark
                     get_mark.not_certified = 0
+                if two_mark==0:
+                    get_mark.mark2=0
                 get_mark.save()
                 mark_pk = get_mark.pk
-
             if int(red_mark) == 0 and int(del_mark) != 0:
                 get_mark = MarksItog.objects.get(pk=del_mark)
 

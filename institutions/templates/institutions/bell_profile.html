@@ -1,32 +1,32 @@
 {% extends 'user_index.html' %}
 {% block h2 %}
-Профили звонков
+<i class="bi bi-bell"></i> Профили звонков
 {% endblock %}
 
 
 {% block content %}
 	
-		<table class="table table-sm table-bordered ">
+		<table class="rtable ">
 			<thead>
 				<tr>
-					<td>
+					<th>№</th>
+					<th>
 						Наименование
-					</td>
-					<td>
-						Действие
-					</td>
+					</th>
+
 				</tr>
 
 			</thead>
 			{% for bell_profile in bell_profiles %}
 			<tr>
+				<td>{{ forloop.counter }}</td>
 				<td>{{ bell_profile.title }}</td>
-				<td><a href="">Редактировать</a></td>
+
 			</tr>
 			{% endfor %}
 		</table>
 	
 
-	<a class="btn btn-success" href="{% url 'Bell_profile_create' %}">Добавить</a>
+	<a class="btn btn-success" href="{% url 'Bell_profile_create' %}"><i class="bi bi-file-earmark-plus"></i> Добавить</a>
    
 {% endblock %}

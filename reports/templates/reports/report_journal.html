@@ -4,11 +4,12 @@
 
 {% block content %}
 
-<table class="table table-sm table-bordered">
+<table class="rtable">
 
 {% for i in result %}
+<thead>
 <tr>
-	<td colspan="5" class="text-center">{{i.0.0  }}</td>
+	<th colspan="5" class="text-center">{{i.0.0  }}</th>
 </tr>
 <tr>
 	<td>Класс</td>
@@ -17,6 +18,7 @@
 	<td>Заполнение дз</td>
 	<td>Наличие оценок</td>
 </tr>
+</thead>
 {% for lessons in i.1.0 %}
 <tr>
 	<td>{{ lessons.0.0.class_pk }}</td>
