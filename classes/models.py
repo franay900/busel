@@ -115,7 +115,7 @@ class Student(models.Model):
     user=models.ForeignKey(UserNet, on_delete=models.SET_NULL, verbose_name="Пользователь",
                                        null=True)
     class_pk = models.ForeignKey(Classes, on_delete=models.CASCADE,null=True)
-
+    date_of_enrollment=models.DateField(verbose_name='Дата зачслениия', default='2021-09-01')
     def edit(self):
         return reverse('StudentEdit',kwargs={'student_pk':self.pk})
     def __str__(self):
@@ -143,4 +143,4 @@ class StudentShifting(models.Model):
 
 
     type_shift = models.IntegerField(null=False, choices=Shift_CHOICES)
-    date=models.DateTimeField(verbose_name='Дата Отчисления')
+    date=models.DateField(verbose_name='Дата')

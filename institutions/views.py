@@ -26,6 +26,7 @@ class InstitutionsHomeView(AdminPermissionMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         kwargs['test'] = True
+        kwargs['title']='Организация'
         return super().get_context_data(**kwargs)
 
     def get_form_kwargs(self):

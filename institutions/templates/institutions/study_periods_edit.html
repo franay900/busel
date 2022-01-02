@@ -8,11 +8,11 @@
 		{% csrf_token %}
 
 		<div class="four mt-4">
-			<table class="table table-bordered table-sm table-striped " >
+			<table class="rtable" >
 					<tr>
-						<td>Период</td>
-						<td>Начало</td>
-						<td>Окончание</td>
+						<th>Период</th>
+						<th>Начало</th>
+						<th>Окончание</th>
 					</tr>
 				{% for period in periods %}
 				<tr id="one_per">
@@ -24,7 +24,7 @@
 			</table>
 		</div>
 
-		<button type="submit" class="btn btn-success mt-3">Сохранить</button>
+		<button type="submit" class="btn btn-primary mt-3"><i class="bi bi-pencil-square"></i> Обновить</button>
 	</form>
 
 

@@ -21,7 +21,7 @@
 
   </div>
 <div class="alert alert-danger mt-3" role="alert">
-  <h4 class="alert-heading">Внимание!</h4>
+  <h4 class="alert-heading"><i class="bi bi-exclamation-circle"></i>  Внимание!</h4>
   <p>На данной странице происходит заполнение учебного плана.Ниже необходимо указать количество учебных часов для изучаемых предметов.В случае отсутствия необходимости в некоторых предметах необходимо пропустить ввод количества учебных часов по данному предмету.</p>
   <hr>
   <p class="mb-0">При необходимости можно создать для каждого профиля свой учебный план.</p>
@@ -31,14 +31,14 @@
   <div class="col-12">
     <div class="tab-content tab-content-horizontal" id="nav-tabContent">
       <div class="tab-pane fade show active" id="list-home" role="tabpanel" aria-labelledby="list-home-list">
-      	<table class="table table-bordered table-sm table-striped mt-3">
+      	<table class="rtable">
       		<thead>
       			<tr>
-      				<td>Предметы</td>
-      				<td>1 класс</td>
-      				<td>2 класс</td>
-      				<td>3 класс</td>
-      				<td>4 класс</td>
+      				<th>Предметы</th>
+      				<th>1 класс</th>
+      				<th>2 класс</th>
+      				<th>3 класс</th>
+      				<th>4 класс</th>
       			</tr>
       		</thead>
       		<tbody>
@@ -57,15 +57,15 @@
       	</table>
       </div>
       <div class="tab-pane fade" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">
-      	<table class="table table-bordered table-sm table-striped mt-3">
+      	<table class="rtable">
       		<thead>
       			<tr>
-      				<td>Предметы</td>
-      				<td>5 класс</td>
-      				<td>6 класс</td>
-      				<td>7 класс</td>
-      				<td>8 класс</td>
-      				<td>9 класс</td>
+      				<th>Предметы</th>
+      				<th>5 класс</th>
+      				<th>6 класс</th>
+      				<th>7 класс</th>
+      				<th>8 класс</th>
+      				<th>9 класс</th>
       			</tr>
       		</thead>
       		<tbody>
@@ -85,12 +85,12 @@
       	</table>
       </div>
       <div class="tab-pane fade" id="list-messages" role="tabpanel" aria-labelledby="list-messages-list">
-      	<table class="table table-bordered table-sm table-striped mt-3">
+      	<table class="rtable">
       		<thead>
       			<tr>
-      				<td>Предметы</td>
-      				<td>10 класс</td>
-      				<td>11 класс</td>
+      				<th>Предметы</th>
+      				<th>10 класс</th>
+      				<th>11 класс</th>
 
       			</tr>
       		</thead>
@@ -113,7 +113,13 @@
   </div>
 </div>
 
-<button class="btn btn-outline-success"  type="submit">Сохранить</button>
+{% if form.instance.title %}
+<button class="btn btn-primary"  type="submit"><i class="bi bi-pencil-square"></i> Обновить</button>
+{% else %}
+
+<button class="btn btn-success"  type="submit"><i class="bi bi-plus-square-dotted"></i> Добавить</button>
+
+{% endif %}
 </form>
 
 {% endblock %}

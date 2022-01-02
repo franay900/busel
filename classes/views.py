@@ -20,6 +20,7 @@ import re
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db.models import Q
 from journal.utils import Journal
+from django.contrib.auth.models import Group
 
 
 
@@ -56,7 +57,9 @@ def class_edit_view(request,pk):
         info_form=ClassForm(instance=class_info,teacher=request.user.institution)
         subgroups_form=SubgroupsForm(class_number=class_info.class_number, profile=class_info.сurriculum)
         if request.method=="POST":
+
             if 'info' in request.POST:
+
                 in_form=ClassForm(request.POST,instance=class_info,teacher=request.user.institution)
                 if in_form.is_valid():
                     in_form.save()
@@ -81,7 +84,7 @@ class SubgroupView(View,Journal):
     def get_classes(self):
         
 
-        if not self.request.user.groups.filter(name__in=['Администратор ОО']):
+        if not self.request.user.has_perm('classes.view_classes'):
             return Classes.objects.filter(class_teacher=self.request.user).order_by('class_number','letter')
         else:
            
@@ -92,7 +95,7 @@ class SubgroupView(View,Journal):
 
 
         try:
-            if not self.request.user.groups.filter(name__in=['Администратор ОО']):
+            if not self.request.user.has_perm('classes.view_classes'):
 
                 class_info=self.get_classes().first()
             elif 'pk' in self.kwargs:
@@ -104,7 +107,7 @@ class SubgroupView(View,Journal):
 
         return class_info
     def get_subgroups(self):
-        return Subgroups.objects.filter(class_pk=self.get_class())
+        return Subgroups.objects.filter(class_pk=self.get_class()) or None
 
 
     def get_context(self):
@@ -114,7 +117,8 @@ class SubgroupView(View,Journal):
         context['students']=self.get_student()
         context['class']=self.get_class()
         context['subgroup_list']=self.get_subgroups()
-        context['subgroups']=self.get_subgroups().distinct('subject_pk')
+        if self.get_subgroups():
+            context['subgroups']=self.get_subgroups().distinct('subject_pk')
         return context
 
     def get(self, request, *args, **kwargs):
@@ -123,29 +127,29 @@ class SubgroupView(View,Journal):
 
     def post(self, request, *args, **kwargs):
         
-        print(self.get_class())
-        for subgroup in self.get_subgroups().distinct('subject_pk'):
-            subgroup_pk=subgroup.subject_pk.pk
-            for student in self.get_student():
-                student_pk=student.pk
-                sub=self.request.POST.get("sub"+str(subgroup_pk)+str(student_pk))
-                if sub:
-                    select_sub=Subgroups.objects.get(pk=sub)
-                    check_sub=StudentSubgroup.objects.filter(student=student_pk, subject=select_sub.subject_pk )
-                    if check_sub:
-                        
-                        check_sub.update(subgroup=  sub )
-                    else:
-                        sub_save=StudentSubgroup.objects.create(student=student,  subgroup_id=sub,subject=select_sub.subject_pk)
+        if self.get_subgroups():
+            for subgroup in self.get_subgroups().distinct('subject_pk'):
+                subgroup_pk=subgroup.subject_pk.pk
+                for student in self.get_student():
+                    student_pk=student.pk
+                    sub=self.request.POST.get("sub"+str(subgroup_pk)+str(student_pk))
+                    if sub:
+                        select_sub=Subgroups.objects.get(pk=sub)
+                        check_sub=StudentSubgroup.objects.filter(student=student_pk, subject=select_sub.subject_pk )
+                        if check_sub:
+                            
+                            check_sub.update(subgroup=  sub )
+                        else:
+                            sub_save=StudentSubgroup.objects.create(student=student,  subgroup_id=sub,subject=select_sub.subject_pk)
 
         return redirect(request.META.get('HTTP_REFERER'))
 
 
 
-class СurriculumView(ListView):
+class СurriculumView(PermissionRequiredMixin,ListView):
     model = Сurriculum
     template_name = 'classes/curriculum.html'
-
+    permission_required = 'classes.view_сurriculum'
     def get_context_data(self):
         context = super().get_context_data()
         context['title'] = 'Учебные планы'
@@ -153,10 +157,11 @@ class СurriculumView(ListView):
             institution=self.request.user.institution.pk,year=self.request.user.institution.year.pk)
         return context
 
-class СurriculumCreateView(AdminPermissionMixin, CurruculumMixin, CreateView):
+class СurriculumCreateView(PermissionRequiredMixin, CurruculumMixin, CreateView):
     form_class = СurriculumForm
     template_name = 'classes/add_curriculum.html'
-
+    
+    permission_required = 'classes.add_сurriculum'
     def get_context_data(self):
 
         context=super().get_context_data()
@@ -175,10 +180,11 @@ class СurriculumCreateView(AdminPermissionMixin, CurruculumMixin, CreateView):
         self.form_save()
         return reverse('Curriculum')
 
-class СurriculumUpdateView(AdminPermissionMixin, CurruculumMixin, UpdateView):
+class СurriculumUpdateView(PermissionRequiredMixin, CurruculumMixin, UpdateView):
     model=Сurriculum
     form_class = СurriculumForm
     template_name = 'classes/add_curriculum.html'
+    permission_required = 'classes.change_сurriculum'
     def get_context_data(self):
 
         context=super().get_context_data()
@@ -209,9 +215,11 @@ class DeleteCurriculum(InstitutionsMixin,AdminPermissionMixin, DeleteView):
 
 
 
-class LoadView(AdminPermissionMixin, TimetableSettigns, View):
+class LoadView(PermissionRequiredMixin, TimetableSettigns, View):
     form_class = СurriculumForm
     template_name = 'classes/load.html'
+    permission_required = 'classes.view_load'
+
 
     def get_success_url(self):
         return reverse('Load')
@@ -219,7 +227,7 @@ class LoadView(AdminPermissionMixin, TimetableSettigns, View):
     def get(self, request, *args, **kwargs):
         context = {}
         context['subjects'] = self.get_info()
-        context['teachers']=UserNet.objects.filter(institution=self.request.user.institution.pk,groups=2,is_active=True).distinct()
+        context['teachers']=UserNet.objects.filter(institution=self.request.user.institution.pk,groups__name='Учитель',is_active=True).distinct()
         context['classes']=Classes.objects.filter(institution=self.request.user.institution.pk)
         context['class']=self.get_class()
         context['title'] = 'Учебная нагрузка'
@@ -260,19 +268,20 @@ class LoadView(AdminPermissionMixin, TimetableSettigns, View):
 
 
 #Расписание
-class Timetable(AdminPermissionMixin,ListView):
+class Timetable(PermissionRequiredMixin,ListView):
     model = Classes
     template_name = 'classes/timetable_classes.html'
-
+    permission_required = 'classes.view_timetabletemplates'
     def get_context_data(self):
         context = super().get_context_data()
         context['title'] = 'Расписание'
         context['classes'] = Classes.objects.filter(institution=self.request.user.institution.pk)
         return context
 
-class TimetableTemplatesView(AdminPermissionMixin,TimetableSettigns,ListView):
+class TimetableTemplatesView(PermissionRequiredMixin,TimetableSettigns,ListView):
     model = TimetableTemplates
     template_name = 'classes/timetable_templates.html'
+    permission_required = 'classes.view_timetabletemplates'
     def get_context_data(self):
         context = super().get_context_data()
         context['title'] = 'Шаблоны расписания '+str(self.get_class().class_number)+str(self.get_class().letter)+' класса'
@@ -282,8 +291,9 @@ class TimetableTemplatesView(AdminPermissionMixin,TimetableSettigns,ListView):
             institution=self.request.user.institution.pk,year=self.request.user.institution.year.pk)
         return context
 
-class AddTimetableTemplate(AdminPermissionMixin, TimetableSettigns, View):
+class AddTimetableTemplate(PermissionRequiredMixin, TimetableSettigns, View):
     template_name = 'classes/timetable_add_template.html'
+    permission_required = 'classes.view_timetabletemplates'
     def post(self,request):
         context={}
         context['days'] = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
@@ -292,8 +302,8 @@ class AddTimetableTemplate(AdminPermissionMixin, TimetableSettigns, View):
         context['class_pk']=self.request.POST.get("class")
         return render(request, self.template_name,context)
 
-class CreateTimetableTemplate(AdminPermissionMixin,View):
-
+class CreateTimetableTemplate(PermissionRequiredMixin,View):
+    permission_required = 'classes.view_timetabletemplates'
     def post(self,request):
         class_pk=request.POST.get("class_pk")
         class_get=Classes.objects.get(pk=class_pk)
@@ -312,8 +322,9 @@ class CreateTimetableTemplate(AdminPermissionMixin,View):
         return redirect(class_get.timetable_templates())
 
 
-class UpdateTimetableTemplate(AdminPermissionMixin,View):
+class UpdateTimetableTemplate(PermissionRequiredMixin,View):
     template_name = 'classes/timetable_add_template.html'
+    permission_required = 'classes.view_timetabletemplates'
     def get_template(self):
         return TimetableTemplates.objects.get(pk=self.kwargs['pk'])
     def get(self, request, *args, **kwargs):
@@ -356,9 +367,9 @@ class UpdateTimetableTemplate(AdminPermissionMixin,View):
 
         return redirect(class_get.timetable_templates())
 
-class TimetableWeek(AdminPermissionMixin, TimetableSettigns, View):
+class TimetableWeek(PermissionRequiredMixin, TimetableSettigns, View):
     template_name = 'classes/timetable_weeks.html'
-
+    permission_required = 'classes.view_timetabletemplates'
     def get(self, request, *args, **kwargs):
         context={}
         context['class_pk']=self.get_class()
@@ -396,11 +407,12 @@ class TimetableWeek(AdminPermissionMixin, TimetableSettigns, View):
                         get_lesson=SubjectTemplate.objects.filter(profile__id=post_week,day=weekday)
                         for lesson in get_lesson:
                             lesson_save=Lessons.objects.create(number=lesson.lesson,date=date_week,class_pk=self.get_class(),subject_pk=lesson.subject_pk,teacher=lesson.subject_pk.teacher)
+                            lesson_save.types.add(1)
         messages.success(request,'Уроки успешно распределены')
         return redirect(request.META.get('HTTP_REFERER'))
-class EditLessons(AdminPermissionMixin,TimetableSettigns,View):
+class EditLessons(PermissionRequiredMixin,TimetableSettigns,View):
     template_name='classes/timetable_editlesson.html'
-
+    permission_required = 'classes.view_timetabletemplates'
     def get(self,request,class_pk):
         context={}
         context['title']='Редактирование уроков'
@@ -408,14 +420,14 @@ class EditLessons(AdminPermissionMixin,TimetableSettigns,View):
         context['lessons']=self.get_lessons()
         context['class']=self.get_class()
         context['loads']=self.get_loads()
-        print(self.get_class())
-        context['teachers']=UserNet.objects.filter(institution=request.user.institution,groups=2,is_active=True)
+        context['teachers']=UserNet.objects.filter(institution=request.user.institution,groups__name='Учитель',is_active=True)
         return render(request, self.template_name, context)
     def post(self,request,class_pk):
         self.save_edit_timetable()
 
         return redirect(request.META.get('HTTP_REFERER'))
-class DeleteLessons(AdminPermissionMixin, View):
+class DeleteLessons(PermissionRequiredMixin, View):
+    permission_required = 'journal.delete_lessons'
     def get(self,request,class_pk):
         begin=request.GET.get("begin")
         end=request.GET.get("end")
@@ -434,26 +446,28 @@ class StudentListView(PermissionRequiredMixin, ListView):
         name=self.request.GET.get('name')
         middle_name=self.request.GET.get('middle_name')
         class_pk=self.request.GET.get('class_pk')
-        return surname,name,middle_name,class_pk
+        if (surname or name or middle_name or class_pk) is not None:
+            return surname,name,middle_name,class_pk
     def get_class(self):
-        if self.request.user.groups.filter(name__in=['Администратор ОО']):
+        if self.request.user.has_perm('classes.delete_student'):
             return Classes.objects.filter(institution=self.request.user.institution)
         else:
             return Classes.objects.filter(class_teacher=self.request.user)
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
         context['title'] = 'Обучающиеся'
-        context['surname']=self.query()[0]
-        context['name']=self.query()[1]
-        context['middle_name']=self.query()[2]
-        if self.query()[3]:
+        if self.query():
+            context['surname']=self.query()[0]
+            context['name']=self.query()[1]
+            context['middle_name']=self.query()[2]
+        
             context['class_pk']=int(self.query()[3])
         context['classes']=self.get_class()
         return context
 
     def get_queryset(self):
         
-        if self.query()[0] or self.query()[1] or self.query()[2]:
+        if self.query() and (self.query()[0] or self.query()[1] or self.query()[2]):
             users=UserNet.objects.filter(institution=self.request.user.institution, groups__name='Ученик', is_active=True, 
                 last_name__iregex=r"[[:<:]]{0}".format(self.query()[0]), first_name__iregex=r"[[:<:]]{0}".format(self.query()[1])
                 , middle_name__iregex=r"[[:<:]]{0}".format(self.query()[2])
@@ -464,7 +478,8 @@ class StudentListView(PermissionRequiredMixin, ListView):
         else:
             users=UserNet.objects.filter(institution=self.request.user.institution, groups__name='Ученик', is_active=True)
 
-        if self.query()[3]:
+
+        if self.query() and self.query()[3].isdigit():
             students=Student.objects.filter(user__in=users,class_pk=self.query()[3]).order_by('user__last_name')
         else:
             students=Student.objects.filter(user__in=users, class_pk__in=self.get_class()).order_by('user__last_name')
@@ -491,8 +506,9 @@ class AddStudent(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
         user.institution_id = self.request.user.institution.pk
 
         user.save()
-        user.groups.add(3)
-        Student.objects.create(user=user,class_pk=form.cleaned_data['class'])
+        group=Group.objects.get(name='Ученик')
+        user.groups.add(group)
+        Student.objects.create(user=user,class_pk=form.cleaned_data['class'],date_of_enrollment=form.cleaned_data['date_of_enrollment'])
         return super().form_valid(form)
 
     def get_context_data(self):
@@ -512,13 +528,14 @@ class ImportStudent(View):
         context={}
         context['title']='Импорт пользователей'
         context['file']=FileTemplates.objects.filter(name='Шаблон для импорта учеников').first()
-        return render(request,'classes/import_user.html',context)
+        return render(request,'classes/import_student.html',context)
     def post(self,request):
         context={}
 
         if 'add' in request.POST:
             get_users=request.POST.getlist("users")
             get_classes=request.POST.getlist("users_classes")
+            date=request.POST.get('add')
             
             i=0
             for user in get_users:
@@ -527,14 +544,17 @@ class ImportStudent(View):
                 user_get.save()
                 pk_class=get_classes[i]
                 get_class=Classes.objects.get(pk=pk_class)
-                Student.objects.create(user=user_get,class_pk=get_class)
+                
+                Student.objects.create(user=user_get,class_pk=get_class,date_of_enrollment=date)
                 i+=1
             messages.success(request, 'Учащиеся успешно импортированы!')
-            return redirect('ImportUser')
+            return redirect('StudentImport')
         else:
             file=request.FILES['file']
+            date=request.POST.get('date')
             users=get_user(file)
             arr=[]
+            my_group=Group.objects.get(name='Ученик')
             for row in range(2,users.max_row+1):
                 last_name=users[row][0].value
                 first_name=users[row][1].value
@@ -550,13 +570,17 @@ class ImportStudent(View):
                     login=generate_login()[0]
                     password=generate_login()[1]
                     user_pk=UserNet.objects.create_user(is_active=False,username=login,password=password,last_name=last_name,first_name=first_name,middle_name=patronymic,gender=gender,birth_day=birth_day,institution=self.request.user.institution)
-                    user_pk.groups.set([4])
+                    
+                    my_group.user_set.add(user_pk)
+
+
                     arr.append([last_name,first_name,patronymic,gender,birth_day,login,password,user_pk.pk,class_find])
                     
-
+        
         context['title']='Результат импорта'
+        context['date']=date
         context['users']=arr
-        return render(request,'user_account/import_result.html',context)
+        return render(request,'classes/import_result.html',context)
 
 
 

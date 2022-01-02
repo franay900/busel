@@ -11,7 +11,7 @@ from pathlib import Path
 
 import os
 
-ALLOWED_HOSTS = ['127.0.0.1','147.78.65.166','busel.ga']
+ALLOWED_HOSTS = ['127.0.0.1','147.78.65.166','pk-busel.ru']
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production

@@ -1,6 +1,6 @@
 {% extends 'user_index.html' %}
 {% block h2 %}
-Список классов на {{ request.user.institution.year }}
+<i class="bi bi-mortarboard"></i> Список классов на {{ request.user.institution.year }}
 {% endblock %}
 
 
@@ -8,7 +8,7 @@
 	
 
 
-<table class="rtable">
+<table class="rtable mt-1">
   <thead>
     <tr>
       <th>Номер</th>
@@ -16,7 +16,7 @@
       <th>Учебный план</td>
       <th>Смена</th>
       <th>Классный руководитель</th>
-      <th colspan="2">Действие</th>
+      <th class="text-center" colspan="2">Действие</th>
     </tr>
   </thead>
   <tbody>
@@ -39,8 +39,8 @@
 
 
 		<!-- Button trigger modal -->
-		<button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#exampleModal">
-  			Добавить
+		<button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">
+  			<i class="bi bi-plus-square-dotted"></i> Добавить
 		</button>
 		<form method="POST">
 		<div class="modal fade bd-example-modal-xl" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
