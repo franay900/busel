@@ -36,7 +36,7 @@ class UsersView(PermissionRequiredMixin,UserMixin, ListView):
 
 def user_edit_view(request,user_id):
     user=UserNet.objects.get(pk=user_id)
-    if user.institution== request.user.institution and UserNet.objects.get(pk=request.user.pk,groups__name__in=["Администратор ОО", 'Секретарь']):
+    if user.institution== request.user.institution and UserNet.objects.get(pk=request.user.pk,groups__name="Администратор ОО"):
         password_form=SetPassword(user=user)
         form=UserEditForm(instance=user,user=user.institution.typeInstitutions)
         if request.method=="POST":
@@ -106,7 +106,6 @@ class AddUser(AdminPermissionMixin, SuccessMessageMixin, CreateView):
             self.password += random.choice(chars)
         for i in range(8):
             self.login += random.choice(chars)
-        
         user = form.save(commit=False)
         user.set_password(self.password)
         user.username=self.login

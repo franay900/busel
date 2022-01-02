@@ -5,14 +5,12 @@
 
 
 {% block content %}
-	<table class="rtable">
-		<thead>
+	<table class="table table-sm table-bordered">
 		<tr>
-			<th style="width: 5%">Класс</th>
-			<th style="width: 35%">Учебный план</th>
-			<th style="width:48%;text-align: center;" colspan="3" class="text-center">Действие</th>
+			<td style="width: 5%">Класс</td>
+			<td style="width: 35%">Учебный план</td>
+			<td style="width:48%;text-align: center;" colspan="3">Действие</td>
 		</tr>
-		</thead>
 		{% for i in classes %}
 		<tr>
 			<td>{{ i.class_number }}{{ i.letter }}</td>

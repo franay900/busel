@@ -1,12 +1,11 @@
 {% extends 'user_index.html' %}
 {% block h2 %}
-<i class="bi bi-building"></i> Организация
+Организация
 {% endblock %}
 
 
 {% block content %}
-<form action="" method="post" enctype="multipart/form-data">
-  <div class="container">
+	<div class="container">
 <div class="row flex-lg-nowrap">
 
 
@@ -19,15 +18,9 @@
               <div class="row">
                 <div class="col-12 col-sm-auto mb-3">
                   <div class="mx-auto" style="width: 140px;">
-                    {% if form.instance.photo %}
-                    
-                    <img src="{{ form.instance.photo.url }}" style="width: 140px;height: 140px" alt="">
-                    {% else %}
                     <div class="d-flex justify-content-center align-items-center rounded" style="height: 140px; background-color: rgb(233, 236, 239);">
                       <span style="color: rgb(166, 168, 170); font: bold 8pt Arial;">140x140</span>
                     </div>
-                    
-                    {% endif  %}
                   </div>
                 </div>
                 <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
@@ -36,16 +29,11 @@
                     <p class="mb-0">{{ request.user.institution }}</p>
                     <div class="text-muted"><small>Последнее редактирование: {{ request.user.institution.last_edit }}</small></div>
                     <div class="mt-2">
-
-
-                      <div class="custom-file">
-                          <input type="file" class="custom-file-input" id="customFileLangHTML" name="photo">
-                          <label class="custom-file-label" for="customFileLangHTML" data-browse="Выбрать файл">Добавьте свою фотографию</label>
-                      </div>
-
+                      <button class="btn btn-primary" type="button" disabled="">
+                        <i class="fa fa-fw fa-camera"></i>
+                        <span>Изменить фотографию</span>
+                      </button>
                     </div>
-                    
-
                   </div>
                   <div class="text-center text-sm-right">
                     <span class="badge badge-secondary">{{request.user.institution.typeInstitutions}}</span>
@@ -58,36 +46,22 @@
               </ul>
               <div class="tab-content pt-3">
                 <div class="tab-pane active">
-                  
+                  <form action="" method="post">
                     <div class="row">
                       <div class="col">
-                        
-              {% csrf_token %}
-                        {% for i in form %}
-                        {% if i != form.photo %}
-                        <div class="form-group row">
-                    <label class="col-lg-3 col-form-label form-control-label">{{ i.label }}:</label>
-                    <div class="col-lg-9">
-                        {{ i }}
-                        <div class="invalid-feedback">
-                            {{ i.errors }}
-                          </div>
-
-
-                    </div>
-                </div>
-                        {% endif %}
-                        {% endfor %}
+                      	
+   						{% csrf_token %}
+                      	{{ form }}
 
                       </div>
                      
                     </div>
                     <div class="row">
                       <div class="col d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary mt-3"><i class="bi bi-pencil-square"></i> Обновить</button>
+                        <button type="submit" class="btn btn-success mt-3">Сохранить</button>
                       </div>
                     </div>
-                 
+                  </form>
 
                 </div>
               </div>
@@ -95,7 +69,7 @@
           </div>
         </div>
       </div>
- </form>
+
 
     </div>
 
@@ -104,12 +78,7 @@
 </div>
 
    
-    {% if form.short_title.errors  %}
-    
-      <script>
-        $('#id_short_title').attr("class","form-control is-invalid")
-      </script>
-    {% endif %}
-    
+   	
+   	
    
 {% endblock %}

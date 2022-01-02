@@ -2,10 +2,9 @@ from django import forms
 from .models import *
 from user_account.models import *
 class InstitutionsInfoForm(forms.ModelForm):
-	error_css_class = 'is-invalid'
 	class Meta:
 		model=Institutions
-		fields=['title','short_title','system_mark','year', 'photo']
+		fields=['title','short_title','system_mark','year']
 	def __init__(self,*args,**kwargs):
 		super().__init__(*args,**kwargs)
 		for field in self.fields:

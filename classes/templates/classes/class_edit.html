@@ -17,29 +17,8 @@
     <div class="tab-pane active in mt-3" id="tab1">
       <form method="POST">
     {% csrf_token %}
-   {% for i in form %}
-                      
-                        <div class="form-group row">
-                    <label class="col-lg-3 col-form-label form-control-label">{{ i.label }}:</label>
-                    <div class="col-lg-9">
-                        {{ i }}
-                        {{ i.errors }}
-                        {% if i.errors %}
-                          <script>
-                            $('#id_{{ i.id }}').attr('class','is-invalid')
-                          </script>
-                        {% endif %}
-                        <div class="invalid-feedback">
-                            {{ i.errors }}
-                          </div>
-
-
-                    </div>
-                </div>
-                      
-                        {% endfor %}
-
-    <button name="info" type="submit" class="btn btn-primary mt-3"><i class="bi bi-pencil-square"></i> Обновить</button>
+    {{ form  }}
+    <button class="btn btn-outline-success mt-3" type="submit" name="info">Сохранить</button>
     </form>
     </div>
 
@@ -58,8 +37,8 @@
         </tr>
         {% endfor %}
     </table>
-<button type="button" class="btn btn-success mt-3" data-toggle="modal" data-target="#exampleModal">
-  <i class="bi bi-file-earmark-plus"></i> Добавить
+<button type="button" class="btn btn-outline-primary mt-3" data-toggle="modal" data-target="#exampleModal">
+  Добавить
 </button>
 
 <form method="post">
@@ -81,7 +60,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-        <button name="subroups" type="submit" class="btn btn-success"><i class="bi bi-file-earmark-plus"></i> Добавить</button>
+        <button name="subroups" type="submit" class="btn btn-primary">Сохранить</button>
       </div>
     </div>
   </div>
@@ -95,7 +74,41 @@
   </div> <!--/.tab-content-->
 </div><!--/.tab-wrap-->
 
-
+<!--
+  <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="home-tab" href="#tab1" data-toggle="tab">Информация</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#tab2" id="history-tab" data-toggle="tab">Подгруппы</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">..</a>
+  </li>
+</ul>
+<div class="tab-content" id="pills-tabContent">
+  <div class="tab-pane fade show active" id="tab1">
+    <form method="POST">
+    {% csrf_token %}
+    {{ form  }}
+    <button class="btn btn-success" type="submit" name="info">Сохранить</button>
+    </form>
+  </div>
+  <div class="tab-pane fade" id="tab2" >
+    
+    <table class="table table-sm table-bordered">
+        <tr>
+          <td>№</td>
+          <td>Предмет</td>
+          <td>Подгруппа</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>Родной язык</td>
+          <td>Подгруппа 1</td>
+        </tr>
+    </table>
+  -->
    
 
   <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">...</div> 
@@ -113,11 +126,5 @@
 });
   </script>
   
-
-
-
-    
-   
-
 
 {% endblock %}
