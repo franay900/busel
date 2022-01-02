@@ -14,6 +14,7 @@ class UserNet(AbstractUser):
     institution = models.ForeignKey(Institutions, on_delete=models.CASCADE, null=True)
     gender=models.CharField(max_length=150, verbose_name='Пол', null=True)
     registration=models.BooleanField(null=True)
+    position=models.CharField(max_length=150, verbose_name='Должность', null=True)
     class Meta:
         ordering=['last_name','first_name']
 

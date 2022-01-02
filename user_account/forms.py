@@ -16,7 +16,7 @@ class UserEditForm(forms.ModelForm):
         )
   
         model = UserNet
-        fields=['last_name','first_name','middle_name','gender','birth_day','groups','avatar','email']
+        fields=['last_name','first_name','middle_name','gender','birth_day','groups','position','avatar','email']
         
    
         widgets={
@@ -27,6 +27,7 @@ class UserEditForm(forms.ModelForm):
             'gender':forms.RadioSelect(choices=CHOICES),
             'email':forms.EmailInput(attrs={'class':'form-control'}),
             'avatar':forms.FileInput(attrs={'class':'','id':'validatedInputGroupCustomFile'}),
+            'position':forms.TextInput(attrs={'class':'form-control'}),
 	    }
     
     

@@ -1,21 +1,33 @@
 {% extends 'user_index.html' %}
 {% load number_tags %}
 {% block h2 %}
-Организации
+Реестр образовательных организаций
 {% endblock %}
 
 
 {% block content %}
-	<table class="table table-sm table-bordered">
+	<table class="rtable">
+		<thead>
 			<tr>
-				<td>Наименование</td>
-				<td>Действие</td>
+				<th>Наименование</th>
+				
+				<th>Число сотрудников</th>
+				
+				<th>Ведомственная организация</th>
+				<th class="text-center" colspan="2">Действие</th>
 			</tr>
+			</thead>
 		<tbody>
 			{% for institution in institutions %}
 			<tr>
 				<td>{{ institution.short_title }}</td>
-				<td><a href="">Удалить</a></td>
+				
+				<td></td>
+				
+				<td></td>
+				<td><a href="">Редактировать</a></td>
+				<td><a href="">Заблокировать</a></td>
+				
 			</tr>
 			{% endfor %}
 		</tbody>
@@ -30,7 +42,7 @@
 	  <div class="modal-dialog modal-xl" role="document">
 	    <div class="modal-content">
 	      <div class="modal-header">
-	        <h5 class="modal-title" id="exampleModalLabel">Добавление учебного предмета</h5>
+	        <h5 class="modal-title" id="exampleModalLabel">Добавление образовательной организации</h5>
 	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 	          <span aria-hidden="true">&times;</span>
 	        </button>

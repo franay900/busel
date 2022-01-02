@@ -1,22 +1,22 @@
 {% extends 'user_index.html' %}
 {% load subject_tags %}
 {% block h2 %}
-Учебные предметы
+<i class="bi bi-book"></i> Учебные предметы
 {% endblock %}
 
 
 {% block content %}
-	<table class="table table-sm  table-bordered">
-
+	<table class="rtable">
+		<thead>
 			<tr>
-				<td>№</td>
-				<td style="width:30%">Наименование</td>
-				<td style="width:30%">Краткое наименование</td>
-				<td style="width:15%">Тип</td>
-				<td style="width:15%">Статус</td>
-				<td>Действие</td>
+				<th>№</th>
+				<th style="width:30%">Наименование</th>
+				<th style="width:25%">Краткое наименование</th>
+				<th style="width:15%">Тип</th>
+				<th style="width:20%">Статус</th>
+				<th>Действие</th>
 			</tr>
-
+		</thead>
 			{% for i in subjects %}
 			{% check_subject subject_id=i.pk as status %}
 			<tr>
@@ -31,8 +31,8 @@
 	</table>
 	
 	
-	<button type="button" class="button-41" data-toggle="modal" data-target="#exampleModal">
-	  Добавить
+	<button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">
+	  <i class="bi bi-file-earmark-plus"></i> Добавить
 	</button>
 
 	<!-- Modal -->

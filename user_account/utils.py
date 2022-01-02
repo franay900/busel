@@ -12,7 +12,7 @@ class UserMixin:
 			groupsUser=[]
 			for i in groups:
 				groupsUser.append(i['group'])
-			users=UserNet.objects.filter(institution=institutions,groups__name__in=['Администратор ОО','Учитель'],is_active=True).distinct()
+			users=UserNet.objects.filter(institution=institutions,groups__name__in=['Администратор ОО','Учитель','Завуч','Секретарь'],is_active=True).distinct()
 
 		context['users']=users
 		return context
