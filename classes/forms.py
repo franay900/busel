@@ -11,7 +11,7 @@ class СurriculumForm(forms.ModelForm):
 		for field in self.fields:
 			self.fields[field].widget.attrs['class']='form-control'
 class ClassForm(forms.ModelForm):
-	error_css_class = 'is-invalid'
+
 	class Meta:
 		model=Classes
 		fields=['class_number','letter','сurriculum','bell_profile','change','period_profile','class_teacher']
@@ -22,7 +22,7 @@ class ClassForm(forms.ModelForm):
 			self.edit=False
 		self.teacher=kwargs.pop('teacher')
 		super().__init__(*args,**kwargs)
-		self.fields['class_teacher'].queryset = UserNet.objects.filter(institution=self.teacher.pk,groups__name='Учитель',is_active=True).distinct()
+		self.fields['class_teacher'].queryset = UserNet.objects.filter(institution=self.teacher.pk,groups=2,is_active=True).distinct()
 		self.fields['сurriculum'].queryset = Сurriculum.objects.filter(institution=self.teacher.pk,year=self.teacher.year.pk)
 		self.fields['bell_profile'].queryset = BellProfile.objects.filter(institution=self.teacher.pk)
 		self.fields['period_profile'].queryset = PeriodProfile.objects.filter(institution=self.teacher.pk,year=self.teacher.year.pk)
@@ -102,7 +102,7 @@ class OldStudentForm(forms.ModelForm):
             ("женский", "женский"),
  
         )
-        fields=['last_name','first_name','middle_name','avatar','birth_day','gender']
+        fields=['last_name','first_name','middle_name','avatar','email','birth_day','gender']
         avatar = forms.ImageField()
         widgets={
 	    	'last_name':forms.TextInput(attrs={'class':'form-control'}),
@@ -114,16 +114,11 @@ class OldStudentForm(forms.ModelForm):
             'email':forms.EmailInput(attrs={'class':'form-control'}),
             'avatar':forms.FileInput(attrs={'class':'','id':'validatedInputGroupCustomFile'}),
 	    }
-    date_of_enrollment = forms.DateField(
-        widget=forms.DateInput(attrs={
-            'class': 'form-control datetimepicker-input',
-            'type':'date'
-        }), label="Дата зачисления"
-    )
+    
     
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
         super(OldStudentForm, self).__init__(*args, **kwargs)
         self.fields['class']=forms.ModelChoiceField(label='Класс',queryset=Classes.objects.filter(institution=user.institution))
+        
         self.fields['class'].widget.attrs['class']='form-control'
-

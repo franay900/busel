@@ -32,13 +32,11 @@ class Marks(models.Model):
     lesson=models.ForeignKey(Lessons, on_delete=models.SET_NULL, verbose_name='Урок',null=True,blank=True)
     lesson_type=models.ForeignKey(LessonType, on_delete=models.SET_NULL, verbose_name='Тип урока',null=True,blank=True)
     mark=models.IntegerField(null=True,blank=True)
-    mark2=models.IntegerField(null=True,blank=True)
     attendance=models.IntegerField(null=True,blank=True)
 
 class MarksItog(models.Model):
     student=models.ForeignKey(Student, on_delete=models.SET_NULL, verbose_name='Ученик',null=True,blank=True)
     mark=models.IntegerField(null=True,blank=True)
-    
     load=models.ForeignKey(Load, on_delete=models.SET_NULL, verbose_name='Нагрузка',null=True,blank=True)
     period=models.ForeignKey(Periods, on_delete=models.SET_NULL, verbose_name='Период',null=True,blank=True)
     itog=models.IntegerField(null=True,blank=True)

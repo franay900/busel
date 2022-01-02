@@ -1,7 +1,5 @@
 from django import template
 from journal.models import Marks, MarksItog
-from django.db.models import Sum
-
 register = template.Library()
 
 
@@ -19,25 +17,10 @@ def get_marks_itog(context,period,student,load):
 
 
 @register.simple_tag(name='sball_count', takes_context=True)
-def sball_count(context,student):
+def sball_count(context,itog,student,load):
 	
-	marks=Marks.objects.filter(student=student,lesson__in=context['lessons']).distinct()
-	sum_mark=marks.aggregate(Sum('mark'), Sum('mark2'))
-	
-	if sum_mark['mark__sum']:
-		if sum_mark['mark2__sum']:
-			count_itog=marks.exclude(mark__isnull=False,attendance=1).count()+marks.exclude(mark2__isnull=False,attendance=1).count()
-			sum_itog=sum_mark['mark__sum']+sum_mark['mark2__sum']
-		else: 
-			print(2)
-			count_itog=marks.exclude(mark__isnull=False,attendance=1).count()
-			sum_itog=sum_mark['mark__sum']
 
-		ball=sum_itog/count_itog,2
-
-		return sum_itog, count_itog, marks.exclude(mark__isnull=False,attendance=1).count(), marks.exclude(mark__gt=1,attendance=1).count()
-		
-		
+	return Marks.objects.filter()
 
 @register.simple_tag(name='get_itogs', takes_context=True)
 def get_itogs(context,itog,student,load):

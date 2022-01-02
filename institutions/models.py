@@ -31,7 +31,7 @@ class TypeInstitutions(models.Model):
 
 class Institutions(models.Model):
     title = models.CharField(max_length=150, verbose_name='Наименование организации')
-    short_title = models.CharField(max_length=50, verbose_name='Краткое наименование')
+    short_title = models.CharField(max_length=150, verbose_name='Краткое наименование организации')
     photo = models.ImageField(upload_to='photos/%Y/%m/%d/', null=True, verbose_name='Фото', blank=True)
     year = models.ForeignKey(Year, on_delete=models.PROTECT, verbose_name='Учебный год')
     typeInstitutions = models.ForeignKey(TypeInstitutions, on_delete=models.PROTECT, verbose_name='Тип', null=True)

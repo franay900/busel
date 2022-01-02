@@ -3,18 +3,14 @@
 
 
 {% block content %}
-	<table class="rtable">
-		<thead>
+	<table class="table table-sm table-bordered">
 		<tr>
-			<th>№</th>
-			<th style="width: 33%">Наименование шаблона</th>
-			<th style="width: 33%">Учебный план</th>
-			<th style="width: 34%">Действие</th>
+			<td style="width: 33%">Наименование шаблона</td>
+			<td style="width: 33%">Учебный план</td>
+			<td style="width: 34%">Действие</td>
 		</tr>
-		</thead>
 		{% for template in templates %}
 		<tr>
-			<td>{{ forloop.counter }}</td>
 			<td >{{ template.name }}</td>
 			<td >{{ template.сurriculum }}</td>
 			<td ><a href="{{ template.get_absolute_url }}">Редактировать</a></td>

@@ -3,9 +3,6 @@
 
 
 {% block content %}
-
-
-
    <div class="media align-items-center py-3 mb-3">
     {% if request.user.avatar %}
     
@@ -15,7 +12,7 @@
     {% endif %}
     <div class="media-body ml-4">
       <h4>{{ request.user.last_name }} {{ request.user.first_name }} {{ request.user.middle_name }}</h4>
-      <div class="text-muted">{% if request.user.position %}{{ request.user.position }}{% else%}Должность{% endif %}</div>
+      <div class="text-muted">Должность</div>
     </div>
 
    </div>
@@ -35,6 +32,5 @@
                 </div>
               </div>
             </div>
-
 
 {% endblock %}

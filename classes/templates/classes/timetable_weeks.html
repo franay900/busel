@@ -11,14 +11,12 @@
 		{% endfor %}
 	</select>
 	
-	<table class="rtable mt-3">
-		<thead>
+	<table class="table table-sm table-bordered mt-3">
 		<tr>
-			<th>№ недели</th>
-			<th >Интервал</th>
-			<th>Шаблон</td>
+			<td style="width:10%">№ недели</td>
+			<td style="width:45%">Интервал</td>
+			<td>Шаблон</td>
 		</tr>
-		</thead>
 		{% for week in weeks %}
 		<tr>
 			<td>{{ forloop.counter }} неделя</td>
