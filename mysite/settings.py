@@ -29,20 +29,20 @@ DEBUG = False
 # Application definition
 
 INSTALLED_APPS = [
-    # 'corsheaders',
-    # 'django.contrib.admin',
-    # 'django.contrib.auth',
-    # 'django.contrib.contenttypes',
-    # 'django.contrib.sessions',
-    # 'django.contrib.messages',
-    # 'django.contrib.staticfiles',
-    # 'import_export',
-    # 'news.apps.NewsConfig',
+    'corsheaders',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'import_export',
+    'news.apps.NewsConfig',
     'user_account',
     'institutions',
     'classes',
-    # 'journal',
-    # 'reports',
+    'journal',
+    'reports',
 ]
 
 MIDDLEWARE = [
