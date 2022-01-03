@@ -6,6 +6,7 @@ urlpatterns=[
 	path('journal/school',SchoolJournalView.as_view() ,name="JournalView"),
 	path('journal/my',MyJournalView.as_view() ,name="MyJournal"),
 	path('journal/class',ClassesJournalView.as_view() ,name="ClassJournal"),
+	path('journal/delete_topics/<int:load>/<int:period>',DeleteTopics.as_view() ,name="DeleteTopics"),
 
 	path('check_period/<int:load>',check_period ,name="CheckPeriod"),
 	path('lesson_topics/<int:load>/<int:period>/',LessonTopics.as_view() ,name="LessonTopics"),

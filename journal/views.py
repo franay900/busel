@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import View, ListView
 from user_account.permissions import AdminPermissionMixin
 from classes.models import Load, Classes, Student
@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from django.http import HttpResponseRedirect
 from datetime import datetime, timedelta
 import time
-
+ 
 
 
 class SchoolJournalView(View, Journal):
@@ -68,6 +68,7 @@ class LessonTopics(View):
         load = self.kwargs['load']
         return Load.objects.get(pk=load)
     def get(self, request, *args, **kwargs):
+        self.referer = self.request.META.get('HTTP_REFERER')
         load_pk = self.kwargs.get("load")
         load = Load.objects.get(pk=load_pk)
         period_pk = self.kwargs.get("period")
@@ -80,6 +81,7 @@ class LessonTopics(View):
         context['load'] = load
         context['types'] = LessonType.objects.all()
         context['BellProfile'] = BellProfile.objects.get(pk=get_class.bell_profile.pk)
+        context['referer']=self.referer
         return render(request, 'journal/lesson_topics.html', context)
 
     def post(self, request, *args, **kwargs):
@@ -97,6 +99,7 @@ class LessonTopics(View):
         context['types'] = LessonType.objects.all()
         context['BellProfile'] = BellProfile.objects.get(pk=get_class.bell_profile.pk)
         context['success']=True
+        context['referer']=self.request.POST.get("referer")
         for lesson in lessons:
             topic = request.POST.get("topic" + str(lesson.pk))
             homework = request.POST.get("homework" + str(lesson.pk))
@@ -322,3 +325,16 @@ class TeacherTimeatable(View):
         
         context['lessons']=changes
         return render(request,self.template_name,context)
+
+
+
+class DeleteTopics(View):
+    def get(self,request,load,period):
+        
+        get_period=Periods.objects.get(pk=period)
+        lessons=Lessons.objects.filter(date__gte=get_period.start, date__lte=get_period.end, subject_pk__pk=load)
+        for lesson in lessons:
+            lesson.topic=''
+            lesson.homework=''
+            lesson.save()
+        return redirect(request.META.get('HTTP_REFERER'))

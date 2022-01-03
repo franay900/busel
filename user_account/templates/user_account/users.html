@@ -25,7 +25,7 @@
      		<td>{{ i.last_name  }}  {{ i.first_name }} {{ i.middle_name }}</td>
 
         <td>{{ i.username }}</td>
-        <td>{% if i.position %}{{ i.position }}{% endif %}</td>
+        <td>{% if i.position %}{{ i.position|truncatechars:30 }}{% endif %}</td>
         <td>{{ i.birth_day }}</td>
      		<td ><a href="{{ i.get_absolute_url }}">Редактировать</a></td>
      		<td ><a href="{{ i.ban }}">{%if i != request.user%} Заблокировать{% endif %}</a></td>

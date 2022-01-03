@@ -57,7 +57,9 @@
 			<textarea name="homework{{ lesson.pk }}" class="form-control" id="" rows="">{% if lesson.homework %}{{ lesson.homework }}{% endif %}</textarea>
 			{% get_dates date=lesson.date  as dates %}
 			<select name="date_homework{{ lesson.pk }}"  class="custom-select custom-select-sm mt-1"  name="" id="">
+				{% if not dates %}
 				<option value="">---</option>
+				{% endif %}
 				{% for date in dates %}
 				{% get_bell date=date as bell %}
 				<option  {{ lesson.date_homework.pk }} {% if lesson.date_homework.pk == date.pk %} selected="" {% endif %}  value="{{ date.pk }}">{{ date.date|date:'d.m.Y D' }} ({{ bell.start }}-{{ bell.end }})</option>
@@ -68,7 +70,7 @@
 			
 			{% if not lesson.types.all  %}
 			<select  name="types{{ lesson.pk }}" id="t{{ lesson.pk }}" class="custom-select custom-select-sm mt-1">
-				<option value="">-</option>
+				
 				{% for type in types %}
 				<option value="{{ type.pk }}">{{ type.name }}</option>
 				{% endfor %}
@@ -92,14 +94,14 @@
 </table>
 <div>
 
-{% if success %}
-<button  type="button" class="btn btn-secondary" onclick="history.go(-2)"><i class="bi bi-reply"></i> Вернуться</button>
-{% else %}
-<button  type="button" class="btn btn-secondary" onclick="history.go(-1)"><i class="bi bi-reply"></i> Вернуться</button>
-{% endif %}
+
+
+<a class="btn btn-secondary" onclick="document.location.href='{{ referer }}'"><i class="bi bi-reply"></i> Вернуться</a>
+
 <button type="submit" class="btn btn-primary "><i class="bi bi-pencil-square"></i> Обновить</button>
 
-
+<a class="btn btn-danger" href="{% url 'DeleteTopics' load=load.pk period=period.pk %}"><i class="bi bi-trash"></i> Очистить</a>
+<input name="referer" value="{{ referer }}" style="display: none">
 </div>
 </form>
 

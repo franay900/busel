@@ -184,7 +184,7 @@
         {% get_marks lesosn=lesson.pk type_l=lesson_type.pk student=student.pk as mark %}
         <td student="{{ student.pk }}" type="{{lesson_type.pk}}" lesson="{{lesson.pk}}" id="{{ lesson_type.pk }}{{ lesson.pk }}{{ student.pk }}" class="day {{ student.pk }}" markpk="{{mark.pk}}" ><a >{% if mark.mark %}{{ mark.mark }}{% endif %}{% if mark.mark2 %}/{{ mark.mark2 }}{% endif %} {%if mark.attendance == 1 %}н{% endif %}</a><input  style="display: none;width: 100%;height: 100%" class="mark"></td>
         {% else %}
-        <td class="bg-light"></td>
+        <td student="{{ student.pk }}" class="bg-light" ><a href=""></a></td>
         {% endif %}
         {% endfor %}
         {% else %}
@@ -261,6 +261,7 @@ width:200px;
 }
 tbody td{
 height: 32px;
+width: 42px;
 }
 table{
 width:100%;

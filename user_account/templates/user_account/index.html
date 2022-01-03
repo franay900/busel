@@ -1,5 +1,5 @@
 {% extends 'user_index.html' %}
-
+{% load static %}
 
 
 {% block content %}
@@ -11,7 +11,7 @@
     
      <img class="d-block ui-w-100 rounded-circle" style="width:100px;height:100px" src="{{ request.user.avatar.url }}" alt="">
     {% else %}
-    <img style="width:100px;height:100px" src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="" class="d-block ui-w-100 rounded-circle">
+    <img style="width:100px;height:100px" src="{% static 'img/no-user-image-icon-27.jpg' %}" alt="" class="d-block ui-w-100 rounded-circle">
     {% endif %}
     <div class="media-body ml-4">
       <h4>{{ request.user.last_name }} {{ request.user.first_name }} {{ request.user.middle_name }}</h4>
