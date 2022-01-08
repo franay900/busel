@@ -20,7 +20,7 @@ from django.urls import path,include
 from news.views import *
 from user_account.views import *
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('adminka/', admin.site.urls),
     path('',include('news.urls')),
     path('user_account/',include('user_account.urls')),
     path('institutions/',include('institutions.urls')),
