@@ -95,7 +95,7 @@
 
 <div class="row mt-3">
   <div class="col">
-    <a href="{% url 'LessonTopics' load=load_pk.pk period=period.pk %}" class="btn btn-secondary btn-sm">Темы уроков и дз</a>
+    <a href="{% url 'LessonTopics' load=load_pk.pk period=period.pk %}" class="btn btn-secondary btn-sm" target="_blank">Темы уроков и дз</a>
     <a  href="{% url 'ItogView' load=load_pk.pk period=period.pk %}" class="btn btn-secondary mr-3 btn-sm">Итоговая ведомость</a>
   </div>
 
@@ -132,7 +132,7 @@
  
 
 </div>
-<div id="scroll" class="col-6 mycol " style="overflow-x: scroll;">
+<div id="scroll" class="col-6 mycol sc3" style="overflow-x: scroll;">
 
      
     <table style="" id="table2"  class="myTable  ">
@@ -157,7 +157,12 @@
       
       <tr>
         {% for lesson in lessons %}
-        <th id=""  colspan="{{ lesson.types.all.count }}" class="date">{{ lesson.date|date:'d' }}</th>
+        <th id=""  colspan="{{ lesson.types.all.count }}" class="date">
+
+          <a  class="" data-toggle="popover" title="Тема: {{ lesson.topic }}" data-content="Дз на следующий урок: {{ lesson.homework }}">{{ lesson.date|date:'d' }}</a>
+
+
+        </th>
   
         {% endfor %}
       </tr>
@@ -165,7 +170,12 @@
         {% for lesson in lessons %}
         {% if lesson.types.all %}
         {% for lesson_type in lesson.types.all %}
-        <th id="day" class="date day{{ lesson.date|date:'m' }}">{{ lesson_type.short_name }}</th>
+        <th id="day" class="date day{{ lesson.date|date:'m' }}">
+        <a class=" btn-tooltip" data-toggle="tooltip" data-placement="bottom" title="{{ lesson_type.name }}">
+          {{ lesson_type.short_name }}
+        </a>
+        </th>
+
         {% endfor %}
         {% else %}
         <th id="" class="date day{{ lesson.date|date:'m' }}">-</th>
@@ -451,8 +461,9 @@ $('.add-row').click(function () {
 
 jQuery(document).ready(function(){
 
+$('.btn-tooltip').tooltip();
+$("[data-toggle=popover]").popover();   
 
-   
 $('td').keydown(function(evt){
     if(evt.keyCode == 39){
         event.preventDefault();

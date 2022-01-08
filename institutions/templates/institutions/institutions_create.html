@@ -26,8 +26,12 @@
 				
 				<td></td>
 				<td><a href="">Редактировать</a></td>
-				<td><a href="">Заблокировать</a></td>
-				
+				<td>
+					{% if institution.is_active %}
+					<a href="{% url 'BlockInstitution' institution=institution.pk %}">Заблокировать</a>
+					{% else %}
+					<a href="{% url 'UnBlockInstitution' institution=institution.pk %}">Разблокировать</a>
+					{% endif %}
 			</tr>
 			{% endfor %}
 		</tbody>

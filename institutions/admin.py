@@ -15,4 +15,4 @@ admin.site.register(SystemMarks)
 
 
 
-	
+admin.site.site_header = 'Админ-панель ПК "Бусел"'

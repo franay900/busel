@@ -54,15 +54,29 @@ def register(request):
 		form=UserRegisterForm()
 	return render(request,'news/register.html',{"form":form})
 def user_login(request):
+	context={}
 	if request.method=='POST':
 		form=UserLoginForm(data=request.POST)
+
 		if form.is_valid():
+			
 			user=form.get_user()
-			login(request, user)
-			return redirect('HomePageUserAccount')
+			if user.is_superuser:
+				login(request, user)
+				return redirect('HomePageUserAccount')
+			elif user.institution.is_active:
+				login(request, user)
+				return redirect('HomePageUserAccount')
+			else:
+				messages.warning(request, "Ваша организация заблокирована!")
+				context['error']=True
+		else:
+			messages.warning(request, "Неверный логин или пароль!")
+			context['error']=True
 	else:
 		form=UserLoginForm()
-	return render(request,'news/login.html',{"form":form})
+	context['form']=form
+	return render(request,'news/login.html',context)
 
 def user_logout(request):
 	logout(request)

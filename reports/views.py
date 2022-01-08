@@ -21,7 +21,7 @@ class ReportJournal(View):
 		a=0
 		count_mark=0
 		mark_count=0
-		teachers=UserNet.objects.filter(institution=request.user.institution,groups=2,is_active=True)
+		teachers=UserNet.objects.filter(institution=request.user.institution,groups__name='Учитель',is_active=True)
 		for teacher in teachers:
 			
 			loads=Load.objects.filter(teacher=teacher).order_by("class_pk","subject_pk","subgroup")

@@ -6,7 +6,7 @@ class AdminPermissionMixin:
 	def has_permissions(self):
 		user_pk=self.request.user.pk
 		try:
-			user=UserNet.objects.get(pk=user_pk,groups__name__in=['Администратор ОО'])
+			user=UserNet.objects.get(pk=user_pk,groups__name__in=['Администратор ОО','Завуч'])
 			return user.groups
 		except:
 			pass

@@ -215,7 +215,7 @@ class DeleteCurriculum(InstitutionsMixin,AdminPermissionMixin, DeleteView):
 
 
 
-class LoadView(PermissionRequiredMixin, TimetableSettigns, View):
+class LoadView(PermissionRequiredMixin, TimetableSettigns,SuccessMessageMixin, View):
     form_class = СurriculumForm
     template_name = 'classes/load.html'
     permission_required = 'classes.view_load'
@@ -241,29 +241,65 @@ class LoadView(PermissionRequiredMixin, TimetableSettigns, View):
                 for subgroup in subroups_list:
                     teacher=self.request.POST.get("subject_"+str(subject.pk)+"_subgroup_"+str(subgroup.pk))
                     load_check=Load.objects.filter(class_pk=class_pk,subject_pk=subject,subgroup=subgroup)
+                    delete=self.request.POST.get("del_"+str(subject.pk))
+
+                    if delete:
+                        for i in load_check: get_load=i.pk
+                        get_load=Load.objects.get(pk=get_load).delete()
+                    else:
+
+                        if load_check and teacher:
+                            for i in load_check: get_teacher=i.pk
+                            teacher_get=UserNet.objects.get(pk=teacher)
+                            get_load=Load.objects.get(pk=get_teacher)
+                            get_load.teacher=teacher_get
+                            get_load.save()
+
+                            update_timetable_begin=self.request.POST.get("begin_"+str(subject.pk))
+                            update_timetable_end=self.request.POST.get("end_"+str(subject.pk))
+
+                            if update_timetable_begin and update_timetable_end:
+                                get_lessons=Lessons.objects.filter(subject_pk=get_load, date__gte=update_timetable_begin, date__lte=update_timetable_end)
+                                for lesson in get_lessons:
+                                    lesson.teacher=teacher_get
+                                    lesson.save()
+
+
+                        else:
+                            if teacher:
+                                teacher_load=UserNet.objects.get(pk=teacher)
+                                Load.objects.create(class_pk=self.get_class(),subject_pk=subject,subgroup=subgroup,teacher=teacher_load)
+            else:
+                teacher=self.request.POST.get("subject_"+str(subject.pk))
+                load_check=Load.objects.filter(class_pk=class_pk,subject_pk=subject)
+                update_timetable_begin=self.request.POST.get("begin_"+str(subject.pk))
+                update_timetable_end=self.request.POST.get("end_"+str(subject.pk))
+                delete=self.request.POST.get("del_"+str(subject.pk))
+
+                if delete:
+                    for i in load_check: get_load=i.pk
+                    get_load=Load.objects.get(pk=get_load).delete()
+                else:
                     if load_check and teacher:
+                        
                         for i in load_check: get_teacher=i.pk
                         teacher_get=UserNet.objects.get(pk=teacher)
                         get_load=Load.objects.get(pk=get_teacher)
                         get_load.teacher=teacher_get
                         get_load.save()
+                        if update_timetable_begin and update_timetable_end:
+                            get_lessons=Lessons.objects.filter(subject_pk=get_load, date__gte=update_timetable_begin, date__lte=update_timetable_end)
+                            for lesson in get_lessons:
+                                lesson.teacher=teacher_get
+                                lesson.save()
+
                     else:
                         if teacher:
                             teacher_load=UserNet.objects.get(pk=teacher)
-                            Load.objects.create(class_pk=self.get_class(),subject_pk=subject,subgroup=subgroup,teacher=teacher_load)
-            else:
-                teacher=self.request.POST.get("subject_"+str(subject.pk))
-                load_check=Load.objects.filter(class_pk=class_pk,subject_pk=subject)
-                if load_check and teacher:
-                    for i in load_check: get_teacher=i.pk
-                    teacher_get=UserNet.objects.get(pk=teacher)
-                    get_load=Load.objects.get(pk=get_teacher)
-                    get_load.teacher=teacher_get
-                    get_load.save()
-                else:
-                    if teacher:
-                        teacher_load=UserNet.objects.get(pk=teacher)
-                        Load.objects.create(class_pk=self.get_class(),subject_pk=subject,teacher=teacher_load)
+                            Load.objects.create(class_pk=self.get_class(),subject_pk=subject,teacher=teacher_load)
+
+
+        messages.success(request,'Нагрузка успешно обновлена!')
         return redirect(request.META.get('HTTP_REFERER'))
 
 

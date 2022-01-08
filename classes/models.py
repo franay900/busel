@@ -50,6 +50,9 @@ class Classes(models.Model):
     
     class Meta:
         ordering=['class_number','letter']
+        verbose_name="класс"
+        verbose_name_plural="Классы"
+
     def __str__(self):
         return str(self.class_number)+str(self.letter)
 class Subgroups(models.Model):
@@ -120,7 +123,10 @@ class Student(models.Model):
         return reverse('StudentEdit',kwargs={'student_pk':self.pk})
     def __str__(self):
         return self.user.first_name
-
+    class Meta:
+        ordering=['user']
+        verbose_name="ученик"
+        verbose_name_plural="Ученики"
 
 class StudentSubgroup(models.Model):
     student=models.ForeignKey(Student, on_delete=models.SET_NULL, verbose_name="Ученик",

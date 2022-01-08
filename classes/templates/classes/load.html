@@ -6,6 +6,29 @@
 
 
 {% block content %}
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="exampleModalLabel">Внимание!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span class="text-white cancel" aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Вы уверены, что хотите удалить учебную нагрузку? После сохранения изменений будет удалена вся информация, связанная с этой нагрузкой.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary cancel" data-dismiss="modal">Отмена</button>
+        <button type="button" class="btn btn-danger confirm">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 	<select onchange="top.location=this.value" class="custom-select custom-select-sm" style="width:auto" name="" id="">
 		{% for classes in classes %}
 		<option  {% if class.pk == classes.pk %} selected="" {% endif %} value="{{ classes.class_load }}">{{ classes.class_number }}{{ classes.letter }}</option>
@@ -20,6 +43,14 @@
 			<th>Предмет</th>
 			<th>Подгруппа</th>
 			<th>Преподаватель</th>
+			<th>Обновить в расписании 
+			
+		<a  data-container="body" data-toggle="popover" data-placement="bottom" data-content="Ниже вам будет предложено ввести пероид обновления расписания. После сохранения изменений преподаватели будут обновлены.">
+		  <i class="bi bi-question-circle-fill"></i>
+		</a>
+
+			</th>
+			<th>Удалить</th>
 		</tr>
 		</thead>
 		{% for subject in subjects %}
@@ -27,17 +58,24 @@
 		{% if group_true %}
 		<tr>
 			<td>{{ subject.subject }}</td>
-			<td></td>
-			<td style="padding: 6px 12px;">
+			<td class="bg-light"></td>
+			<td >
 			<select  class="custom-select custom-select-sm "  name="subject_{{ subject.pk }}" id="">
 				<option value="">---------</option>
 				{% get_teacher subject=subject.pk  as teacher %}
 				{% for teachers in teachers %}
-					<option   {% if teacher == teachers.pk  %}    selected="" {% endif %}  value="{{ teachers.pk }}">{{ teachers }}</option>
+					<option    {% if teacher == teachers.pk  %}    selected="" {% endif %}  value="{{ teachers.pk }}">{{ teachers }}</option>
 				{% endfor %}
 			</select>			
 			
 			</td>
+			{% if teacher %}
+			<td><input value="{{ subject.pk }}"  class="timetable" type="checkbox"></td>
+			<td><input name="del_{{ subject.pk }}" id="del{{ subject.pk }}" class="delete" type="checkbox"></td>
+			{% else %}
+			<td></td>
+			<td></td>
+			{% endif %}
 		</tr>
 		{% else  %}
 		{% get_subgroup subject=subject.pk as a %}
@@ -47,15 +85,23 @@
 		<tr>
 			<td>{{ i.subject_pk }}</td>
 			<td>{{ i.name }}</td>
-			<td><select class="custom-select custom-select-sm" name="subject_{{ subject.pk }}_subgroup_{{ i.pk }}" id="">
+			<td ><select  class="custom-select custom-select-sm" name="subject_{{ subject.pk }}_subgroup_{{ i.pk }}" id="">
 				<option value="">---------</option>
 				{% get_teacher subject=subject.pk subgroup=i.pk as teacher %}
 
 				{% for teachers in teachers %}
 					<option {% if teacher == teachers.pk  %}    selected="" {% endif %} value="{{ teachers.pk }}">{{ teachers }}</option>
 				{% endfor %}
-
-			</select></td>
+				</select>
+				
+			</td>
+			{% if teacher %}
+			<td><input value="{{ subject.pk }}"  class="timetable" type="checkbox"></td>
+			<td><input name="del_{{ subject.pk }}" id="del{{ subject.pk }}" class="delete" type="checkbox"></td>
+			{% else %}
+			<td></td>
+			<td></td>
+			{% endif %}
 		</tr>
 		{% endfor %}
 		{% endif %}
@@ -65,4 +111,20 @@
 	 <button type="submit" class="btn btn-primary mt-3"><i class="bi bi-pencil-square"></i> Обновить</button>
 	</div>
 	</form>
+
+
+
+<script>
+	//$('#btn-tooltip').tooltip();
+	$("[data-toggle=popover]").popover();
+
+
+</script>
+
+
+
+<input type="date" id="begin" class="form-control form-control-sm " style="display: none">
+<input type="date" id="end" class="form-control form-control-sm " style="display: none">
+
+
 {% endblock %}

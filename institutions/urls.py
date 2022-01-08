@@ -14,8 +14,8 @@ urlpatterns=[
 	path('subject/',SubjectView.as_view(),name="Subject_list"),
 	path('delete_subject/<int:pk>/',DeleteSubject.as_view() ,name="Delete_subject"),
 	path('create_institution/',InstitutionCreate.as_view() ,name="InstitutionCreate"),
-	
-
+	path('block_institution/<int:institution>',BlockInstitution.as_view() ,name="BlockInstitution"),
+	path('unblock_institution/<int:institution>',UnblockInstitution.as_view() ,name="UnBlockInstitution"),
 
 ]
 

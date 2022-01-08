@@ -21,14 +21,33 @@
     <p>Внимательно вводите  <code>логин и пароль</code>
   </div>
 
+{% if messages %}
+        {% for message in messages %}
+
+        {% if message.tags == 'error' or message.tags == 'warning' %}
+          <div class="alert alert-danger" role="alert">
+            {{ message }}
+          </div>
+        {% else %}
+           <div class="alert alert-success" role="alert">
+            {{ message }}
+          </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+
+
   <div class="form-label-group">
-    {{ form.username }}
     <label for="inputEmail">Логин</label>
+    <input type="text" class="form-control {% if error %}is-invalid{% endif %}" id="validationServer03" aria-describedby="validationServer03Feedback" required name="username"> 
+    
+    
   </div>
 
   <div class="form-label-group">
-    {{ form.password }}
     <label for="inputPassword">Пароль</label>
+    <input type="password" class="form-control {% if error %}is-invalid{% endif %}" id="validationServer03" aria-describedby="validationServer03Feedback" required name="password"> 
+    
   </div>
 
   <div class="checkbox mb-3">
@@ -37,7 +56,7 @@
     </label>
   </div>
   <button class="btn btn-lg btn-primary btn-block" type="submit">Войти</button>
-  <p class="mt-5 mb-3 text-muted text-center">©Бусел 2020-2021</p>
+  <p class="mt-5 mb-3 text-muted text-center">©Бусел 2020-2022</p>
 </form>
 
 <style>

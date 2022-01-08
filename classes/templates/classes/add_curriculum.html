@@ -1,7 +1,17 @@
 {% extends 'user_index.html' %}
 {% load curriculum %}
 {% block h2 %}
+
+
+
+{% if form.instance.title %}
+Редактирование учебного плана
+{% else %}
+
 Добавление учебного плана
+
+{% endif %}
+
 {% endblock %}
 
 

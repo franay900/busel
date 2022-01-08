@@ -8,18 +8,18 @@
 	<table class="rtable">
 		<thead>
 		<tr>
-			<th style="width: 5%">Класс</th>
-			<th style="width: 35%">Учебный план</th>
-			<th style="width:48%;text-align: center;" colspan="3" class="text-center">Действие</th>
+			<th >Класс</th>
+			<th >Учебный план</th>
+			<th colspan="3" class="text-center">Действие</th>
 		</tr>
 		</thead>
 		{% for i in classes %}
 		<tr>
 			<td>{{ i.class_number }}{{ i.letter }}</td>
 			<td >{{ i.сurriculum }}</td>
-			<td style="width:16%"><a href="{{ i.timetable_templates }}">Шаблоны</a></td>
-			<td style="width: 16%"><a href="{{ i.timetable_weeks }}">Распределение уроков</a></td>
-			<td style="width: 16%"><a href="{% url 'EditLesson' class_pk=i.pk %}">Редактирование уроков</a></td>
+			<td ><a href="{{ i.timetable_templates }}">Шаблоны</a></td>
+			<td ><a href="{{ i.timetable_weeks }}">Распределение уроков</a></td>
+			<td ><a href="{% url 'EditLesson' class_pk=i.pk %}">Редактирование уроков</a></td>
 		</tr>
 		{% endfor %}
 	</table>

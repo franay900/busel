@@ -15,11 +15,11 @@ from .utils import Study_Periods
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
 
-class InstitutionsHomeView(AdminPermissionMixin, UpdateView):
+class InstitutionsHomeView(AdminPermissionMixin,SuccessMessageMixin, UpdateView):
     model = Institutions
     form_class = InstitutionsInfoForm
     template_name = 'institutions/institutions.html'
-    success_message = 'Информация обновлена'
+    success_message = 'Информация об организации успешно обновлена!'
 
     def get_success_url(self):
         return reverse('institutionsHome')
@@ -227,11 +227,24 @@ class InstitutionCreate(AdminPermissionMixin, SuccessMessageMixin, CreateView):
 
 
 
+class BlockInstitution(PermissionRequiredMixin, View):
+    permission_required = 'institutions.delete_institutions'
+    def get(self,request,institution):
+
+        get_institution=Institutions.objects.get(pk=institution)
+        get_institution.is_active=False
+        get_institution.save()
+        return redirect(request.META.get('HTTP_REFERER'))
 
 
 
 
+class UnblockInstitution(PermissionRequiredMixin, View):
+    permission_required = 'institutions.delete_institutions'
+    def get(self,request,institution):
 
-
-
+        get_institution=Institutions.objects.get(pk=institution)
+        get_institution.is_active=True
+        get_institution.save()
+        return redirect(request.META.get('HTTP_REFERER'))
 

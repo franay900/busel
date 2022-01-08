@@ -7,16 +7,16 @@
 		<thead>
 		<tr>
 			<th>№</th>
-			<th style="width: 33%">Наименование шаблона</th>
-			<th style="width: 33%">Учебный план</th>
-			<th style="width: 34%">Действие</th>
+			<th >Наименование шаблона</th>
+			<th >Учебный план</th>
+			<th >Действие</th>
 		</tr>
 		</thead>
 		{% for template in templates %}
 		<tr>
 			<td>{{ forloop.counter }}</td>
 			<td >{{ template.name }}</td>
-			<td >{{ template.сurriculum }}</td>
+			<td >{{ template.сurriculum|truncatechars:35 }}</td>
 			<td ><a href="{{ template.get_absolute_url }}">Редактировать</a></td>
 		</tr>
 		{% endfor %}

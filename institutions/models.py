@@ -37,6 +37,7 @@ class Institutions(models.Model):
     typeInstitutions = models.ForeignKey(TypeInstitutions, on_delete=models.PROTECT, verbose_name='Тип', null=True)
     last_edit = models.DateTimeField(verbose_name='Последнее редактирование',auto_now=True,null=True)
     system_mark=models.ForeignKey('SystemMarks',verbose_name='Система оценивания',on_delete=models.PROTECT,default=1)
+    is_active=models.BooleanField(default=True)
     class Meta:
         verbose_name = 'Организацию'
         verbose_name_plural = 'Организации'
@@ -59,6 +60,12 @@ class BellProfile(models.Model):
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        verbose_name = 'Расписание звонков'
+        verbose_name_plural = 'Профили расписания звонков'
+        ordering = ['-pk']
+
 
 
 class BellTimetable(models.Model):

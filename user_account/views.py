@@ -44,12 +44,12 @@ def user_edit_view(request,user_id):
             if save_form.is_valid():
                 form=save_form
                 user=form.save()
-                messages.success(request,'Информация обновлена')
+                messages.success(request,'Информация о сотруднике успешно обновлена!')
 
             save_password=SetPassword(data=request.POST,user=user)
             if save_password.is_valid():
                 save_password.save()
-                messages.success(request,"Пароль успешно обновлен")
+                messages.success(request,"Пароль успешно обновлен!")
 
             
         context={"form":form,'password_form':password_form,'title':'Редактирование пользователя'}
@@ -61,7 +61,7 @@ class UserEditView(PermissionRequiredMixin,SuccessMessageMixin,InstitutionsMixin
     form_class = UserEditForm
     template_name = 'classes/user_update.html'
     pk_url_kwarg = 'user_id'
-    success_message = 'Информация обновлена'
+    success_message = 'Информация о сотруднике успешно обновлена!'
     error_message='Ошибка'
     permission_required = 'user_account.change_usernet'
     login_url='login'
