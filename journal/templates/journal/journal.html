@@ -352,8 +352,15 @@ function select(url){
   name_period=' триместр'
   }
   for(var i = 1; i<=result.period.length; i++){ //data[1] contains no of sem
-  $('#periods').append('<option value="' + result.period[i-1] + '">' + i+name_period +'</option>');
+    var period=$('#periods').append('<option value="' + result.period[i-1] + '">' + i+name_period +'</option>');
+
+
+  if(result.period[i-1]==result.now_period){
+    $(period).children('option').eq(i-1).attr('selected',true)
   }
+
+  }
+  
   }
 
 
