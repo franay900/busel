@@ -11,8 +11,7 @@ admin.site.register(BellProfile)
 admin.site.register(BellTimetable)
 admin.site.register(Subject)
 admin.site.register(SystemMarks)
-
-
+admin.site.register(KindInstitutions)
 
 
 admin.site.site_header = 'Админ-панель ПК "Бусел"'

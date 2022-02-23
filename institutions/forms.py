@@ -5,9 +5,10 @@ class InstitutionsInfoForm(forms.ModelForm):
 	error_css_class = 'is-invalid'
 	class Meta:
 		model=Institutions
-		fields=['title','short_title','system_mark','year', 'photo']
+		fields=['title','short_title','system_mark','year','typeInstitutions','kindInstitutions', 'photo']
 	def __init__(self,*args,**kwargs):
 		super().__init__(*args,**kwargs)
+		self.fields['typeInstitutions'].disabled=True
 		for field in self.fields:
 			self.fields[field].widget.attrs['class']='form-control'
 

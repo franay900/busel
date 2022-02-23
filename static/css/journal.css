@@ -1,0 +1,66 @@
+
+
+.sc3::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.sc3::-webkit-scrollbar-track {
+  background-color: transparent;
+  border-radius: 10px;
+}
+.sc3::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 10px;
+}
+
+.myTable > tbody td{
+height: 32px;
+}
+
+.myTable > thead{
+width:200px;
+}
+.myTable > tbody td{
+height: 32px;
+width: 42px;
+}
+.myTable{
+width:100%;
+float:left;
+
+}
+
+
+.mycol1 {padding-left: 0; padding-right:0;}
+.mycol2 { padding-right:0;}
+
+
+
+.myTable > table td input{
+
+    
+    border: 1px!important;
+    display: block;
+    font-size: inherit;
+    font-weight: 400;
+    height: 100%;
+    line-height: 14px;
+    margin: 0!important;
+    outline: none!important;
+    padding: 0!important;
+    position: static;
+    text-align: center;
+    text-transform: uppercase;
+    width: 100%!important;
+    z-index: 2!important;
+}
+
+.month{
+  display: none;
+}
+.mycol {padding-left: 0; padding-right:0;}
+.mycol2 { padding-right:0;}
+
+.day,.month,.date{
+text-align: center;
+}

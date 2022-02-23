@@ -5,6 +5,7 @@ from .views import *
 urlpatterns=[
 	path('class_view/',ClassView.as_view() ,name="Class"),
 	path('class_edit/<int:pk>/',class_edit_view ,name="ClassEdit"),
+	path('delete_class/',DeleteClassView.as_view() ,name="ClassDelete"),
 
 	path('subgroup/',SubgroupView.as_view() ,name="SubgroupView"),
 	path('subgroup/<int:pk>/',SubgroupView.as_view() ,name="SubgroupViewPk"),

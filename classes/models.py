@@ -21,7 +21,7 @@ class Classes(models.Model):
     )
 
     class_number = models.IntegerField(verbose_name='Номер', choices=CHOICES)
-    letter = models.CharField(max_length=10, verbose_name='Литер')
+    letter = models.CharField(max_length=10, verbose_name='Литер', blank=True)
     institution = models.ForeignKey(Institutions, on_delete=models.PROTECT, verbose_name='Организация')
     year = models.ForeignKey(Year, on_delete=models.PROTECT, verbose_name='Учебный год')
     сurriculum = models.ForeignKey('Сurriculum', on_delete=models.SET_NULL, verbose_name='Учебный план', null=True)
@@ -122,7 +122,7 @@ class Student(models.Model):
     def edit(self):
         return reverse('StudentEdit',kwargs={'student_pk':self.pk})
     def __str__(self):
-        return self.user.first_name
+        return  self.user.last_name  + ' ' + self.user.first_name 
     class Meta:
         ordering=['user']
         verbose_name="ученик"

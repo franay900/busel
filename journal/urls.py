@@ -19,5 +19,7 @@ urlpatterns=[
 	path('timetable/teacher',TeacherTimeatable.as_view() ,name="TimetableTeacher"),
 	
 	
+	path('journal/attendance', AttendanceJournal.as_view(), name='AttendanceJournal'), 
+	path('journal/attendance/<int:pk>', AttendanceJournal.as_view(), name='AttendanceJournalPk')
 ]
 

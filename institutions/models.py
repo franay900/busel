@@ -28,13 +28,22 @@ class TypeInstitutions(models.Model):
     def __str__(self):
         return self.title
 
+class KindInstitutions(models.Model):
+    title = models.CharField(max_length=150, verbose_name='Вид организации')
 
+    class Meta:
+        verbose_name = 'Вид организации'
+        verbose_name_plural = 'Виды организаций'
+
+    def __str__(self):
+        return self.title
 class Institutions(models.Model):
     title = models.CharField(max_length=150, verbose_name='Наименование организации')
     short_title = models.CharField(max_length=50, verbose_name='Краткое наименование')
     photo = models.ImageField(upload_to='photos/%Y/%m/%d/', null=True, verbose_name='Фото', blank=True)
     year = models.ForeignKey(Year, on_delete=models.PROTECT, verbose_name='Учебный год')
     typeInstitutions = models.ForeignKey(TypeInstitutions, on_delete=models.PROTECT, verbose_name='Тип', null=True)
+    kindInstitutions = models.ForeignKey(KindInstitutions, on_delete=models.PROTECT, verbose_name='Вид', null=True)
     last_edit = models.DateTimeField(verbose_name='Последнее редактирование',auto_now=True,null=True)
     system_mark=models.ForeignKey('SystemMarks',verbose_name='Система оценивания',on_delete=models.PROTECT,default=1)
     is_active=models.BooleanField(default=True)

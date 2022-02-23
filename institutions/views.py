@@ -15,12 +15,13 @@ from .utils import Study_Periods
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
 
-class InstitutionsHomeView(AdminPermissionMixin,SuccessMessageMixin, UpdateView):
+class InstitutionsHomeView(PermissionRequiredMixin,SuccessMessageMixin, UpdateView):
     model = Institutions
     form_class = InstitutionsInfoForm
     template_name = 'institutions/institutions.html'
     success_message = 'Информация об организации успешно обновлена!'
-
+    permission_required = 'institutions.view_institutions'
+    
     def get_success_url(self):
         return reverse('institutionsHome')
 

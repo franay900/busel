@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from django.http import HttpResponseRedirect
 from datetime import datetime, timedelta
 import time
- 
+from datetime import date, timedelta, datetime
 
 
 class SchoolJournalView(View, Journal):
@@ -52,10 +52,14 @@ def check_period(self, load):
     get_class = Classes.objects.get(pk=get_load.class_pk.pk)
     filter_periods = Periods.objects.filter(profile=get_class.period_profile)
     periods = []
+    num=0
     for period in filter_periods:
         periods.append(period.pk)
+        if period.pk==Periods.objects.filter(profile=get_class.period_profile,end__gte=datetime.today()).first().pk:
+            num=period.pk
     response = {
         'period': periods,
+        'now_period':num
 
     }
 
@@ -338,3 +342,54 @@ class DeleteTopics(View):
             lesson.homework=''
             lesson.save()
         return redirect(request.META.get('HTTP_REFERER'))
+
+
+class AttendanceJournal(View, Journal):
+    template_name='journal/attendance.html'
+
+    def get_class(self):
+
+
+        try:
+            if not self.request.user.has_perm('classes.view_classes'):
+
+                class_info=self.get_classes().first()
+            elif 'pk' in self.kwargs:
+                class_info=Classes.objects.get(pk=self.kwargs['pk'])
+            else:
+                class_info=Classes.objects.filter(institution=self.request.user.institution).first()
+        except Classes.DoesNotExist:
+            class_info=None
+
+        return class_info
+
+    def get_student(self):
+
+
+
+        return Student.objects.filter(class_pk=self.get_class(),user__isnull=False,user__is_active=True).order_by('user')
+
+    def days_cur_month(self):
+        m = datetime.now().month
+        y = datetime.now().year
+        ndays = (date(y, m+1, 1) - date(y, m, 1)).days
+        d1 = date(y, m, 1)
+        d2 = date(y, m, ndays)
+        delta = d2 - d1
+
+        return [(d1 + timedelta(days=i)).strftime('%d') for i in range(delta.days + 1)]
+
+    def get_context(self):
+        context={}
+
+        context['title']='Журнал посещаемости'
+        context['classes']=self.get_classes()
+        context['class']=self.get_class()
+        context['students']=self.get_student()
+        context['dates']=self.days_cur_month()
+
+        return context
+    def get(self,request, *args,**kwargs):
+
+        return render(request,self.template_name,self.get_context())
+

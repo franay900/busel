@@ -3,7 +3,7 @@ from classes.models import Classes, Student, StudentSubgroup
 from institutions.models import Periods
 from journal.models import Lessons, Marks
 from django.db.models import Q, Sum
-
+from datetime import datetime
 
 class Journal():
 	type_journal='my'
@@ -90,11 +90,12 @@ class Journal():
 	        periods = Periods.objects.get(pk=period)
 	        return periods
 	    else:
-	        return Periods.objects.filter(profile=self.get_class().period_profile).first()
+	        return Periods.objects.filter(profile=self.get_class().period_profile,end__gte=datetime.today()).first()
 	    
 	def get_lessons(self):
 		date_start=self.get_period().start
 		date_end=self.get_period().end
+
 		if  self.type_journal=='school':
 
 			return Lessons.objects.filter(subject_pk=self.get_load(),date__range=[date_start,date_end]).order_by("date")

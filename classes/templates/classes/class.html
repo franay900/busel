@@ -28,7 +28,7 @@
 					<td>{{ class.change }} смена</td>
 					<td>{{ class.class_teacher }}</td>
 					<td> <a href="{{ class.get_absolute_url  }}">Редактировать</a></td>
-					<td><a href="">Удалить</a></td>
+					<td><a class="deleteClass" name="{{ class }}" pk="{{ class.pk }}">Удалить</a></td>
 				</tr>
 				{% endfor %}
 
@@ -66,6 +66,45 @@
 </form>
 	
 	
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="exampleModalLabel"><i class="bi bi-exclamation-circle"></i> Удаление класса</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="{% url 'ClassDelete' %}" method="POST">
+        {% csrf_token %}
+      <div class="modal-body">
+        <strong>Внимание!</strong> Вы действительно хотите удалить <a class="class" href=""></a> класс? Данные будут безвозвратно уничтожены.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="submit" class="btn btn-danger">Да, удалить</button>
+        <input  id="pk" name="pk" style="display: none;" type="text">
+
+      </div>
+    </div>
+    </form>
+  </div>
+</div>
+
+<script type="text/javascript">
+	  $('.deleteClass').on('click',function(event){
+    const modal = new bootstrap.Modal(document.querySelector('#staticBackdrop'));
+    modal.show();
+    var name=$(this).attr('name')
+    var pk=$(this).attr('pk')
+    $(".class").text(name)
+    $("#pk").attr('value',pk)
+
+  })
+
+</script>
 
    
 {% endblock %}

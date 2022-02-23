@@ -1,3 +1,55 @@
+
+
+
+
+jQuery(document).ready(function(){
+
+
+
+
+$('.btn-tooltip').tooltip();
+$("[data-toggle=popover]").popover();   
+
+  $('.mark_tr').each(function(){
+
+           var mark_sum=0
+           var mark_lenght=0
+           var mark=$(this).children('td').text()
+           var student=$(this).children('td').attr('student')
+           for (i = 0; i < mark.length; i +=1 ) {
+              if(parseInt(mark[i])>0){
+              mark_sum=mark_sum+parseInt(mark[i])
+              mark_lenght+=1
+            }
+          }
+           var ball=mark_sum/mark_lenght
+           
+           ball=ball.toFixed(2)
+           
+           if(ball>0){
+              $('#ball'+student).text(ball)
+         }
+         
+  });
+
+  
+    $('.disabled_date').on('click',function(event){
+      $('#liveToast2').toast('show');
+  })
+
+
+
+
+$('.date').click(function(){
+
+  $(this).append($('.block'))
+})
+
+
+});
+
+
+
 function save_mark(self,url,tocken, min_mark,max_mark){
     
     $(self).css('display','none')
@@ -147,7 +199,7 @@ else if(!skip){
 
 
 function click_mark(self){
-  
+
   var td=$(self)
   var td_id=td.attr('id')
   var old_mark=$(td).children('a').text().replace(/\s+/g, '')

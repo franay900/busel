@@ -1,4 +1,6 @@
 
+
+
 function take_off(one,two,three){
 	$('input[type="date"]').val('')
 	$('#one_title').text(one)
@@ -98,7 +100,7 @@ $('#two').click(function(){
     $(ap).attr('colspan',count_mar).show()
     }
 
-    var count_may=$('table').find('.day03').length;
+    var count_may=$('table').find('.day05').length;
     if (count_may){
     $(may).attr('colspan',count_may).show()
     }

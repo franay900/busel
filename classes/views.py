@@ -144,6 +144,17 @@ class SubgroupView(View,Journal):
 
         return redirect(request.META.get('HTTP_REFERER'))
 
+class DeleteClassView(PermissionRequiredMixin,DeleteView):
+
+    permission_required='classes.delete_classes'
+    def get_object(self, **kwargs):
+        id_ = int(self.request.POST.get("pk"))
+        return get_object_or_404(Classes, id=id_)
+
+    def get_success_url(self):
+        return reverse('Class')
+
+
 
 
 class СurriculumView(PermissionRequiredMixin,ListView):
