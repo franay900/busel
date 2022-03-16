@@ -38,3 +38,4 @@ class Ads(models.Model):
     institution = models.ForeignKey(Institutions, on_delete=models.CASCADE, verbose_name='Организация')
     author=models.ForeignKey(UserNet, on_delete=models.PROTECT, verbose_name='Автор')
     date_public = models.DateTimeField(verbose_name='Дата публикации',auto_now=True,null=False)
+    updated_at=models.DateTimeField(auto_now=True)
