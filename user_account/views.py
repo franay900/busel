@@ -16,7 +16,7 @@ from modules.users import get_user, generate_login
 from django.contrib import messages
 from django.http import HttpResponseForbidden,HttpResponseRedirect
 from classes.models import Load,Classes
-from news.models import Ads
+from news.models import AdsInstitution
 
 
 class HomePageAccountView(RegisterMixin,LoginRequiredMixin, ListView):
@@ -27,7 +27,7 @@ class HomePageAccountView(RegisterMixin,LoginRequiredMixin, ListView):
         context = super().get_context_data()
 
         context['title'] = "Главная"
-        context['ads']=Ads.objects.filter(institution=self.request.user.institution).order_by('-date_public')
+        context['ads']=AdsInstitution.objects.filter(institution=self.request.user.institution).order_by('-date_public')
         return context
 
 class UsersView(PermissionRequiredMixin,UserMixin, ListView):

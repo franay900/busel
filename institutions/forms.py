@@ -2,7 +2,7 @@ from django import forms
 from .models import *
 from user_account.models import *
 from journal.models import LessonType
-from news.models import Ads
+from news.models import AdsInstitution
 
 class InstitutionsInfoForm(forms.ModelForm):
 	error_css_class = 'is-invalid'
@@ -71,7 +71,7 @@ class InstitutionForm(forms.ModelForm):
 class AdsForm(forms.ModelForm):
 
 	class Meta:
-		model=Ads
+		model=AdsInstitution
 		fields=['title', 'text']
 	def __init__(self,*args,**kwargs):
 		super().__init__(*args,**kwargs)

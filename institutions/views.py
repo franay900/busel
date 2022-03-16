@@ -71,7 +71,7 @@ class AdsCreateView(CreateView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
         context['title'] = "Объявления"
-        context['ads']=Ads.objects.filter(institution=self.request.user.institution)
+        context['ads']=AdsInstitution.objects.filter(institution=self.request.user.institution)
         return context
     def form_valid(self, form):
         form.instance.institution_id = self.request.user.institution.pk
