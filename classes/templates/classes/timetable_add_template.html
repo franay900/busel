@@ -23,7 +23,7 @@
 			<td style="width:5%">Кабинет</td>
 			<td style="width:5%"></td>
 		</tr>
-		{% for num in '1234567' %}
+		{% for num in '12345678' %}
 		{% get_lesson day=forloop.parentloop.counter num=num as lesson %}
 		{% if lesson %}
 		{% get_subject day=forloop.parentloop.counter num=num as subjects %}

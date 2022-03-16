@@ -13,29 +13,72 @@ from .models import *
 from .permissions import InstitutionsMixin
 from .utils import Study_Periods
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from journal.models import LessonType
 
 
-class InstitutionsHomeView(PermissionRequiredMixin,SuccessMessageMixin, UpdateView):
+class InstitutionsHomeView(PermissionRequiredMixin,SuccessMessageMixin, View):
     model = Institutions
     form_class = InstitutionsInfoForm
+    second_form_class=TypeLesson
     template_name = 'institutions/institutions.html'
     success_message = 'Информация об организации успешно обновлена!'
     permission_required = 'institutions.view_institutions'
     
-    def get_success_url(self):
-        return reverse('institutionsHome')
 
-    def get_context_data(self, **kwargs):
-        kwargs['test'] = True
-        kwargs['title']='Организация'
-        return super().get_context_data(**kwargs)
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        return kwargs
+    def get(self,request, **kwargs):
+        context = {}
+        
+        
+        context['title'] = 'Настройки организации'
+        context['types']=LessonType.objects.filter(Q(institution=request.user.institution) | Q(institution=None))
+        if 'form' not in context:
+            context['form'] = self.form_class(instance=self.get_object())
+
+        if 'form2' not in context:
+            context['form2'] = self.second_form_class()
+
+
+        return render(request, self.template_name, context)
+    
+
+    def post(self,request, **kwargs):
+
+
+        if 'title' in request.POST:
+            form=self.form_class(request.POST,request.FILES or None,instance=self.get_object())
+            if form.is_valid():
+                form.save()
+
+        if 'name' in request.POST:
+            form2=self.second_form_class(request.POST,)
+            if form2.is_valid():
+                form2.instance.institution=request.user.institution
+                form2.save()
+            
+        return redirect(request.META.get('HTTP_REFERER'))
+
 
     def get_object(self, **kwargs):
         return Institutions.objects.get(pk=self.request.user.institution.pk)
+
+
+class AdsCreateView(CreateView):
+
+    form_class=AdsForm
+    template_name='institutions/ads.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
+        context['title'] = "Объявления"
+        context['ads']=Ads.objects.filter(institution=self.request.user.institution)
+        return context
+    def form_valid(self, form):
+        form.instance.institution_id = self.request.user.institution.pk
+        form.instance.author=self.request.user
+        return super().form_valid(form)
+    def get_success_url(self):
+        return reverse('create_ad')
 
 
 class StudyPeriodsView(PermissionRequiredMixin,ListView):
@@ -142,7 +185,7 @@ class BellProfileCreateView(AdminPermissionMixin, CreateView):
         form.instance.institution_id = self.request.user.institution.pk
         bell_profile.save()
         profile = bell_profile
-        n = 7
+        n = 8
         a = 0
         while a <= 5:
             a += 1

@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
 from django.contrib.auth import login, logout
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, View
-from .forms import UserEditForm,RegisterForm,SetPassword
+from .forms import UserEditForm,RegisterForm,SetPassword, EditMyAccountForm
 from .permissions import AdminPermissionMixin,RegisterMixin
 from user_account.models import UserNet,FileTemplates
 from .utils import *
@@ -15,14 +15,20 @@ from institutions.permissions import InstitutionsMixin
 from modules.users import get_user, generate_login
 from django.contrib import messages
 from django.http import HttpResponseForbidden,HttpResponseRedirect
+from classes.models import Load,Classes
+from news.models import Ads
 
 
 class HomePageAccountView(RegisterMixin,LoginRequiredMixin, ListView):
     model = UserNet
     login_url = 'login'
-    queryset = UserNet.objects.all()
     template_name = 'user_account/index.html'
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
 
+        context['title'] = "Главная"
+        context['ads']=Ads.objects.filter(institution=self.request.user.institution).order_by('-date_public')
+        return context
 
 class UsersView(PermissionRequiredMixin,UserMixin, ListView):
     model = UserNet
@@ -39,6 +45,8 @@ def user_edit_view(request,user_id):
     if user.institution== request.user.institution and UserNet.objects.get(pk=request.user.pk,groups__name__in=["Администратор ОО", 'Секретарь']):
         password_form=SetPassword(user=user)
         form=UserEditForm(instance=user,user=user.institution.typeInstitutions)
+        load=Load.objects.filter(class_pk__year=user.institution.year, teacher=user)
+        classes=Classes.objects.filter(year=user.institution.year, class_teacher=user)
         if request.method=="POST":
             save_form=UserEditForm(request.POST,request.FILES or None,instance=user,user=user.institution.typeInstitutions)
             if save_form.is_valid():
@@ -52,7 +60,7 @@ def user_edit_view(request,user_id):
                 messages.success(request,"Пароль успешно обновлен!")
 
             
-        context={"form":form,'password_form':password_form,'title':'Редактирование пользователя'}
+        context={"form":form,'password_form':password_form,'title':'Редактирование пользователя', 'load':load, 'classes':classes}
         return render(request,'user_account/new_user_update.html',context)
     else:
         return HttpResponseForbidden()
@@ -172,3 +180,45 @@ class ImportUsers(View):
         context['title']='Результат импорта'
         context['users']=arr
         return render(request,'user_account/import_result.html',context)
+
+
+
+        
+
+
+class EditMyAccount(SuccessMessageMixin,View):
+    template_name = 'user_account/edit_my_account.html'
+    success_message = 'Информация о Вашем аккаунте успешно обновлена!'
+    form_class = EditMyAccountForm
+    second_form_class=SetPassword
+    def get(self,request, **kwargs):
+        context = {}
+        
+        context['title'] = 'Редактирование аккаунта'
+        if 'form' not in context:
+            context['form'] = self.form_class(instance=self.request.user)
+        if 'form2' not in context:
+            context['form2'] = self.second_form_class(user=self.request.user)
+
+        return render(request, self.template_name, context)
+    
+
+    def post(self,request, **kwargs):
+
+
+        if 'email' in request.POST:
+            
+            form=self.form_class(request.POST,request.FILES or None,instance=request.user)
+       
+            form.save()
+    
+            return redirect(request.META.get('HTTP_REFERER'))
+
+        if 'new_password1' in request.POST:
+            save_password=SetPassword(data=request.POST,user=request.user)
+            if save_password.is_valid():
+                save_password.save()
+                messages.success(request,"Пароль успешно обновлен! Введите измененные данные.")
+                
+                return redirect('Registration')
+        

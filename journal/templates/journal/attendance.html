@@ -1,13 +1,19 @@
 {% extends 'user_index.html' %}
-{% load mark_tags %}
-{% load user_tags %}
+{% load attendance %}
 
 
 {% block h2 %}
 <i class="bi bi-layout-text-sidebar"></i> {{ title }} <code>Alpha</code>
 {% endblock %}
 
+
+
+
 {% block content %}
+
+
+
+
 
 
   <select onchange="top.location=this.value" class="custom-select custom-select-sm" style="width:auto" name="" id="">
@@ -19,15 +25,18 @@
 <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
 
 
-<button class="btn btn-sm btn-secondary">Отметить пропуски</button>
+<button class="btn btn-sm btn-secondary active" id="notice" type="radio" status="enable">Отметить пропуски</button>
+
+
+
 <div class="dropdown">
-  <button class="btn btn-secondary btn-sm dropdown-toggle " type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <button class="btn btn-secondary btn-sm dropdown-toggle  " type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  save_reason_url="{% url 'SaveReason' %}">
     Указать причину
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    <a class="dropdown-item" href="#">По болезни</a>
-    <a class="dropdown-item" href="#">По уважительной причине</a>
-    <a class="dropdown-item" href="#">По неуважительной причине</a>
+    <button class="dropdown-item" reason="3">По болезни</button>
+    <button class="dropdown-item" reason="1">По уважительной причине</button>
+    <button class="dropdown-item" reason="2">По неуважительной причине</button>
   </div>
 </div>
 </div>
@@ -35,11 +44,11 @@
 <div class="tables mt-3">
 	<div class="row">
 		<div class="col col-md-3 no-margin mycol2">
-			<table class="myTable  ">
+			<table class="myTable rtable ">
 				<thead>
 					<tr>
-						<th  style="width: 10%; height: 64px">№</th>
-						<th style="width: 90%; height: 64px">Фамилия, имя</th>
+						<th  style="width: 15%; height: 64px">№</th>
+						<th style="width: 85%; height: 64px">Фамилия, имя</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -53,24 +62,61 @@
 			</table>
 		</div>
 
-		<div class="col-9 mycol1 sc3" style="overflow-x: scroll;">
-			<table class="myTable " >
+		<div class="col-8 mycol1 sc3" style="overflow-x: scroll;">
+			<table class="myTable rtable" >
 				<thead>
 					<tr>
-						<th colspan="31">Январь</th>
+						<th colspan="31" id="month">{{ month }}</th>
 					</tr>
 					<tr>
 						{% for date in dates %}
-						<th >{{ date }}</th>
+						<th   class="text-center">{{ date }}</th>
 						{% endfor %}
 					</tr>
 				</thead>
 				<tbody>
 					{% for student in students %}
-					<tr>
+					<tr class="date_tr" sum_id="sum{{student.pk}}" id="tr{{student.pk}}">
 						{% for date in dates %}
-						<td class="date"></td>
+						{% get_attendance student=student day=date month=month year=year as attendance %}
+
+						{%  get_attendance_reason student=student day=date month=month year=year as reason   %}
+						{% if reason == 3 %}
+
+						<td  class="date1 bg-success text-white" date_at="{{ date }}" student_pk="{{ student.pk }}" id="{{ student.pk }}{{ date }}" style="text-shadow: none">{{ attendance }}</td>
+
+						{% elif reason == 1 %}
+						<td  class="date1 bg-info text-white" date_at="{{ date }}" student_pk="{{ student.pk }}" id="{{ student.pk }}{{ date }}" style="text-shadow: none">{{ attendance }}</td>
+
+						{% elif reason == 2 %}
+						<td  class="date1 bg-danger text-white" date_at="{{ date }}" student_pk="{{ student.pk }}" id="{{ student.pk }}{{ date }}" style="text-shadow: none">{{ attendance }}</td>
+
+						{% else %}
+						<td  class="date1 " date_at="{{ date }}" student_pk="{{ student.pk }}" id="{{ student.pk }}{{ date }}" style="text-shadow: none">{{ attendance }}</td>
+						{% endif %}
+						
 						{% endfor %}
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+
+			<div class="col col-md-1 no-margin mycol1">
+			<table class="myTable  rtable">
+				<thead>
+					<tr>
+						<th class="text-center"  style="width: 100%; height: 64px">Итого</th>
+					
+					</tr>
+				</thead>
+				<tbody>
+					{% for student in students %}
+					<tr>
+						
+						<td id="sum{{ student.pk }}">{}</td>
+						
+
 					</tr>
 					{% endfor %}
 				</tbody>
@@ -81,37 +127,46 @@
 </div>
 
 
-<div class="block">
+
+<div>
+<div class="block" month_at="{{ month }}" year_at="{{ year }}" class_pk="{{ class.pk }}" url="{% url 'AttendanceGetLessons' %}" add_url="{% url 'AttendanceAddLessons' %}" style="left: 0; top: 0;">
 	 <div class="row">
 
     <div class="col">
     	<div class="custom-control custom-checkbox " style="border-bottom: 1px solid #ddd">
-        	<input type="checkbox" class="custom-control-input" id="day">
-        	<label class="custom-control-label" for="day">Весь день</label>
+        	<input type="checkbox" class="custom-control-input day" id="day">
+        	<label class="custom-control-label" for="day" >Весь день</label>
       	</div>
 
-     
+     	<div id="days" class="">
+     		
+     	</div>
 
-      <div class="custom-control custom-checkbox ">
-        <input type="checkbox" class="custom-control-input" id="customControlAutosizing">
-        <label class="custom-control-label" for="customControlAutosizing">Биология</label>
-      </div>
-        <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="customControlAutosizing1">
-        <label class="custom-control-label" for="customControlAutosizing1">Русский язык</label>
-      </div>
 
+      <div style="border-top: 1px solid #ddd">
+      <button class="btn btn-sm close_button"  >Закрыть</button>
+      </div>
     </div>
 
 
 
   </div>
-</form>
 
 
 </div>
+</div>
+
 
 <style>
+tbody td{
+max-height: 31px;
+}
+
+
+tr:hover {
+  background-color: lightyellow;
+}
+
 thead th{
 background-color: #EEEEEE;
 border: none;
@@ -122,26 +177,161 @@ text-align: left;
 text-shadow: 1px 1px 1px #fff;
 white-space: nowrap;
 }
+thead{
+width:200px;
+}
+tbody td{
+height: 32px;
+width: 42px;
+}
+table{
+width:100%;
+float:left;
+
+}
 
 .block{
 	width:150px;
 	border: 1px solid #ddd;
-	position: absolute;
+	position: relative;
 
-    background-color: white; /* Затемнение фона */
-    z-index: 100; /* Фон на нижнем слое */
-
+  background-color: white; /* Затемнение фона */
+  z-index: 999999;
+  border-radius: 5px;
+  display: none;
 }
+
+
 
 .mycol1{
 	overflow-x: hidden;
 }
 
-.date{
-	text-align: left;
+.date1{
+	text-align: center;
+	min-width: 31px;
+
+}
+
+.close_button{
+	width: 100%;
+}
+
+.block:before {
+	content: ""; 
+	border: solid transparent;
+	position: absolute;    
+	left: 8px;    
+	bottom: 100%;
+	border-bottom-color: #eee;
+	border-width: 9px;
+	margin-left: 0;
 }
 
 </style>
+
+<script type="text/javascript">
+	$('.close_button').click(function(){
+			var array=[]
+			var arr=[]
+
+			var a=0
+			var b=$('.block').attr('tdid')
+			var student_pk=$('#'+b).attr('student_pk')
+			$('.block').css({top: 0, left: 0});
+
+			$('.block').css('display','none')
+			$('.day').attr('checked',false)
+
+			$('input[type=checkbox]:checked').each(function(){
+				array.push($(this).attr('id'))
+				a++
+			})
+			
+
+			$('input[type=checkbox]:not(:checked)').each(function(){
+				if($(this).attr('id')!='day'){
+				arr.push($(this).attr('id'))
+			}
+			
+			})
+
+
+	
+
+
+		
+	  $.ajax({
+	  url: $('.block').attr('add_url'),         /* Куда пойдет запрос */
+	  method: 'POST',             /* Метод передачи (post или get) */
+	  dataType: 'json',          /* Тип данных в ответе (xml, json, script, html). */
+	  data: {
+	  lessons: JSON.stringify(array), 
+	  delete:JSON.stringify(arr),
+	  student: $(this).attr('student_pk'),
+	  csrfmiddlewaretoken: '{{ csrf_token }}',
+
+
+	},     /* Параметры передаваемые в запросе. */
+	  success: function(data){   /* функция которая будет выполнена после успешного запроса.  */
+	  	if (a>0){
+	      $('#'+b).text(a)
+	  	}
+	  	else{
+	  		$('#'+b).text('')
+	  	}
+
+	  var marks=$('#tr'+student_pk).children('td').text()
+		var mark_sum=0
+		
+		for (mark=0;mark<marks.length; mark+=1){
+
+			mark_sum=mark_sum+parseInt(marks[mark])
+		}
+		$('#sum'+student_pk).text(mark_sum)
+
+	  }
+	});
+
+
+			
+	})
+
+	$('#day').click(function(){
+		if(!($(this).is(':checked'))){
+				
+
+				$('input[type=checkbox]:checked').each(function(){
+						$(this).removeAttr('checked')
+				})
+		}
+
+		else{
+				$('input[type=checkbox]').each(function(){
+						$(this).prop('checked',true)
+				})
+
+		}
+
+	})
+
+	$('.date_tr').each(function(){
+
+
+		var marks=$(this).children('td').text()
+		var mark_sum=0
+		var sum_id=$(this).attr('sum_id')
+		for (mark=0;mark<marks.length; mark+=1){
+
+			mark_sum=mark_sum+parseInt(marks[mark])
+		}
+		$('#'+sum_id).text(mark_sum)
+		
+	})
+</script>
+
+
+
 
 
 {% endblock %}

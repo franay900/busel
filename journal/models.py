@@ -43,3 +43,15 @@ class MarksItog(models.Model):
     period=models.ForeignKey(Periods, on_delete=models.SET_NULL, verbose_name='Период',null=True,blank=True)
     itog=models.IntegerField(null=True,blank=True)
     not_certified=models.IntegerField(null=True,blank=True)
+
+class ReasonSkipping(models.Model):
+
+    reasons=(
+            (1,('Уважительная причина')),
+            (2,('Неуважительная причина')),
+            (3,('По болезни причина'))
+        )
+
+    student=models.ForeignKey(Student, on_delete=models.SET_NULL, verbose_name='Ученик',null=True,blank=True)
+    day=models.DateField()
+    reason=models.IntegerField(choices=reasons)

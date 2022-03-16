@@ -20,22 +20,26 @@
     
 
 		<div class="col-4 ">
-		<table class="table table-sm table-bordered  mt-3">
+		<table class="rtable  mt-3">
+			<thead>
 			<tr>
-				<td colspan="3">{{ days }}</td>
+				<th colspan="3" class="text-center">{{ days }}</th>
 			</tr>
 			<tr>
-				<td>№</td>
-				<td>Начало</td>
-				<td>Окончание</td>
+				<th>№</th>
+				<th>Начало</th>
+				<th>Окончание</th>
 			</tr>
-			{% for i in '1234567' %}
+			</thead>
+			<tbody>
+			{% for i in '12345678' %}
 			<tr>
 				<td>{{ i }}</td>
 				<td><input id="b{{ forloop.parentloop.counter }}{{ forloop.counter }}" name="b{{ forloop.parentloop.counter }}{{ forloop.counter }}" type="text" class="form-control form-control-sm" placeholder="00:00"></td>
 				<td><input id="e{{ forloop.parentloop.counter }}{{ forloop.counter }}" name="e{{ forloop.parentloop.counter }}{{ forloop.counter }}" type="text" class="form-control form-control-sm" placeholder="00:00"></td>
 			</tr>
 			{% endfor %}
+			</tbody>
 		</table>
 		</div>
 	
@@ -50,7 +54,7 @@
 
 			while (i < 6) { // выводит 0, затем 1, затем 2
 			i++;
-			for (let b = 1; b < 8; b++) {
+			for (let b = 1; b <= 8; b++) {
 
 			  document.getElementById('b'+i+b).value=document.getElementById('b'+1+b).value;
 			  document.getElementById('e'+i+b).value=document.getElementById('e'+1+b).value;

@@ -70,3 +70,39 @@ class SetPassword(SetPasswordForm):
         super(SetPassword, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'form-control'
+
+class EditMyAccountForm(forms.ModelForm):
+    class Meta:
+        model = UserNet
+        fields=['last_name','first_name','middle_name','birth_day','email','gender','avatar']
+
+
+        CHOICES =(
+            ("мужской", "мужской"),
+            ("женский", "женский"),
+ 
+        )
+  
+
+        
+   
+        widgets={
+            'last_name':forms.TextInput(attrs={'class':'form-control'}),
+            'first_name':forms.TextInput(attrs={'class':'form-control'}),
+            'middle_name':forms.TextInput(attrs={'class':'form-control'}),
+            'birth_day':forms.DateInput(attrs={'class':'form-control','type':'date'},format='%Y-%m-%d'),
+            'gender':forms.RadioSelect(choices=CHOICES),
+            'email':forms.EmailInput(attrs={'class':'form-control'}),
+            'avatar':forms.FileInput(attrs={'class':'','id':'validatedInputGroupCustomFile'}),
+            # 'position':forms.TextInput(attrs={'class':'form-control'}),
+        }
+    
+
+
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+
+
+        self.fields['last_name'].disabled=True
+        self.fields['first_name'].disabled=True
+        self.fields['middle_name'].disabled=True

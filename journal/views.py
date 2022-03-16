@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View, ListView
 from user_account.permissions import AdminPermissionMixin
-from classes.models import Load, Classes, Student
+from classes.models import Load, Classes, Student,StudentSubgroup
 from institutions.models import Periods, BellProfile
 from django.http import HttpResponseForbidden, HttpResponse
 from .models import *
@@ -11,6 +11,9 @@ from django.http import HttpResponseRedirect
 from datetime import datetime, timedelta
 import time
 from datetime import date, timedelta, datetime
+from django.db.models import Q
+import json
+
 
 
 class SchoolJournalView(View, Journal):
@@ -83,7 +86,7 @@ class LessonTopics(View):
         context['period'] = period
         context['lessons'] = Lessons.objects.filter(subject_pk=load).order_by("date")
         context['load'] = load
-        context['types'] = LessonType.objects.all()
+        context['types'] = LessonType.objects.filter(Q(institution=request.user.institution) | Q(institution=None))
         context['BellProfile'] = BellProfile.objects.get(pk=get_class.bell_profile.pk)
         context['referer']=self.referer
         return render(request, 'journal/lesson_topics.html', context)
@@ -289,6 +292,7 @@ def get_loads(request, class_pk):
 
 
 
+
 class TeacherTimeatable(View):
 
     template_name='journal/timetable_tacher.html'
@@ -377,7 +381,7 @@ class AttendanceJournal(View, Journal):
         d2 = date(y, m, ndays)
         delta = d2 - d1
 
-        return [(d1 + timedelta(days=i)).strftime('%d') for i in range(delta.days + 1)]
+        return [(d1 + timedelta(days=i)).strftime('%d') for i in range(delta.days + 1)],m,y
 
     def get_context(self):
         context={}
@@ -386,10 +390,104 @@ class AttendanceJournal(View, Journal):
         context['classes']=self.get_classes()
         context['class']=self.get_class()
         context['students']=self.get_student()
-        context['dates']=self.days_cur_month()
+        context['dates']=self.days_cur_month()[0]
+        context['month']=self.days_cur_month()[1]
+        context['year']=self.days_cur_month()[2]
 
         return context
     def get(self,request, *args,**kwargs):
 
         return render(request,self.template_name,self.get_context())
 
+
+def get_lessons_attendance(request):
+
+    month=int(request.GET.get('month'))
+    day=int(request.GET.get('date'))
+    year=int(request.GET.get('year'))
+    student=int(request.GET.get('student'))
+    subroups=list(StudentSubgroup.objects.filter(student_id=student).values_list('subgroup',flat=True))
+    
+    class_pk=(request.GET.get('class'))
+    date_lessons=datetime(year,month,day).strftime('%Y-%m-%d')
+    lessons=Lessons.objects.filter( Q(subject_pk__subgroup__in=subroups) | Q(subject_pk__subgroup=None),class_pk=class_pk, date=date_lessons )
+    lesson_array=[]
+    pk_array=[]
+    mark_array=[]
+    attendance=0
+    for lesson in lessons:
+        lesson_array.append(lesson.subject_pk.subject_pk.subject.short_title)
+        pk_array.append(lesson.pk)
+    for mark in Marks.objects.filter(student_id=student,lesson__in=lessons,attendance=1).distinct('lesson'):
+
+
+        mark_array.append(mark.lesson.pk)
+        
+
+    response={
+        'lessons':lesson_array,
+        'pks':pk_array,
+        'marks':mark_array,
+    }
+
+   
+    return JsonResponse(response)
+
+
+
+
+def save_lessons_attendance(request):
+
+    student=int(request.POST.get('student'))
+    get_student=Student.objects.get(pk=student)
+    lessons=request.POST.get('lessons')
+    lessons=json.loads(lessons)
+
+    delete=request.POST.get('delete')
+    delete=json.loads(delete)
+
+
+    
+
+
+
+    for lesson in lessons:
+        get_lesson=Lessons.objects.get(pk=lesson)
+        types=get_lesson.types.all()
+        for type_ in types:
+            marks_get=Marks.objects.filter(student=get_student, lesson=get_lesson, lesson_type=type_,attendance=1)
+            if not marks_get:
+                Marks.objects.create(student=get_student, lesson=get_lesson, lesson_type=type_,attendance=1)
+
+
+
+    if delete:
+        for lesson in delete:
+            get_lesson=Lessons.objects.get(pk=lesson)
+            if get_lesson:
+                types=get_lesson.types.all()
+                for type_ in types:
+                    marks_get=Marks.objects.filter(student=get_student, lesson=get_lesson, lesson_type=type_,attendance=1)
+                    marks_get.delete()
+
+
+    response={
+        'lessons':1,
+        
+    }
+
+   
+    return JsonResponse(response)
+
+def save_reason(request):
+
+    reason=request.GET.get('reason')
+    month=int(request.GET.get('month'))
+    day=int(request.GET.get('day'))
+    year=int(request.GET.get('year'))
+    student=int(request.GET.get('student'))
+    student=Student.objects.get(pk=student)
+    date=datetime(year,month,day).strftime('%Y-%m-%d')
+    ReasonSkipping.objects.create(reason=reason, student=student, day=date)
+
+    return HttpResponse()

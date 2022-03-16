@@ -17,5 +17,6 @@ urlpatterns=[
 	path('block_institution/<int:institution>',BlockInstitution.as_view() ,name="BlockInstitution"),
 	path('unblock_institution/<int:institution>',UnblockInstitution.as_view() ,name="UnBlockInstitution"),
 
+	path('ads/', AdsCreateView.as_view(), name='create_ad')
 ]
 

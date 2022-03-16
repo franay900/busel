@@ -44,12 +44,14 @@
     </div>
 
     <div class="tab-pane " id="tab2">
-       <table class="table table-sm table-bordered mt-3">
+       <table class="rtable mt-3">
+        <thead>
         <tr>
-          <td>№</td>
-          <td>Предмет</td>
-          <td>Подгруппа</td>
+          <th>№</th>
+          <th>Предмет</th>
+          <th>Подгруппа</th>
         </tr>
+        </thead>
         {% for subgroup in subgroups %}
         <tr>
           <td>{{ forloop.counter }}</td>
@@ -116,6 +118,7 @@
 
 
 
+    
     
    
 

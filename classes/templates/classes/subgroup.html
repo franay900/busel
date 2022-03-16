@@ -20,7 +20,7 @@
     {% endfor %}
   </select>
 
-{% if subgroups and students %}
+{% if subgroup_list and students %}
 <form method="post" action="">
 	{% csrf_token %}
   <table class="rtable mt-3">

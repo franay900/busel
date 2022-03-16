@@ -10,14 +10,14 @@
 		<thead  >
 		<tr >
 			<th>№</th>
-			<th style="width:25%">
+			<th >
 				Наименование
 			</th>
-			<th style="width:25%">
+			<th >
 				Учебный год
 			</th>
-			<th style="width:20%">Статус</td>
-			<th colspan="2" style="width:30%;text-align: center" >
+			<th >Статус</td>
+			<th colspan="2" style="text-align: center" >
 				Действие
 			</th>
 		</tr>
@@ -29,8 +29,8 @@
 			<td>{{ i.title }}</td>
 			<td>{{ i.year }}</td>
 			<td>{% if status %}Используется{% else %}Не используется{% endif %}</td>
-			<td style="width:15%"><a href="{{ i.update_url }}" >Редактировать</a></td>
-			<td style="width:15%">{% if not status %}<a href="{{ i.delete_url }}" >Удалить </a>{% endif %}</td>
+			<td ><a href="{{ i.update_url }}" >Редактировать</a></td>
+			<td >{% if not status %}<a href="{{ i.delete_url }}" >Удалить </a>{% else %} <a  class=" btn-tooltip text-muted" data-toggle="tooltip" data-placement="bottom" title="Используется">Удалить</a> {% endif %}</td>
 		</tr>
 		{% endfor %}
 	</table>

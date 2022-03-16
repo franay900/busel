@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group
 from django.db import models
 from django.urls import reverse
-from user_account.models import *
+
 
 class Year(models.Model):
     title = models.CharField(max_length=150, verbose_name='Наименование учебного года')
@@ -15,6 +15,7 @@ class Year(models.Model):
         verbose_name = 'Учебный год'
         verbose_name_plural = 'Учебные года'
         ordering = ['-pk']
+
 
 
 class TypeInstitutions(models.Model):
@@ -54,9 +55,6 @@ class Institutions(models.Model):
 
     def __str__(self):
         return self.title
-
-
-
 
 
 # Расписание звонков

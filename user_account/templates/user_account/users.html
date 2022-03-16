@@ -2,7 +2,7 @@
 
 
 {% block h2 %}
-<i class="bi bi-person"></i> {{ title }}
+<i class="bi bi-person-fill"></i> {{ title }}
 {% endblock %}
 
 {% block content %}
@@ -28,7 +28,14 @@
         <td>{% if i.position %}{{ i.position|truncatechars:20 }}{% endif %}</td>
         <td>{{ i.birth_day }}</td>
      		<td ><a href="{{ i.get_absolute_url }}">Редактировать</a></td>
-     		<td ><a href="{{ i.ban }}">{%if i != request.user%} Заблокировать{% endif %}</a></td>
+     		<td >
+            {%if i != request.user%}
+            <a href="{{ i.ban }}"> Заблокировать</a>
+            {% else %}
+            <a  class=" btn-tooltip text-muted" data-toggle="tooltip" data-placement="bottom" title="Невозможно">Заблокировать</a>
+
+            {% endif %}
+         </td>
      	</tr>
      	{% endfor %}
    </table>

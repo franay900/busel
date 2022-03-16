@@ -13,15 +13,13 @@
   border-radius: 10px;
 }
 
-.myTable > tbody td{
-height: 32px;
-}
+
 
 .myTable > thead{
 width:200px;
 }
 .myTable > tbody td{
-height: 32px;
+height: 31px;
 width: 42px;
 }
 .myTable{
@@ -64,3 +62,4 @@ float:left;
 .day,.month,.date{
 text-align: center;
 }
+

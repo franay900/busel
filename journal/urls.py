@@ -20,6 +20,10 @@ urlpatterns=[
 	
 	
 	path('journal/attendance', AttendanceJournal.as_view(), name='AttendanceJournal'), 
-	path('journal/attendance/<int:pk>', AttendanceJournal.as_view(), name='AttendanceJournalPk')
+	path('journal/attendance/<int:pk>', AttendanceJournal.as_view(), name='AttendanceJournalPk'),
+
+	path('journal/attendance/get_lessons', get_lessons_attendance, name='AttendanceGetLessons'), 
+	path('journal/attendance/add_lessons', save_lessons_attendance, name='AttendanceAddLessons'), 
+	path('journal/attendance/save_reason',save_reason,name="SaveReason"),
 ]
 

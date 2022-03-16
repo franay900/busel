@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
 from user_account.models import UserNet
+from institutions.models import Institutions
+
 
 class News(models.Model):
 	title=models.CharField(max_length=150,verbose_name='Заголовок')
@@ -29,3 +31,10 @@ class Category(models.Model):
 		return reverse('category',kwargs={"category_id":self.pk})
 	def __str__(self):
 		return self.title
+
+class Ads(models.Model):
+    title=models.CharField(max_length=40, verbose_name="Заголовок")
+    text=models.TextField(verbose_name="Текст")
+    institution = models.ForeignKey(Institutions, on_delete=models.CASCADE, verbose_name='Организация')
+    author=models.ForeignKey(UserNet, on_delete=models.PROTECT, verbose_name='Автор')
+    date_public = models.DateTimeField(verbose_name='Дата публикации',auto_now=True,null=False)

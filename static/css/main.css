@@ -1,17 +1,7 @@
 
 
 
-@font-face {
- font-family: "Verdana";
- src: url("../static/fonts/Verdana-Bold.ttf");
-       
-}
 
-
-body{
-  font-family: Verdana;
-  
-}
 
 
 li {
@@ -103,6 +93,7 @@ max-width:42px;
 min-width:42px;
 height: 32px;
 }
+
 
 .student{
 max-height:32px;
@@ -441,5 +432,4 @@ a {
   height: 40px;
   font-size: 14px
 }
-
 

@@ -5,6 +5,9 @@ from .views import*
 urlpatterns= [
 	path('',HomePageAccountView.as_view(),name='HomePageUserAccount'),
 	path('users',UsersView.as_view(),name='users'),
+
+	path('edit_my_account',EditMyAccount.as_view(),name='EditMyAccount'),
+
 	path('user_edit/<int:user_id>/',user_edit_view,name='user_edit'),
 	path('registration/',Registration.as_view(),name='Registration'),
 	path('user_add/',AddUser.as_view(),name='AddUser'),

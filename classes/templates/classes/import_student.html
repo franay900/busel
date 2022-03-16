@@ -1,4 +1,4 @@
-{% extends 'user_index.html' %}
+2{% extends 'user_index.html' %}
 
 
 {% block h2 %}
@@ -16,15 +16,23 @@
 
 
 
-<form action="" enctype="multipart/form-data" method="POST">
+<form action="" enctype="multipart/form-data" method="POST" >
 {% csrf_token %}
 <div class="custom-file">
   <input name="file" type="file" class="custom-file-input" id="customFileLangHTML" accept=".xlsx">
-  <label class="custom-file-label" for="customFileLangHTML" data-browse="Загрузить">Выберите файл</label>
+  <label class="custom-file-label" for="customFileLangHTML" data-browse="Загрузить" id="file">Выберите файл</label>
 </div>
 
 <input class="form-control form-control-sm mt-3" type="date" name="date">
 
 <button class="btn btn-success mt-3"><i class="bi bi-upload"></i> Загрузить</button>
 </form>
+
+
+<script type="text/javascript">
+   $("#customFileLangHTML").change(function(){
+        $("#file").text($(this).val().split('/').pop().split('\\').pop())
+    })
+</script>
+
 {% endblock %}

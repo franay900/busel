@@ -29,10 +29,26 @@ $("[data-toggle=popover]").popover();
            if(ball>0){
               $('#ball'+student).text(ball)
          }
+
+
          
   });
 
-  
+    if($('#month').text()==3){
+        $('#month').text('Март');
+  }
+
+
+    if($('#month').text()==4){
+        $('#month').text('Апрель');
+  }
+
+
+    if($('#month').text()==5){
+        $('#month').text('Май');
+  }
+
+
     $('.disabled_date').on('click',function(event){
       $('#liveToast2').toast('show');
   })
@@ -40,10 +56,105 @@ $("[data-toggle=popover]").popover();
 
 
 
-$('.date').click(function(){
+$('.date1').click(function(){
+  if ($('#notice').attr('status')=='enable'){
+  var top_this=$(this).offset().top
+  var left_this=$(this).offset().left
+  var block=$('.block')
+  $('.day').attr('checked',false)
+  $(block).attr('tdid',$(this).attr('id'))
+  $('.block').css('display','block')
+  $('.block').offset({ top: top_this+25, left: left_this});
+  
+  $('#days').empty()
+  $('.close_button').attr('student_pk',$(this).attr('student_pk'))
 
-  $(this).append($('.block'))
+  $.ajax({
+  url: $('.block').attr('url'),         /* Куда пойдет запрос */
+  method: 'get',             /* Метод передачи (post или get) */
+  dataType: 'json',          /* Тип данных в ответе (xml, json, script, html). */
+  data: {date: $(this).attr('date_at'), month:$('.block').attr('month_at'), year:$('.block').attr('year_at'), class:$('.block').attr('class_pk'), student: $(this).attr('student_pk')},     /* Параметры передаваемые в запросе. */
+  success: function(data){   /* функция которая будет выполнена после успешного запроса.  */
+      var lessons=data.lessons;            /* В переменной data содержится ответ от index.php. */
+      var pks=data.pks;  
+      var marks=data.marks
+      
+      for (i = 0; i < lessons.length; i +=1 ) {
+
+        
+        var day=$('#days').append(' <div class="custom-control custom-checkbox " id="ex_lesson"><input type="checkbox" class="custom-control-input" id="'+pks[i]+'"><label class="custom-control-label" for="'+pks[i]+'">'+lessons[i]+'</label></div>')
+        $(day).attr('day_pk',pks[i])
+
+        if ($.inArray( pks[i], marks )!=-1){
+
+            $('#'+pks[i]).attr('checked',true)
+        }
+      }
+
+      if(marks.length==pks.length){
+        $('.day').prop("checked",true)
+      }
+
+  }
+});
+  
+  
+  }
+  else{
+    var reason=$("button[status='enable']").attr('reason')
+    $.ajax({
+
+      url:$('#dropdownMenuButton').attr('save_reason_url'),
+      method:'get',
+      data:{student:$(this).attr('student_pk'),day:$(this).attr('date_at'),month:$('.block').attr('month_at'),year:$('.block').attr('year_at'),reason:reason}
+
+
+
+    })
+
+    if (reason==3){
+      $(this).addClass('bg-success text-white')
+    }
+
+    if (reason==2){
+      $(this).addClass('bg-danger text-white')
+    }
+
+    if (reason==1){
+      $(this).addClass('bg-info text-white')
+    }
+
+  }
+
 })
+
+
+$('.dropdown-item').click(function(){
+    $("button[status='enable']").attr('status','disabled')
+    $(this).attr('status','enable')
+    $("#notice").removeClass('active')
+    $('#dropdownMenuButton').addClass('active')
+    
+
+})
+
+
+$('#notice').on('click',function(){
+    $("button[status='enable']").attr('status','disabled');
+    $(this).attr('status','enable');
+    $("#dropdownMenuButton").removeClass('active');
+    
+    
+   
+    
+
+    
+
+})
+
+
+
+
 
 
 });

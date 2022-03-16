@@ -1,6 +1,9 @@
 from django import forms
 from .models import *
 from user_account.models import *
+from journal.models import LessonType
+from news.models import Ads
+
 class InstitutionsInfoForm(forms.ModelForm):
 	error_css_class = 'is-invalid'
 	class Meta:
@@ -10,7 +13,22 @@ class InstitutionsInfoForm(forms.ModelForm):
 		super().__init__(*args,**kwargs)
 		self.fields['typeInstitutions'].disabled=True
 		for field in self.fields:
-			self.fields[field].widget.attrs['class']='form-control'
+			if field != 'system_mark' and field != 'typeInstitutions' and field != 'kindInstitutions' and field != 'year':
+				self.fields[field].widget.attrs['class']='form-control'
+			else:
+				self.fields[field].widget.attrs['class']='custom-select'
+
+
+class TypeLesson(forms.ModelForm):
+
+	class Meta:
+		model=LessonType
+		fields=['name','short_name']
+
+	def __init__(self,*args,**kwargs):
+		super().__init__(*args,**kwargs)
+		self.fields['name'].widget.attrs['class']='form-control'
+		self.fields['short_name'].widget.attrs['class']='form-control'
 
 
 class PeriodsForm(forms.ModelForm):
@@ -48,3 +66,14 @@ class InstitutionForm(forms.ModelForm):
 		for field in self.fields:
 			self.fields[field].widget.attrs['class']='form-control'
 
+
+
+class AdsForm(forms.ModelForm):
+
+	class Meta:
+		model=Ads
+		fields=['title', 'text']
+	def __init__(self,*args,**kwargs):
+		super().__init__(*args,**kwargs)
+		for field in self.fields:
+			self.fields[field].widget.attrs['class']='form-control'

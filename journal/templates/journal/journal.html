@@ -1,7 +1,7 @@
 {% extends 'user_index.html' %}
 {% load mark_tags %}
 {% load user_tags %}
-
+{% load attendance %}
 
 {% block h2 %}
 <i class="bi bi-layout-text-sidebar"></i> {{ title }} 
@@ -93,6 +93,9 @@
 </form>
 
 
+
+
+
 <div class="row mt-3">
   <div class="col">
     <a href="{% url 'LessonTopics' load=load_pk.pk period=period.pk %}" class="btn btn-secondary btn-sm" target="_blank">Темы уроков и дз</a>
@@ -115,7 +118,7 @@
     <table class="myTable" >
       <thead>
       <tr>
-        <th id="start"  id="row-2" style="">№</th>
+        <th id="start"  id="row-2" style="width: 15%;" style="">№</th>
         <th   id="row-2" style="text-align:center;">Фамилия, имя</th>
       </tr>
      
@@ -192,7 +195,32 @@
         {% for lesson_type in lesson.types.all %}
         {% if lesson.date >= student.date_of_enrollment %}
         {% get_marks lesosn=lesson.pk type_l=lesson_type.pk student=student.pk as mark %}
-        <td student="{{ student.pk }}" type="{{lesson_type.pk}}" lesson="{{lesson.pk}}" id="{{ lesson_type.pk }}{{ lesson.pk }}{{ student.pk }}" class="day {{ student.pk }}" markpk="{{mark.pk}}" ><a >{% if mark.mark %}{{ mark.mark }}{% endif %}{% if mark.mark2 %}/{{ mark.mark2 }}{% endif %} {%if mark.attendance == 1 %}н{% endif %}</a><input  style="display: none;width: 100%;height: 100%" class="mark"></td>
+
+      
+
+          {%  get_attendance_reason student=student day=lesson.date.day month=lesson.date.month year=lesson.date.year as reason   %}
+
+          {% if mark.attendance and reason  == 3  %}
+            <td class="bg-success text-white text-center" style="text-shadow: none;">н</td>
+ 
+
+          {% elif mark.attendance and reason == 2  %}
+            <td class="bg-danger text-white text-center" style="text-shadow: none;" >н</td>
+          {% elif mark.attendance and reason == 1  %}
+            <td class="bg-info text-white text-center" style="text-shadow: none;">н</td>
+
+         
+
+
+
+          {% elif mark.attendance and not reason %}
+          <td student="{{ student.pk }}" type="{{lesson_type.pk}}" lesson="{{lesson.pk}}" id="{{ lesson_type.pk }}{{ lesson.pk }}{{ student.pk }}" class="day {{ student.pk }}" markpk="{{mark.pk}}" ><a >н </a><input  style="display: none;width: 100%;height: 100%" class="mark"></td>
+
+          {% else %}
+            <td student="{{ student.pk }}" type="{{lesson_type.pk}}" lesson="{{lesson.pk}}" id="{{ lesson_type.pk }}{{ lesson.pk }}{{ student.pk }}" class="day {{ student.pk }}" markpk="{{mark.pk}}" ><a >{% if mark.mark %}{{ mark.mark }}{% endif %}{% if mark.mark2 %}/{{ mark.mark2 }}{% endif %} </a><input  style="display: none;width: 100%;height: 100%" class="mark"></td>
+
+        {% endif %}
+        
         {% else %}
         <td student="{{ student.pk }}" class="bg-light" ><a href=""></a></td>
         {% endif %}

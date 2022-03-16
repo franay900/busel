@@ -13,9 +13,8 @@ def is_group(user):
 
 @register.filter(name='teacher') 
 def teacher(user):
-	check_admin=user.groups.filter(pk__in=[1])
-	groups=user.groups.filter(pk__in=[2])
-	if not check_admin:
+	groups=user.groups.filter(name='Учитель')
+	if groups:
 		return groups.exists()
 
 

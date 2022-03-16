@@ -4,7 +4,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark" style="padding: 0">
   <a class="navbar-brand" href="#">
     <img class="logo" src="{% static 'img/busel2_0-logo_white.png' %}"  alt="">
-   
+    ПК "Бусел"
   </a>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,7 +25,10 @@
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           {% if perms.institutions.view_institutions %} 
-          <a class="dropdown-item" href="{% url 'institutionsHome' %}">Информация</a>
+          <a class="dropdown-item" href="{% url 'institutionsHome' %}">Настройки</a>
+
+          <a class="dropdown-item" href="{% url 'create_ad' %}">Объявления</a>
+
           <a class="dropdown-item" href="{% url 'StudyPeriods' %}">Учебные периоды</a>
           <a class="dropdown-item" href="{% url 'Subject_list' %}">Учебные предметы</a>
 
@@ -94,9 +97,9 @@
 
           <a class="dropdown-item" href="{% url 'MyJournal' %}">Мой журнал</a>
 
-          <!--
+        
           <a class="dropdown-item" href="{% url 'AttendanceJournal' %}">Журнал посещаемости</a>
-        -->
+      
         </div>
       </li>
 

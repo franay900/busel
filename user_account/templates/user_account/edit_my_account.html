@@ -1,0 +1,156 @@
+{% extends 'user_index.html' %}
+{% load static %}
+
+{% block h2 %}
+<i class="bi bi-person"></i> {{ title }}
+{% endblock %}
+
+{% block content %}
+
+<section class="py-5 my-5">
+      <div class="container">
+
+         <div class="bg-white shadow rounded-lg d-block d-sm-flex">
+            <div class="profile-tab-nav border-right">
+               <div class="p-4">
+                  <div class="img-circle text-center mb-3">
+
+                        {% if request.user.avatar %}
+                      
+                       <img   alt="Image" class="shadow" src="{{ request.user.avatar.url }}" alt="" >
+                      {% else %}
+                      <img alt="Image" class="shadow" src="{% static 'img/no-user-image-icon-27.jpg' %}" alt=""  >
+                      {% endif %}
+
+                  </div>
+
+                  <h4 style="display: block;" class="text-center">{{ form.instance.last_name }} {{ form.instance.first_name }}</h4>
+
+               </div>
+               <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                  <a class="nav-link active" id="account-tab" data-toggle="pill" href="#account" role="tab" aria-controls="account" aria-selected="true">
+                     <i class="fa fa-home text-center mr-1"></i> 
+                     Основное
+                  </a>
+                  <a class="nav-link" id="password-tab" data-toggle="pill" href="#password" role="tab" aria-controls="password" aria-selected="false">
+                     <i class="fa fa-key text-center mr-1"></i> 
+                     Пароль
+                  </a>
+
+               </div>
+            </div>
+            <div class="tab-content p-4 p-md-5" id="v-pills-tabContent">
+               <div class="tab-pane fade show active" id="account" role="tabpanel" aria-labelledby="account-tab">
+                  <form method="POST" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <h3 class="mb-4">Основная информация</h3>
+                 
+                  <div class="row">
+                     
+                     
+                     {% for item in form %}
+                     {% if item != form.avatar %}
+                     <div class="col-md-6">
+                        <div class="form-group">
+                           <label>{{ item.label }}</label>
+                           {{ item }}
+                        </div>
+                     </div>
+                     {% endif %}
+                     {% endfor %}
+
+                  </div>
+
+                   <div class="row">
+                     <div class="col mb-3">
+                        <label>Фотография профиля</label>
+                        <div class="custom-file">
+                        <input name="avatar" type="file" class="custom-file-input" id="customFileLangHTML" accept="image/*">
+                        <label class="custom-file-label" for="customFileLangHTML" data-browse="Загрузить" id="file">Выберите файл</label>
+                     </div>
+                  </div>
+               </div>
+                  <div>
+                     <button type="submit" class="btn btn-primary">Обновить</button>
+                     <button class="btn btn-light">Отмена</button>
+                  </div>
+                  </form>
+               </div>
+               <div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
+                  <h3 class="mb-4">Смена пароля</h3>
+                  <form method="POST" >
+                  {% csrf_token %}
+
+               {% for i in form2 %}
+                <div class="form-group">
+                  <label class="form-label">{{ i.label }}</label>
+                  {{ i  }}
+                </div>
+                {% endfor %}
+                   <div class="text-right mt-3">
+      <button type="submit" class="btn btn-primary"><i class="bi bi-lock"></i> Обновить пароль</button>&nbsp;
+
+    </div>
+              </div>
+           
+            </form>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </section>
+
+
+   <style type="text/css">
+      @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap");
+
+
+.shadow {
+   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+.profile-tab-nav {
+   min-width: 250px;
+}
+
+.tab-content {
+   flex: 1;
+}
+
+.form-group {
+   margin-bottom: 1.5rem;
+}
+
+.nav-pills a.nav-link {
+   padding: 15px 20px;
+   border-bottom: 1px solid #ddd;
+   border-radius: 0;
+   color: #333;
+}
+.nav-pills a.nav-link i {
+   width: 20px;
+}
+
+.img-circle img {
+   height: 100px;
+   width: 100px;
+   border-radius: 100%;
+   border: 5px solid #fff;
+}
+
+h4{
+   display: none;
+}
+
+
+   </style>
+
+
+   <script type="text/javascript">
+   $("#customFileLangHTML").change(function(){
+        $("#file").text($(this).val().split('/').pop().split('\\').pop())
+    })
+</script>
+
+{% endblock %}
