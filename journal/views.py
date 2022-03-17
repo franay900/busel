@@ -353,7 +353,7 @@ class AttendanceJournal(View, Journal):
 
 
     def get_classes(self):
-        if self.request.user.has_perm('classes.change_marks'):
+        if self.request.user.has_perm('journal.change_marks'):
             return Classes.objects.filter(institution=self.request.user.institution).order_by('class_number','letter')
         else:
             return Classes.objects.filter(class_teacher=self.request.user)
