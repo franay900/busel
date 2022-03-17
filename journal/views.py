@@ -351,6 +351,12 @@ class DeleteTopics(View):
 class AttendanceJournal(View, Journal):
     template_name='journal/attendance.html'
 
+
+    def get_classes(self):
+        if self.request.user.has_perm('classes.change_marks'):
+            return Classes.objects.filter(institution=self.request.user.institution).order_by('class_number','letter')
+        else:
+            return Classes.objects.filter(class_teacher=self.request.user)
     def get_class(self):
 
 

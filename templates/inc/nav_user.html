@@ -97,9 +97,9 @@
 
           <a class="dropdown-item" href="{% url 'MyJournal' %}">Мой журнал</a>
 
-        
+          {% if perms.journal.view_marks %} 
           <a class="dropdown-item" href="{% url 'AttendanceJournal' %}">Журнал посещаемости</a>
-      
+          {% endif %}
         </div>
       </li>
 
