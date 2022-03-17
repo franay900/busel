@@ -6,7 +6,7 @@
 
 
 
-   <div class="container">
+   <div class="container-fluid">
     <div class="profile-page tx-13">
         <div class="row">
             <div class="col-12 grid-margin">
@@ -16,7 +16,7 @@
                       
                         <div class="cover-body d-flex justify-content-between align-items-center">
                             <div>
-                                <img class="profile-pic" src="https://therichpost.com/wp-content/uploads/2021/03/avatar6.png" alt="profile">
+                                <img class="profile-pic" src="{% if request.user.avatar %}{{ request.user.avatar.url }} {% else %} {% static 'img/no-user-image-icon-27.jpg' %} {% endif %}" alt="profile">
                                 <span class="profile-name">{{ request.user.last_name }} {{ request.user.first_name }} {{ request.user.middle_name }}</span>
                             </div>
                             <div class="d-none d-md-block">
@@ -112,7 +112,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="ml-2">
-                                    <div class="h5 m-0">{{ ad.institution }}</div>
+                                    <div class="h5 m-0">{{ ad.institution.short_title }}</div>
 
                                 </div>
                             </div>
@@ -165,7 +165,7 @@
                                             {% for lesson in timetable %}
                                             <tr>
                                               <td>{{ lesson.class_pk.change }}/{{ lesson.number }}</td>
-                                              <td>{{ lesson.subject_pk.subject_pk.subject.short_title }}</td>
+                                              <td>{{ lesson.class_pk }}/{{ lesson.subject_pk.subject_pk.subject.short_title }}</td>
                                             </tr>
                                             {% endfor %}
 

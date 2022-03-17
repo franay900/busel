@@ -25,7 +25,7 @@
 			<td>{{ ad.title }}</td>
 			<td>{{ ad.author }}</td>
 			<td>{{ ad.date_public }}</td>
-			<td></td>
+			<td><a href="{% url 'delete_ads' pk=ad.pk %}">Удалить</a></td>
 
 		</tr>
 		{% endfor %}

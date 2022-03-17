@@ -99,7 +99,7 @@
                         <td>{{ forloop.counter }}</td>
                         <td>{{ load.class_pk }}</td>
                         <td>{{ load.subject_pk }}</td>
-                        <td>{% if load.subgroup %}{{ load.subgroup }} {% else %} весь класс {% endif %}</td>
+                        <td>{% if load.subgroup %}{{ load.subgroup.name }} {% else %} весь класс {% endif %}</td>
                       </tr> 
                       {% endfor %}
                     </tbody>

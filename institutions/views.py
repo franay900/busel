@@ -80,6 +80,14 @@ class AdsCreateView(CreateView):
     def get_success_url(self):
         return reverse('create_ad')
 
+class AdsDeleteView(View):
+    
+
+    def get(self, request, *args, **kwargs):
+        id_ = self.kwargs.get("pk")
+        AdsInstitution.objects.get(pk=id_).delete()
+        return redirect(request.META.get('HTTP_REFERER'))
+
 
 class StudyPeriodsView(PermissionRequiredMixin,ListView):
     model = PeriodProfile
