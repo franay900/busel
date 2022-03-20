@@ -361,13 +361,12 @@ class AttendanceJournal(View, Journal):
 
 
         try:
-            if not self.request.user.has_perm('classes.view_classes'):
 
-                class_info=self.get_classes().first()
-            elif 'pk' in self.kwargs:
+            if 'pk' in self.kwargs:
                 class_info=Classes.objects.get(pk=self.kwargs['pk'])
             else:
-                class_info=Classes.objects.filter(institution=self.request.user.institution).first()
+
+                class_info=self.get_classes().first()
         except Classes.DoesNotExist:
             class_info=None
 
