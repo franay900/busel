@@ -242,10 +242,10 @@ class DeleteSubject(InstitutionsMixin, DeleteView):
         return self.post(request, *args, **kwargs)
 
 
-class InstitutionCreate(AdminPermissionMixin, SuccessMessageMixin, CreateView):
+class InstitutionCreate(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
     form_class = InstitutionForm
     template_name = 'institutions/institutions_create.html'
-
+    permission_required='institutions.add_institutions'
     def form_valid(self, form):
         chars = 'abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
         self.login = ''

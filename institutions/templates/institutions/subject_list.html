@@ -6,14 +6,14 @@
 
 
 {% block content %}
-	<table class="rtable">
+	<table class="rtable mt-3">
 		<thead>
 			<tr>
 				<th>№</th>
-				<th style="width:30%">Наименование</th>
-				<th style="width:25%">Краткое наименование</th>
-				<th style="width:15%">Тип</th>
-				<th style="width:20%">Статус</th>
+				<th>Наименование</th>
+				<th >Краткое наименование</th>
+				<th >Тип</th>
+				<th >Статус</th>
 				<th>Действие</th>
 			</tr>
 		</thead>
@@ -25,7 +25,7 @@
 				<td>{{ i.short_title }}</td>
 				<td>{% if i.institution %}Индивидуальный{%else%}Системный{% endif %}</td>
 				<td>{% if status %}Используется{% else %}Не используется{% endif %}</td>
-				<td>{% if i.institution and not status %}<a href="{{ i.delete_url }}">Удалить</a>{% endif %}</td>
+				<td>{% if i.institution and not status %}<a href="{{ i.delete_url }}">Удалить</a>{% else %}  <a  class=" btn-tooltip text-muted" data-toggle="tooltip" data-placement="bottom" title="Используется">Удалить</a> {% endif %}</td>
 			</tr>
 			{% endfor %}
 	</table>

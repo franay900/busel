@@ -97,12 +97,12 @@ $('#two').click(function(){
 
     var count_ap=$('table').find('.day04').length;
     if (count_ap){
-    $(ap).attr('colspan',count_mar).show()
+    $('#april').attr('colspan',count_ap).show()
     }
 
     var count_may=$('table').find('.day05').length;
     if (count_may){
-    $(may).attr('colspan',count_may).show()
+    $('#may').attr('colspan',count_may).show()
     }
 })
 

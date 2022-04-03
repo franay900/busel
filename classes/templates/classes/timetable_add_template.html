@@ -8,21 +8,27 @@
 	<input class="form-control form-control-sm mt-2" type="text" name="profile" placeholder="Наименование профиля" required="" value="{{ template.name }}">
 	
 	
-	
+	<div class="row">
 	{% for days in days %}
 	
-	<table class="table table-sm table-bordered mt-3">
+
+	<div class="col-6">
+	<table class="table table-sm table-bordered   mt-3">
 	
-		<tr>
-			<td class="text-center" colspan="5">{{ days }}</td>
+		
+		<tr class=" ">
+			<th class="text-center" colspan="5">{{ days }}</th>
 		</tr>
-		<tr>
-			<td style="width:5%">№</td>
-			<td style="width:10%">Время</td>
-			<td>Предмет</td>
-			<td style="width:5%">Кабинет</td>
-			<td style="width:5%"></td>
+		<tr class=" ">
+			<th>№</th>
+			<th >Время</th>
+			<th>Предмет</th>
+			<th>Кабинет</th>
+			<th ></th>
 		</tr>
+
+		
+
 		{% for num in '12345678' %}
 		{% get_lesson day=forloop.parentloop.counter num=num as lesson %}
 		{% if lesson %}
@@ -47,7 +53,7 @@
 				</select>
 			</td>
 			<td  ><select disabled="" class="custom-select custom-select-sm " name="" id=""></select></td>
-			<td >
+			<td class="text-center">
 				{% if forloop.last %}
 				<button rowspan=1 type="button" class="btn btn-sm" id="plus" value="{{ forloop.parentloop.parentloop.counter }}{{ forloop.parentloop.counter }}">+</button>
 				{% endif %}
@@ -69,7 +75,7 @@
 				</select>
 			</td>
 			<td  ><select disabled="" class="custom-select custom-select-sm " name="" id=""></select></td>
-			<td ><button rowspan=1 type="button" class="btn btn-sm" id="plus" value="{{ forloop.parentloop.counter }}{{ forloop.counter }}">+</button></td>
+			<td class="text-center"><button rowspan=1 type="button" class="btn btn-sm" id="plus" value="{{ forloop.parentloop.counter }}{{ forloop.counter }}">+</button></td>
 		</tr>
 		{% endif %}
 		{% endif %}
@@ -77,9 +83,9 @@
 
 	</table>
 
-	
+	</div>
 	{% endfor %}
-
+</div>
 	<script>
 
 

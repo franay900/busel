@@ -102,9 +102,9 @@ class Journal():
 		else:
 
 			if self.get_load().teacher==self.request.user:
-				return Lessons.objects.filter(subject_pk=self.get_load(),date__range=[date_start,date_end]).order_by("date")
+				return Lessons.objects.filter(subject_pk=self.get_load(),date__range=[date_start,date_end]).order_by("date","pk")
 			else:
-				return Lessons.objects.filter(subject_pk=self.get_load(),date__range=[date_start,date_end],teacher=self.request.user).order_by("date")
+				return Lessons.objects.filter(subject_pk=self.get_load(),date__range=[date_start,date_end],teacher=self.request.user).order_by("date","pk")
 
 	def count_average_score(self):
 

@@ -8,12 +8,13 @@
 	
 
 
-<table class="rtable mt-1">
+<table class="rtable mt-3">
   <thead>
     <tr>
       <th>Номер</th>
       <th>Литер</th>
       <th>Учебный план</td>
+      <th>Профиль периодов</th>
       <th>Смена</th>
       <th>Классный руководитель</th>
       <th class="text-center" colspan="2">Действие</th>
@@ -25,6 +26,7 @@
 					<td>{{ class.class_number }}</td>
 					<td>{{ class.letter }}</td>
 					<td>{{ class.сurriculum }}</td>
+          <td>{{ class.period_profile }}</td>
 					<td>{{ class.change }} смена</td>
 					<td>{{ class.class_teacher }}</td>
 					<td> <a href="{{ class.get_absolute_url  }}">Редактировать</a></td>

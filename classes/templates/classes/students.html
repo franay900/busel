@@ -69,6 +69,7 @@
        <th style="text-align: center">ФИО</th>
        <th>Пол</th>
        <th>Дата рождения</th>
+       <th>Дата зачисления</th>
        <th>Класс</th>
        <th style="text-align: center" {% if perms.classes.delete_student %} colspan="2" {% endif %}>Действие</th>       
      </tr>
@@ -82,6 +83,7 @@
      		<td>{{ i.user.last_name  }}  {{ i.user.first_name }} {{ i.user.middle_name }}</td>
         <td>{{ i.user.gender }}</td>
         <td>{{ i.user.birth_day }}</td>
+        <td>{{ i.date_of_enrollment }}</td>
         <td>{{ i.class_pk }}</td>
      		<td><a href="{{ i.edit }}">Личное дело</a></td>
         {% if perms.classes.delete_student %}
