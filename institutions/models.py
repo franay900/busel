@@ -49,7 +49,7 @@ class Institutions(models.Model):
     kindInstitutions = models.ForeignKey(KindInstitutions, on_delete=models.PROTECT, verbose_name='Вид', null=True)
     last_edit = models.DateTimeField(verbose_name='Последнее редактирование',auto_now=True,null=True)
     system_mark=models.ForeignKey('SystemMarks',verbose_name='Система оценивания',on_delete=models.PROTECT,default=1)
-    departmental_organization = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, verbose_name='Ведомственная организация')
+    departmental_organization = models.ForeignKey('self', on_delete=models.CASCADE, null=True, verbose_name='Ведомственная организация')
     is_active=models.BooleanField(default=True)
     class Meta:
         verbose_name = 'Организацию'
