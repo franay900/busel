@@ -1,13 +1,15 @@
 {% extends 'user_index.html' %}
 
-
+{% block h2 %}
+<i class="bi bi-pencil-square"></i> Редактирование данных пользователя
+{% endblock %}
 
 {% block content %}
 
 
 
 <form action="" method="POST" enctype='multipart/form-data'>
-<div class="container light-style flex-grow-1 container-p-y">
+<div class=" light-style  ">
 
 {% csrf_token %}
 

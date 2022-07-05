@@ -14,6 +14,7 @@ from .permissions import InstitutionsMixin
 from .utils import Study_Periods
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from journal.models import LessonType
+from classes.models import Classes, Student
 
 
 class InstitutionsHomeView(PermissionRequiredMixin,SuccessMessageMixin, View):
@@ -241,11 +242,34 @@ class DeleteSubject(InstitutionsMixin, DeleteView):
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
 
-
+#Админка ###############################################################################
 class InstitutionCreate(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
     form_class = InstitutionForm
     template_name = 'institutions/institutions_create.html'
     permission_required='institutions.add_institutions'
+
+    def get_types(self):
+        
+        if self.request.user.is_superuser:
+            types=TypeInstitutions.objects.all()
+        elif self.request.user.institution.typeInstitutions.title == 'Орган управления':
+            types=TypeInstitutions.objects.filter(title='Образовательная организация')
+        return types
+
+    def get_departmental(self):
+        
+
+        if self.request.user.is_superuser == True:
+            departmentals=Institutions.objects.filter(typeInstitutions__title='Орган управления')
+        else:
+            departmentals=Institutions.objects.filter(typeInstitutions__title='Орган управления', pk = self.request.user.institution.pk)
+        return departmentals
+
+    def get_form_kwargs(self):
+        kwargs = super(InstitutionCreate, self).get_form_kwargs()
+        kwargs['types']=self.get_types().values_list('pk')
+        return kwargs
+
     def form_valid(self, form):
         chars = 'abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
         self.login = ''
@@ -262,10 +286,50 @@ class InstitutionCreate(PermissionRequiredMixin, SuccessMessageMixin, CreateView
 
         return super().form_valid(form)
 
+    def query(self):
+
+        short_title=self.request.GET.get('short_title')
+        ban=self.request.GET.get("ban")
+        if (short_title or ban) is not None:
+            return short_title,ban
+
+
+    def get_institution(self):
+        if self.request.user.is_superuser == True:
+            department_q = Q(departmental_organization__in=self.get_departmental()) | Q(departmental_organization=None)
+        else:
+            department_q = Q(departmental_organization__in=self.get_departmental())
+        if self.query():
+            department=self.request.GET.get('department')
+
+            if department!='-':
+                instituion=Institutions.objects.filter(departmental_organization=department,short_title__icontains=self.query()[0])
+            elif int(self.query()[1])==1:
+                instituion=Institutions.objects.filter(department_q,short_title__icontains=self.query()[0])
+            else:
+                instituion=Institutions.objects.filter(department_q,short_title__icontains=self.query()[0],is_active=True)
+        else:
+            instituion=Institutions.objects.filter(department_q, is_active=True)
+        return instituion
     def get_context_data(self):
         context = super().get_context_data()
         context['title'] = 'Реестр ОО'
-        context['institutions'] = Institutions.objects.all()
+        context['institutions'] = self.get_institution()
+        context['departmentals']=self.get_departmental()
+        department=self.request.GET.get('department')
+        if department!='-' and department:
+            context['department'] = int(department)
+        else:
+            context['department'] = 0
+        context['types']=self.get_types()
+        if self.query():
+            context['short_title']=self.query()[0]
+
+        if self.query():
+            if int(self.query()[1])==1:
+                context['ban']=True
+        else:
+            context['ban']=False
         return context
 
     def get_success_url(self):
@@ -300,3 +364,66 @@ class UnblockInstitution(PermissionRequiredMixin, View):
         get_institution.save()
         return redirect(request.META.get('HTTP_REFERER'))
 
+class EditInstitutuonView(UpdateView):
+    template_name='institutions/institutions.html'
+    form_class=InstitutionsInfoForm
+
+    def form_valid(self,form):
+        return super().form_valid(form)
+
+    def get_object(self,**kwargs):
+        return Institutions.objects.get(pk=int(self.kwargs.get('pk')))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['title'] = 'Редактирование организации'
+        return context
+    def get_form_kwargs(self):
+        kwargs = super(EditInstitutuonView, self).get_form_kwargs()
+        kwargs['is_admin'] = self.request.user.is_superuser
+        
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('InstitutionCreate')
+
+#######################################################################
+
+class TranslationOfTheYear(PermissionRequiredMixin, View):
+
+    permission_required='institutions.change_year'
+    template_name='institutions/translate_year.html'
+
+    def get(self,request):
+        year=Year.objects.get(pk=request.user.institution.year.pk+1)
+        context={}
+        context['title']='Перевод года'
+        context['year']=year
+        context['classes']=Classes.objects.filter(
+                institution=self.request.user.institution.pk,year=self.request.user.institution.year.pk)
+        context['new_classes']=Classes.objects.filter(
+                institution=self.request.user.institution.pk,year=self.request.user.institution.year.pk+1)
+        context['one_student'] = Student.objects.filter(class_pk__institution=self.request.user.institution, class_pk__institution__year = self.request.user.institution.year, user__is_active= True ).first()
+        
+        return render(request,self.template_name,context )
+
+    def post(self,request):
+
+        class_pk = int(self.request.POST.get('class_pk'))
+        get_old_class = Classes.objects.get(pk=class_pk)
+        students = Student.objects.filter(class_pk__pk=class_pk)
+        get_new_class = Classes.objects.get(pk=class_pk)
+        for student in students:
+            student.arсhive_classes.add(get_old_class)
+            if self.request.POST.get('new_class_'+str(student.pk)):
+                class_student = int(self.request.POST.get('new_class_'+str(student.pk)))
+                if class_student!=0:
+                    get_new_class = Classes.objects.get(pk=class_student)
+                    student.class_pk=get_new_class
+                    
+            else:
+                student.class_pk = None
+            
+            student.save()
+        messages.success(request, 'Учащиеся успешно переведены!')
+        return redirect(request.META.get('HTTP_REFERER'))

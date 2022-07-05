@@ -6,8 +6,6 @@
 
 {% block content %}
 
-  
-
 <form method="POST" enctype="multipart/form-data">
 {% csrf_token %}
 
@@ -24,9 +22,8 @@
     <!--
     <a class="nav-link" data-toggle="tab" href="#characteristics">Дополнительная</a>
     --->
-    {% if departmentals %}
     <a class="nav-link" data-toggle="tab" href="#opinion">Типы уроков</a>
-    {% endif %}
+
 </nav>
     <hr class="mt-0 mb-4">
 

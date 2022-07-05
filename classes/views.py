@@ -21,7 +21,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db.models import Q
 from journal.utils import Journal
 from django.contrib.auth.models import Group
-
+from django.http import JsonResponse
 
 
 
@@ -85,10 +85,10 @@ class SubgroupView(View,Journal):
         
 
         if not self.request.user.has_perm('classes.view_classes'):
-            return Classes.objects.filter(class_teacher=self.request.user).order_by('class_number','letter')
+            return Classes.objects.filter(class_teacher=self.request.user, year=self.request.user.institution.year.pk).order_by('class_number','letter')
         else:
            
-            return Classes.objects.filter(institution=self.request.user.institution).order_by('class_number','letter')
+            return Classes.objects.filter(institution=self.request.user.institution, year=self.request.user.institution.year.pk).order_by('class_number','letter')
     def get_student(self):
         return Student.objects.filter(class_pk=self.get_class(),user__isnull=False,user__is_active=True).order_by('user')
     def get_class(self):
@@ -101,7 +101,7 @@ class SubgroupView(View,Journal):
             elif 'pk' in self.kwargs:
                 class_info=Classes.objects.get(pk=self.kwargs['pk'])
             else:
-                class_info=Classes.objects.filter(institution=self.request.user.institution).first()
+                class_info=Classes.objects.filter(institution=self.request.user.institution,year=self.request.user.institution.year.pk).first()
         except Classes.DoesNotExist:
             class_info=None
 
@@ -239,7 +239,7 @@ class LoadView(PermissionRequiredMixin, TimetableSettigns,SuccessMessageMixin, V
         context = {}
         context['subjects'] = self.get_info()
         context['teachers']=UserNet.objects.filter(institution=self.request.user.institution.pk,groups__name='Учитель',is_active=True).distinct()
-        context['classes']=Classes.objects.filter(institution=self.request.user.institution.pk)
+        context['classes']=Classes.objects.filter(institution=self.request.user.institution.pk, year=self.request.user.institution.year.pk)
         context['class']=self.get_class()
         context['title'] = 'Учебная нагрузка'
         return render(request, self.template_name,context)
@@ -322,7 +322,7 @@ class Timetable(PermissionRequiredMixin,ListView):
     def get_context_data(self):
         context = super().get_context_data()
         context['title'] = 'Расписание'
-        context['classes'] = Classes.objects.filter(institution=self.request.user.institution.pk)
+        context['classes'] = Classes.objects.filter(institution=self.request.user.institution.pk, year=self.request.user.institution.year.pk)
         return context
 
 class TimetableTemplatesView(PermissionRequiredMixin,TimetableSettigns,ListView):
@@ -497,9 +497,9 @@ class StudentListView(PermissionRequiredMixin, ListView):
             return surname,name,middle_name,class_pk
     def get_class(self):
         if self.request.user.has_perm('classes.delete_student'):
-            return Classes.objects.filter(institution=self.request.user.institution)
+            return Classes.objects.filter(institution=self.request.user.institution, year=self.request.user.institution.year.pk)
         else:
-            return Classes.objects.filter(class_teacher=self.request.user)
+            return Classes.objects.filter(class_teacher=self.request.user,year=self.request.user.institution.year.pk)
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
         context['title'] = 'Обучающиеся'
@@ -685,3 +685,23 @@ class Deduction(PermissionRequiredMixin,SuccessMessageMixin,View):
         get_student.user.save()
         StudentShifting.objects.create(student=get_student, type_shift=2, date=date)
         return redirect(request.META.get('HTTP_REFERER'))
+
+class ReturnStudents(View):
+
+    def get(self,request,class_pk):
+
+        
+        students_get=Student.objects.filter(class_pk=class_pk)
+        
+        students_fio=[]
+        students_pk=[]
+
+        for student in students_get:
+            students_fio.append(student.user.last_name+ ' ' +student.user.first_name)
+            students_pk.append(student.pk)
+        response={
+            'fio':students_fio,
+            'pk': students_pk  
+        }
+        return JsonResponse(response)
+

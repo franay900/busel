@@ -115,7 +115,7 @@
   <div style="" class="col-3 mycol2 no-margin"  style=""> 
 
     
-    <table class="myTable" >
+    <table class="myTable " >
       <thead>
       <tr>
         <th id="start"  id="row-2" style="width: 15%;" style="">№</th>
@@ -162,7 +162,7 @@
         {% for lesson in lessons %}
         <th id=""  colspan="{{ lesson.types.all.count }}" class="date">
 
-          <a  class="" data-toggle="popover" title="Тема: {{ lesson.topic }}" data-content="Дз на следующий урок: {{ lesson.homework }}">{{ lesson.date|date:'d' }}</a>
+          <a  class="date_l" data-toggle="popover" title="Тема: {{ lesson.topic }}" data-content="Дз на следующий урок: {{ lesson.homework }}">{{ lesson.date|date:'d' }}</a>
 
 
         </th>
@@ -174,7 +174,7 @@
         {% if lesson.types.all %}
         {% for lesson_type in lesson.types.all %}
         <th id="day" class="date day{{ lesson.date|date:'m' }}">
-        <a class=" btn-tooltip" data-toggle="tooltip" data-placement="bottom" title="{{ lesson_type.name }}">
+        <a class="btn-tooltip date_l" data-toggle="tooltip" data-placement="bottom" title="{{ lesson_type.name }}">
           {{ lesson_type.short_name }}
         </a>
         </th>
@@ -345,6 +345,9 @@ td{
   padding:0px;
 }
 
+.date_l{
+  color: grey;
+}
 
 </style>
 <script type="text/javascript">

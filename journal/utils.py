@@ -29,7 +29,7 @@ class Journal():
 
 
 	def get_classes(self):
-	    return Classes.objects.filter(institution=self.request.user.institution).order_by('class_number','letter')
+	    return Classes.objects.filter(institution=self.request.user.institution, year=self.request.user.institution.year.pk).order_by('class_number','letter')
 
 	def get_class(self):
 
@@ -90,7 +90,7 @@ class Journal():
 	        periods = Periods.objects.get(pk=period)
 	        return periods
 	    else:
-	        return Periods.objects.filter(profile=self.get_class().period_profile,end__gte=datetime.today()).first()
+	        return Periods.objects.filter(profile=self.get_class().period_profile).first()
 	    
 	def get_lessons(self):
 		date_start=self.get_period().start

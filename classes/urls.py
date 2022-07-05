@@ -23,7 +23,7 @@ urlpatterns=[
 	path('student/edit/<int:student_pk>',StudentEditView.as_view() ,name="StudentEdit"),
 	path('student/list/',StudentListView.as_view() ,name="StudentList"),
 	path('delete_student/',Deduction.as_view() ,name="DeleteStudent"),
-
+	path('get_students/<int:class_pk>/',ReturnStudents.as_view(), name="GetStudent"),
 
 	path('timetable/classes/',Timetable.as_view() ,name="TimetableClasses"),
 	path('timetable/templates/<int:pk>/',TimetableTemplatesView.as_view() ,name="TimetableTemplates"),

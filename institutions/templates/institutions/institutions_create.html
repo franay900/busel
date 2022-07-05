@@ -1,17 +1,79 @@
 {% extends 'user_index.html' %}
 {% load number_tags %}
 {% block h2 %}
-Реестр образовательных организаций
+<i class="bi bi-motherboard"></i> Реестр организаций
 {% endblock %}
 
 
 {% block content %}
-	<table class="rtable">
+
+
+<div class="card mt-">
+  <h5 class="card-header">Поиск организаций</h5>
+  <div class="card-body">
+   <form class="needs-validation" novalidate method="get">
+  <div class="form-row">
+    <div class="col-md-4 mb-3">
+      <label for="validationCustom01">Краткое наименование</label>
+      <input type="text" class="form-control" id="validationCustom01" placeholder="" value="{% if short_title %}{{ short_title }}{%endif%}" required name="short_title">
+   
+    </div>
+    <div class="col-md-4 mb-3">
+      <label for="validationCustom02">Ведомственная организация</label>
+
+        <select class="custom-select " name="department">
+        	<option >-</option>
+        	{% for departamental in departmentals %}
+
+        	<option value="{{ departamental.pk }}"  {% if departamental.pk == department %} selected {% endif %}>{{ departamental.title }}</option>
+        	{% endfor %}
+     
+        </select>
+
+   
+    </div>
+    <div class="col-md-4 mb-3">
+      <label for="validationCustomUsername">Заблокированные</label>
+      <div class="input-group">
+
+        <select class="custom-select" name="ban" >
+
+        	<option value="1" {% if ban %}selected{% endif %}>Показывать</option>
+        	<option value="0" {% if not ban %}selected{% endif %}>Скрыть</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+  	    <div class="col-md-4 mb-3">
+      <label for="validationCustomUsername">Тип</label>
+      <div class="input-group">
+
+        <select class="custom-select ">
+        	<option>-</option>
+        	{% for type in types %}
+        	<option>{{ type.title }}</option>
+        	{% endfor %}
+     
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-secondary" type="submit"><i class="fa fa-search"></i> Поиск</button>
+</form>
+
+  </div>
+</div>
+
+
+	<table class="rtable mt-3">
 		<thead>
 			<tr>
+				<th>№</th>
 				<th>Наименование</th>
 				
-				<th>Число сотрудников</th>
+				<th>Учебный год</th>
 				
 				<th>Ведомственная организация</th>
 				<th class="text-center" colspan="2">Действие</th>
@@ -20,12 +82,13 @@
 		<tbody>
 			{% for institution in institutions %}
 			<tr>
+				<td>{{ forloop.counter }}</td>
 				<td>{{ institution.short_title }}</td>
 				
-				<td></td>
+				<td>{{ institution.year }}</td>
 				
-				<td></td>
-				<td><a href="">Редактировать</a></td>
+				<td> {{ institution.departmental_organization }} </td>
+				<td><a href="{{ institution.edit_url }}">Редактировать</a></td>
 				<td>
 					{% if institution.is_active %}
 					<a href="{% url 'BlockInstitution' institution=institution.pk %}">Заблокировать</a>
@@ -38,7 +101,7 @@
 	</table>
 	
 	<button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">
-	  Добавить
+	  <i class="bi bi-plus-circle-dotted"></i> Добавить
 	</button>
 
 	<!-- Modal -->

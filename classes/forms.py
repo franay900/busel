@@ -59,7 +59,7 @@ class StudentForm(forms.ModelForm):
     	super(StudentForm, self).__init__(*args, **kwargs)
 
 
-    	self.fields['class_pk']=forms.ModelChoiceField(label='Класс',queryset=Classes.objects.filter(institution=self.instance.user.institution))
+    	self.fields['class_pk']=forms.ModelChoiceField(label='Класс',queryset=Classes.objects.filter(institution=self.instance.user.institution,year=self.instance.user.institution.year.pk))
     	self.fields['class_pk'].widget.attrs['class']='form-control'
 class StudentUserForm(forms.ModelForm):
     
@@ -124,6 +124,6 @@ class OldStudentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
         super(OldStudentForm, self).__init__(*args, **kwargs)
-        self.fields['class']=forms.ModelChoiceField(label='Класс',queryset=Classes.objects.filter(institution=user.institution))
+        self.fields['class']=forms.ModelChoiceField(label='Класс',queryset=Classes.objects.filter(institution=user.institution,year=user.institution.year.pk))
         self.fields['class'].widget.attrs['class']='form-control'
 

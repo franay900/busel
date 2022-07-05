@@ -13,11 +13,17 @@ urlpatterns=[
 	path('bell_profile_create/',BellProfileCreateView.as_view() ,name="Bell_profile_create"),
 	path('subject/',SubjectView.as_view(),name="Subject_list"),
 	path('delete_subject/<int:pk>/',DeleteSubject.as_view() ,name="Delete_subject"),
+
+	#админка
 	path('create_institution/',InstitutionCreate.as_view() ,name="InstitutionCreate"),
 	path('block_institution/<int:institution>',BlockInstitution.as_view() ,name="BlockInstitution"),
 	path('unblock_institution/<int:institution>',UnblockInstitution.as_view() ,name="UnBlockInstitution"),
+	path('edit_institution/<int:pk>', EditInstitutuonView.as_view(), name="EditInstitution"),
+	#
 
 	path('ads/', AdsCreateView.as_view(), name='create_ad'),
-	path('ads/delete/<int:pk>', AdsDeleteView.as_view(), name='delete_ads')
+	path('ads/delete/<int:pk>', AdsDeleteView.as_view(), name='delete_ads'), 
+
+	path('translate_year/', TranslationOfTheYear.as_view(), name='translate_year')
 ]
 

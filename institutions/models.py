@@ -7,7 +7,7 @@ class Year(models.Model):
     title = models.CharField(max_length=150, verbose_name='Наименование учебного года')
     start = models.DateField(verbose_name='Дата начала учебного года')
     end = models.DateField(verbose_name='Дата окончания учебного года')
-
+    is_active=models.BooleanField(default=False, verbose_name='Активен')
     def __str__(self):
         return self.title
 
@@ -38,6 +38,8 @@ class KindInstitutions(models.Model):
 
     def __str__(self):
         return self.title
+
+
 class Institutions(models.Model):
     title = models.CharField(max_length=150, verbose_name='Наименование организации')
     short_title = models.CharField(max_length=50, verbose_name='Краткое наименование')
@@ -47,6 +49,7 @@ class Institutions(models.Model):
     kindInstitutions = models.ForeignKey(KindInstitutions, on_delete=models.PROTECT, verbose_name='Вид', null=True)
     last_edit = models.DateTimeField(verbose_name='Последнее редактирование',auto_now=True,null=True)
     system_mark=models.ForeignKey('SystemMarks',verbose_name='Система оценивания',on_delete=models.PROTECT,default=1)
+    departmental_organization = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, verbose_name='Ведомственная организация')
     is_active=models.BooleanField(default=True)
     class Meta:
         verbose_name = 'Организацию'
@@ -56,6 +59,8 @@ class Institutions(models.Model):
     def __str__(self):
         return self.title
 
+    def edit_url(self):
+        return reverse('EditInstitution', kwargs={"pk":self.pk})
 
 # Расписание звонков
 class BellProfile(models.Model):

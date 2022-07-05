@@ -1,0 +1,264 @@
+{% extends 'user_index.html' %}
+{% load translate_year_tags %}
+{% block h2 %}
+<i class="bi bi-arrow-clockwise"></i> Перевод организации на {{ year }}
+{% endblock %}
+
+
+{% block content %}
+
+
+{% if one_student %}
+<table class="rtable">
+	
+	<thead>
+		<tr>
+			<th>Класс</th>
+			<th>Новый класс</th>
+			<th>Статус</th>
+			<th>Действие</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		{% for class in classes %}
+		<tr id="newtr{{class.pk}}">
+			<td>{{ class }}</td>
+			<td class="text-center">
+				{% get_next_class institution=request.user.institution num=class.class_number letter=class.letter as next_class %}
+				
+				{% if class.class_number != 9 and class.class_number != 11 %}
+				<select class="custom-select custom-select-sm new_class_select" name="" id="">
+				{% for new_class in new_classes %}
+				<option {% if new_class.letter == next_class.letter and  new_class.class_number == next_class.class_number %} selected {% endif %} value="{{ new_class.pk }}">{{ new_class }}</option>
+				{% endfor %}
+				</select>
+
+				{% else %}
+				<div class="text-primary text-center">ВЫПУСК</div>
+				{% endif %}
+
+			</td>
+			<td>
+				{% get_student pk=class.pk as student%}
+				
+					{% if student %}
+					<div class="text-danger text-center"> <i class="bi bi-exclamation-octagon"></i>Не переведен </div>
+					{% else %}
+					<div class="text-success text-center"> <i class="bi bi-check-circle"></i>Переведен </div>
+					{% endif %}
+				
+
+			</td>
+			<td>
+				{% if student %}
+				{% if class.class_number != 9 and class.class_number != 11 %}
+				<a class_id="{{class.pk}}" class="replace" url="{% url 'GetStudent' class_pk=class.pk %}">Перевод</a>
+				{% else %}
+				<a class_id="{{class.pk}}" class="replacen" url="{% url 'GetStudent' class_pk=class.pk %}">Перевод</a>
+				{% endif %}
+				{% endif %}
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+
+<form action="" method="POST">
+{% csrf_token %}
+<!-- Модальное окно -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Перевод класса</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <table class="rtable" id="tableo">
+        	<thead>
+        		<tr>
+        			<th>№</th>
+        			<th>ФИ</th>
+        			<th>Тип</th>
+        			<th>Класс</th>
+        		</tr>
+
+
+        	</thead>
+        	<tbody class="tbe">
+        		<tr id="tr1" >
+        			<td class="num">1</td>
+        			<td class="fio">Иванов Иван</td>
+        			<td>
+        				<select class="custom-select custom-select-sm typep" name="" id="">
+        					<option value="1">Перевод на следующий учебный год</option>
+        					<option value="2">Условный перевод</option>
+        					<option value="3">Выбытие/отчисление</option>
+        				</select>
+        			</td>
+        			<td class="class_td">
+        				<select class="custom-select custom-select-sm class_select" name="" id="">
+        					<option disabled value="0">Не выбран</option>
+        					{% for class in new_classes %}
+        					<option value="{{ class.pk }}">{{ class }}</option>
+        					{% endfor %}
+
+        				</select>
+        			</td>
+        		</tr>
+        	</tbody>
+        	<tbody class="tb1" id="tbo">
+        		
+        	</tbody>
+        </table>
+
+
+        <table class="rtable" id="tablev">
+        	<thead>
+        		<tr>
+        			<th>№</th>
+        			<th>ФИ</th>
+        			<th>Тип</th>
+        			<th>Класс</th>
+        		</tr>
+
+
+        	</thead>
+        	<tbody class="tbe">
+        		<tr id="tr2" >
+        			<td class="num">1</td>
+        			<td class="fio">Иванов Иван</td>
+        			<td>
+        				<select class="custom-select custom-select-sm typep" name="" id="">
+        					<option value="3">Выпуск</option>
+        					<option value="1">Условный выпуск</option>
+        					<option value="3">Выбытие/отчисление</option>
+        				</select>
+        			</td>
+        			<td class="class_td">
+        				<select class="custom-select custom-select-sm class_select" name="" id="" style="display: none;">
+        					<option selected disabled value="0">Не выбран</option>
+        					{% for class in new_classes %}
+        					<option value="{{ class.pk }}">{{ class }}</option>
+        					{% endfor %}
+
+        				</select>
+        			</td>
+        		</tr>
+        	</tbody>
+        	<tbody class="tb1" id="tbv">
+        		
+        	</tbody>
+        </table>
+
+
+      </div>
+      <div class="modal-footer">
+      	<input style="display:none" type="text" name="class_pk" id="class_id">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="submit"  class="btn btn-success">Сохранить</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+</form>
+
+
+
+<script>
+
+
+	$('.typep').on('change', function(event){
+		if ($(this).val()==3){
+				
+				$(this).closest('tr').find('.class_select').css('display','none')
+				$(this).closest('tr').find('.class_select option[value=0]').prop('selected',true)
+		}
+
+		if ($(this).val()==1 | $(this).val()==2){
+				$(this).closest('tr').find('.class_select').css('display','block')
+		}
+
+	 });
+
+
+	function model_window(self, modal, type_class){
+		
+		modal.show();
+		var class_id=$(self).attr('class_id')
+		var url=$(self).attr('url')
+		$('.tb1').empty()
+		var new_class = $('#newtr'+class_id).find('.new_class_select option:selected').attr('value')
+		$('#class_id').attr('value',class_id)
+		var tr_id = ''
+		var tb_id = ''
+		if (type_class == 510){
+			tr_id = '#tr1'
+			tb_id = '#tbo'
+		}
+		else{
+			tr_id = '#tr2'
+			tb_id = '#tbv'
+		}
+
+		$.ajax({
+			url: url,
+			method:'get',
+			dataType:'json',
+
+			success: function(data){
+				var fio = data.fio
+				var pk = data.pk
+				for (i=0; i<fio.length; i++){
+					var clonerow = $(tr_id).clone(true)
+					$(tb_id).append(clonerow)
+					$(clonerow).children('.num').text(i+1)
+					$(clonerow).children('.fio').text(fio[i])
+					$(clonerow).find('.class_select option[value='+ new_class +']').prop('selected',true)
+					
+					$(clonerow).find('.class_select').attr('name',"new_class_"+pk[i])
+				}
+			}
+		})
+	}
+	$('.replace').on('click', function(event){
+		$('#tablev').css('display','none')
+		$('#tableo').css('display','block')
+		var modal = new bootstrap.Modal(document.querySelector('#exampleModal'));
+		model_window(this, modal, 510)
+	})
+
+	$('.replacen').on('click', function(event){
+		$('#tableo').css('display','none')
+		$('#tablev').css('display','block')
+		var modal = new bootstrap.Modal(document.querySelector('#exampleModal'))
+		model_window(this, modal,911)
+	})
+
+	 
+</script>
+<style>
+	.tbe {
+		display: none;
+	}
+</style>
+
+{% else %}
+<div class="alert alert-success" role="alert">
+  Все учащиеся переведены на следующий учебный год.
+</div>
+
+{% endif %}
+   
+{% endblock %}

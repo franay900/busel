@@ -5,20 +5,23 @@
 
 
 
+
 {% block content %}
 <form  method="POST" >
-<table class="table table-bordered table-sm">
+<table class="rtable">
+	<thead>
 	<tr>
-		<td>Фамилия</td>
-		<td>Имя</td>
-		<td>Отчество</td>
-		<td>Пол</td>
-		<td>Дата рождения</td>
-		<td>Класс</td>
-		<td>Логин</td>
-		<td>Пароль</td>
-		<td>Импорт</td>
+		<th>Фамилия</th>
+		<th>Имя</th>
+		<th>Отчество</th>
+		<th>Пол</th>
+		<th>Дата рождения</th>
+		<th>Класс</th>
+		<th>Логин</th>
+		<th>Пароль</th>
+		<th>Импорт</th>
 	</tr>
+	</thead>
 	{% for user in users %}
 	<tr>
 		<td>{{ user.0 }}</td>

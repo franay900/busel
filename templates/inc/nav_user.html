@@ -1,10 +1,10 @@
  {% load user_tags %}
 {% load static %}
 
-<nav class="navbar navbar-expand-lg navbar-dark" style="padding: 0">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="padding: 0">
   <a class="navbar-brand" href="#">
-    <img class="logo" src="{% static 'img/busel2_0-logo_white.png' %}"  alt="">
-   
+    <img  src="{% static 'img/busel2_0-logo_white.png' %}"  width="30" height="30" class="d-inline-block align-top" alt="">
+    Бусел
   </a>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,7 +17,7 @@
 
         <a class="nav-link "  href="{% url 'HomePageUserAccount' %}"><i class="bi bi-house-door"></i> Главная <span class="sr-only">(current)</span></a>
       </li>
-
+      {% if request.user.institution %}
       {% if perms.classes.view_сurriculum %} 
      <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle "  href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -105,18 +105,39 @@
         </div>
       </li>
 
-
-
       <li class="nac-item">
          <a class="nav-link " href="{% url 'ReportsView' %}"><i class="bi bi-file-earmark-check"></i> Отчеты</a>
       </li>
+      {% endif %}
+
+      
        {% endif %}
 
        {% if perms.institutions.delete_institutions %}
       <li class="nac-item">
-        <a class="nav-link " href="{% url 'InstitutionCreate' %}">Реестр организаций</a>
+
+        
+
+
+
       </li>
 
+
+            <li class="nav-item dropdown">
+
+
+        <a class="nav-link dropdown-toggle " href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="bi bi-building"></i> Подвемовственные ОО
+        </a>
+
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          {% if perms.user_account %}
+          <a class="dropdown-item" href="{% url 'InstitutionCreate' %}">Реестр организаций</a>
+          {% endif %}
+
+        
+        </div>
+      </li>
        {% endif %}
 
     {% if request.user|teacher %}
@@ -125,6 +146,12 @@
       </li>
   
  {% endif %}
+
+    {% if request.user.institution.typeInstitutions.title == 'Образовательная организация' and not request.user.institution.year.is_active %}
+    <li class="nac-item">
+      <a class="nav-link"  href="{% url 'translate_year' %}"><i class="bi bi-arrow-clockwise"></i> Перевод года</a>
+    </li>
+    {% endif %}
 
     {% if not perms.classes.change_classes and  request.user|class_manager %}
     <li class="nav-item dropdown">

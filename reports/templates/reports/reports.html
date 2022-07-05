@@ -1,19 +1,65 @@
 {% extends 'user_index.html' %}
 
+{% block h2 %}
+<i class="bi bi-activity"></i> Отчеты
 
-
+{% endblock %}
 {% block content %}
+<!--
 <div class="list-group">
 
   <a href="{% url 'ReportsJournal' %}" class="list-group-item list-group-item-action">Отчет по ведению электронного журнала</a>
   <a href="{% url 'ReportPerformance' %}" class="list-group-item list-group-item-action " tabindex="-1" aria-disabled="true">Отчет успеваемости (за год)</a>
 
-  <!--
+ 
   <a href="#" class="list-group-item list-group-item-action disabled">Отчет по посещаемости</a>
   <a href="#" class="list-group-item list-group-item-action disabled">Отчет по заполнению данных</a>
--->
+
   
 </div>
 
+-->
+<div class="row">
+  <div class="col">
+<div class="card" >
+  <div class="card-header">
+    Журнал
+  </div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">Отчет по ведению</li>
+    <li class="list-group-item">Отчет успеваемости</li>
+    <li class="list-group-item">Рейтинг учащихся</li>
+  </ul>
+</div>
+</div>
 
+<div class="col">
+<div class="card">
+  <div class="card-header">
+    Организация
+  </div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">Cras justo odio</li>
+    <li class="list-group-item">Dapibus ac facilisis in</li>
+    <li class="list-group-item">Vestibulum at eros</li>
+  </ul>
+</div>
+</div>
+
+
+
+<div class="col">
+<div class="card">
+  <div class="card-header">
+    Пользователи
+  </div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">Cras justo odio</li>
+    <li class="list-group-item">Dapibus ac facilisis in</li>
+    <li class="list-group-item">Vestibulum at eros</li>
+  </ul>
+</div>
+</div>
+
+</div>
 {% endblock %}

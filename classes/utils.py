@@ -17,14 +17,14 @@ class TimetableSettigns():
             if 'pk' in self.kwargs :
                 class_info=Classes.objects.get(pk=self.kwargs['pk'])
             else:
-                class_info=Classes.objects.filter(institution=self.request.user.institution).first()
+                class_info=Classes.objects.filter(institution=self.request.user.institution, year=self.request.user.institution.year.pk).first()
         except Classes.DoesNotExist:
             class_info=None
 
         return class_info 
 
     def get_classes(self):
-        return Classes.objects.filter(institution=self.request.user.institution).order_by('class_number','letter')
+        return Classes.objects.filter(institution=self.request.user.institution, year=self.request.user.institution.year.pk).order_by('class_number','letter')
     def get_info(self):
         info_class=self.get_class()
         if info_class!=None:
