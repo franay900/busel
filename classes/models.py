@@ -118,7 +118,7 @@ class Student(models.Model):
     user=models.ForeignKey(UserNet, on_delete=models.SET_NULL, verbose_name="Пользователь",
                                        null=True)
     class_pk = models.ForeignKey(Classes, on_delete=models.CASCADE,null=True)
-    ar_classes = models.ManyToManyField(Classes, null=True, related_name='arсhive_classes')
+    arсhive_classes = models.ManyToManyField(Classes, null=True, related_name='old_classes')
     date_of_enrollment=models.DateField(verbose_name='Дата зачслениия', default='2021-09-01')
     def edit(self):
         return reverse('StudentEdit',kwargs={'student_pk':self.pk})

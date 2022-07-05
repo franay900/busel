@@ -42,7 +42,7 @@ class UsersView(PermissionRequiredMixin,UserMixin, ListView):
 
 def user_edit_view(request,user_id):
     user=UserNet.objects.get(pk=user_id)
-    if user.institution== request.user.institution and UserNet.objects.get(pk=request.user.pk,groups__name__in=["Администратор ОО", 'Секретарь', 'Администратор УО']):
+    if user.institution== request.user.institution and UserNet.objects.get(pk=request.user.pk,groups__name__in=["Администратор ОО", 'Секретарь']):
         password_form=SetPassword(user=user)
         form=UserEditForm(instance=user,user=user.institution.typeInstitutions)
         load=Load.objects.filter(class_pk__year=user.institution.year, teacher=user)
