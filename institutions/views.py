@@ -414,7 +414,7 @@ class TranslationOfTheYear(PermissionRequiredMixin, View):
         students = Student.objects.filter(class_pk__pk=class_pk)
         get_new_class = Classes.objects.get(pk=class_pk)
         for student in students:
-            student.arсhive_classes.add(get_old_class)
+            student.old_classes.add(get_old_class)
             if self.request.POST.get('new_class_'+str(student.pk)):
                 class_student = int(self.request.POST.get('new_class_'+str(student.pk)))
                 if class_student!=0:
