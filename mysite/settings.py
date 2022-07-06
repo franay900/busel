@@ -38,11 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'import_export',
     'news.apps.NewsConfig',
-    'user_account',
-    'institutions',
-    'classes',
-    'journal',
-    'reports',
+    # 'user_account',
+    # 'institutions',
+    # 'classes',
+    # 'journal',
+    # 'reports',
 ]
 
 MIDDLEWARE = [
