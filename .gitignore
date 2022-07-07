@@ -2,7 +2,4 @@ logs/
 config/
 media/
 
-*/__pycache__/*
-
-_migrations/*
 !_migrations/__init__.py
