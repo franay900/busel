@@ -290,7 +290,6 @@ class InstitutionCreate(PermissionRequiredMixin, SuccessMessageMixin, CreateView
         user = UserNet.objects.create_user(username=self.login, password=self.password,
                                            institution=institutions_create)
         user.groups.set([group])
-        if self.request.user.is_superuser == False:
         return super().form_valid(form)
 
     def query(self):
