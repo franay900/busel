@@ -277,7 +277,7 @@ class InstitutionCreate(PermissionRequiredMixin, SuccessMessageMixin, CreateView
 
         institutions_create = form.save(commit=True)
         if self.request.user.is_superuser == False:
-            institutions_create.departmental_organization.set(self.request.user.institution)
+            institutions_create.departmental_organization = self.request.user.institution
             department_institution = Institutions.objects.get(pk=self.request.user.institution.pk)
             lim = department_institution.lim-1
             department_institution.save()
@@ -289,7 +289,7 @@ class InstitutionCreate(PermissionRequiredMixin, SuccessMessageMixin, CreateView
         group = TypeInstitutions.objects.get(pk=self.request.POST.get("typeInstitutions")).group.all()[0]
         user = UserNet.objects.create_user(username=self.login, password=self.password,
                                            institution=institutions_create)
-        user.groups.set([group])
+        user.groups([group])
         return super().form_valid(form)
 
     def query(self):
