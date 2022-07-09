@@ -1,661 +1,44 @@
-from django.contrib.auth.models import Group
-from django.db import models
+import random
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse
 from django.urls import reverse
 from django.views.generic import UpdateView, ListView, CreateView, DeleteView, View
-from django.http import HttpResponseForbidden,HttpResponse
 from user_account.models import UserNet
 from user_account.permissions import AdminPermissionMixin
 from .forms import *
 from .models import *
-from journal.models import *
-from .utils import TimetableSettigns, CurruculumMixin
-from institutions.permissions import InstitutionsMixin
-from modules.users import get_user, generate_login
-from modules.weeks import get_dates
-import random
-import re
+from .permissions import InstitutionsMixin
+from .utils import Study_Periods
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.db.models import Q
-from journal.utils import Journal
-from django.contrib.auth.models import Group
-from django.http import JsonResponse
+from journal.models import LessonType
+from classes.models import Classes, Student
 
 
-
-class ClassView(PermissionRequiredMixin, CreateView):
-    form_class = ClassForm
-    template_name = 'classes/class.html'
-    permission_required = 'classes.view_classes'
-    def get_success_url(self):
-        return reverse('Class')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data()
-        context['title'] = 'Классы'
-        context['classes'] = Classes.objects.filter(
-                institution=self.request.user.institution.pk,year=self.request.user.institution.year.pk)
-        return context
-
-    def get_form_kwargs(self):
-        kwargs = super(ClassView, self).get_form_kwargs()
-        kwargs['edit'] = True
-        kwargs['teacher']=self.request.user.institution
-        return kwargs
-
-
-    def form_valid(self, form):
-        form.instance.institution_id = self.request.user.institution.pk
-        form.instance.year_id = self.request.user.institution.year.pk
-        return super().form_valid(form)
-
-def class_edit_view(request,pk):
-    class_info=Classes.objects.get(pk=pk)
-    if class_info.institution.pk==request.user.institution.pk:
-        info_form=ClassForm(instance=class_info,teacher=request.user.institution)
-        subgroups_form=SubgroupsForm(class_number=class_info.class_number, profile=class_info.сurriculum)
-        if request.method=="POST":
-
-            if 'info' in request.POST:
-
-                in_form=ClassForm(request.POST,instance=class_info,teacher=request.user.institution)
-                if in_form.is_valid():
-                    in_form.save()
-                    messages.success(request, 'Информация обновлена!')
-                    return redirect(request.META.get('HTTP_REFERER'))
-            if 'subroups' in request.POST:
-                sub_form=SubgroupsForm(request.POST,class_number=class_info.class_number, profile=class_info.сurriculum)
-                sub_form.instance.class_pk=class_info
-                if sub_form.is_valid():
-                    sub_form.save()
-                    return redirect(request.META.get('HTTP_REFERER'))
-        class_subgroups=Subgroups.objects.filter(class_pk=pk)
-        context={"form":info_form,'subroups':subgroups_form,'title':'Редактирование класса','subgroups':class_subgroups}
-        return render(request,'classes/class_edit.html',context)
+class InstitutionsHomeView(PermissionRequiredMixin,SuccessMessageMixin, View):
+    model = Institutions
+    form_class = InstitutionsInfoForm
+    second_form_class=TypeLesson
+    template_name = 'institutions/institutions.html'
+    success_message = 'Информация об организации успешно обновлена!'
+    permission_required = 'institutions.view_institutions'
     
-    else:
-        return HttpResponseForbidden()
 
-class SubgroupView(View,Journal):
-    form_class = ClassForm
-    template_name = 'classes/subgroup.html'
-    def get_classes(self):
-        
-
-        if not self.request.user.has_perm('classes.view_classes'):
-            return Classes.objects.filter(class_teacher=self.request.user, year=self.request.user.institution.year.pk).order_by('class_number','letter')
-        else:
-           
-            return Classes.objects.filter(institution=self.request.user.institution, year=self.request.user.institution.year.pk).order_by('class_number','letter')
-    def get_student(self):
-        return Student.objects.filter(class_pk=self.get_class(),user__isnull=False,user__is_active=True).order_by('user')
-    def get_class(self):
-
-
-        try:
-            if not self.request.user.has_perm('classes.view_classes'):
-
-                class_info=self.get_classes().first()
-            elif 'pk' in self.kwargs:
-                class_info=Classes.objects.get(pk=self.kwargs['pk'])
-            else:
-                class_info=Classes.objects.filter(institution=self.request.user.institution,year=self.request.user.institution.year.pk).first()
-        except Classes.DoesNotExist:
-            class_info=None
-
-        return class_info
-    def get_subgroups(self):
-        return Subgroups.objects.filter(class_pk=self.get_class()) or None
-
-
-    def get_context(self):
-        context = {}
-        context['title'] = 'Подгруппы '+str(self.get_class().class_number)+str(self.get_class().letter)+' класса'
-        context['classes']=self.get_classes()
-        context['students']=self.get_student()
-        context['class']=self.get_class()
-        context['subgroup_list']=self.get_subgroups()
-        if self.get_subgroups():
-            context['subgroups']=self.get_subgroups().distinct('subject_pk')
-        return context
-
-    def get(self, request, *args, **kwargs):
-        
-        return render(request, self.template_name,self.get_context())
-
-    def post(self, request, *args, **kwargs):
-        
-        if self.get_subgroups():
-            for subgroup in self.get_subgroups().distinct('subject_pk'):
-                subgroup_pk=subgroup.subject_pk.pk
-                for student in self.get_student():
-                    student_pk=student.pk
-                    sub=self.request.POST.get("sub"+str(subgroup_pk)+str(student_pk))
-                    if sub:
-                        select_sub=Subgroups.objects.get(pk=sub)
-                        check_sub=StudentSubgroup.objects.filter(student=student_pk, subject=select_sub.subject_pk )
-                        if check_sub:
-                            
-                            check_sub.update(subgroup=  sub )
-                        else:
-                            sub_save=StudentSubgroup.objects.create(student=student,  subgroup_id=sub,subject=select_sub.subject_pk)
-
-        return redirect(request.META.get('HTTP_REFERER'))
-
-class DeleteClassView(PermissionRequiredMixin,DeleteView):
-
-    permission_required='classes.delete_classes'
-    def get_object(self, **kwargs):
-        id_ = int(self.request.POST.get("pk"))
-        return get_object_or_404(Classes, id=id_)
-
-    def get_success_url(self):
-        return reverse('Class')
-
-
-
-
-class СurriculumView(PermissionRequiredMixin,ListView):
-    model = Сurriculum
-    template_name = 'classes/curriculum.html'
-    permission_required = 'classes.view_сurriculum'
-    def get_context_data(self):
-        context = super().get_context_data()
-        context['title'] = 'Учебные планы'
-        context['curriculums'] = Сurriculum.objects.filter(
-            institution=self.request.user.institution.pk,year=self.request.user.institution.year.pk)
-        return context
-
-class СurriculumCreateView(PermissionRequiredMixin, CurruculumMixin, CreateView):
-    form_class = СurriculumForm
-    template_name = 'classes/add_curriculum.html'
-    
-    permission_required = 'classes.add_сurriculum'
-    def get_context_data(self):
-
-        context=super().get_context_data()
-        context['title']='Добавление учебного плана'
-        c_def=self.get_curriculum_context(title='Добавление учебного плана')
-        return dict(list(context.items())+list(c_def.items()))
-
-    def form_valid(self, form):
-        form.instance.institution_id = self.request.user.institution.pk
-        form.instance.year_id = self.request.user.institution.year.pk
-
-
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        self.form_save()
-        return reverse('Curriculum')
-
-class СurriculumUpdateView(PermissionRequiredMixin, CurruculumMixin, UpdateView):
-    model=Сurriculum
-    form_class = СurriculumForm
-    template_name = 'classes/add_curriculum.html'
-    permission_required = 'classes.change_сurriculum'
-    def get_context_data(self):
-
-        context=super().get_context_data()
-        context['title']='Редактирование учебного плана'
-        c_def=self.get_curriculum_context(title='Редактирование учебного плана')
-        return dict(list(context.items())+list(c_def.items()))
-
-    def form_valid(self, form):
-        form.instance.institution_id = self.request.user.institution.pk
-        form.instance.year_id = self.request.user.institution.year.pk
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        self.form_save()
-        return reverse('Curriculum')
-class DeleteCurriculum(InstitutionsMixin,AdminPermissionMixin, DeleteView):
-    template_name = 'institutions/curriculum.html'
-
-    def get_object(self, **kwargs):
-        id_ = self.kwargs.get("pk")
-        return get_object_or_404(Сurriculum, id=id_)
-
-    def get_success_url(self):
-        return reverse('Curriculum')
-
-    def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
-
-
-
-class LoadView(PermissionRequiredMixin, TimetableSettigns,SuccessMessageMixin, View):
-    form_class = СurriculumForm
-    template_name = 'classes/load.html'
-    permission_required = 'classes.view_load'
-
-
-    def get_success_url(self):
-        return reverse('Load')
-
-    def get(self, request, *args, **kwargs):
-        context = {}
-        context['subjects'] = self.get_info()
-        context['teachers']=UserNet.objects.filter(institution=self.request.user.institution.pk,groups__name='Учитель',is_active=True).distinct()
-        context['classes']=Classes.objects.filter(institution=self.request.user.institution.pk, year=self.request.user.institution.year.pk)
-        context['class']=self.get_class()
-        context['title'] = 'Учебная нагрузка'
-        return render(request, self.template_name,context)
-    def post(self, request, *args, **kwargs):
-        subjects_list=self.get_info()
-        class_pk=self.get_class().pk
-        for subject in subjects_list:
-            subroups_list=Subgroups.objects.filter(class_pk=class_pk,subject_pk=subject.pk)
-            if subroups_list:
-                for subgroup in subroups_list:
-                    teacher=self.request.POST.get("subject_"+str(subject.pk)+"_subgroup_"+str(subgroup.pk))
-                    load_check=Load.objects.filter(class_pk=class_pk,subject_pk=subject,subgroup=subgroup)
-                    delete=self.request.POST.get("del_"+str(subject.pk))
-
-                    if delete:
-                        for i in load_check: get_load=i.pk
-                        get_load=Load.objects.get(pk=get_load).delete()
-                    else:
-
-                        if load_check and teacher:
-                            for i in load_check: get_teacher=i.pk
-                            teacher_get=UserNet.objects.get(pk=teacher)
-                            get_load=Load.objects.get(pk=get_teacher)
-                            get_load.teacher=teacher_get
-                            get_load.save()
-
-                            update_timetable_begin=self.request.POST.get("begin_"+str(subject.pk))
-                            update_timetable_end=self.request.POST.get("end_"+str(subject.pk))
-
-                            if update_timetable_begin and update_timetable_end:
-                                get_lessons=Lessons.objects.filter(subject_pk=get_load, date__gte=update_timetable_begin, date__lte=update_timetable_end)
-                                for lesson in get_lessons:
-                                    lesson.teacher=teacher_get
-                                    lesson.save()
-
-
-                        else:
-                            if teacher:
-                                teacher_load=UserNet.objects.get(pk=teacher)
-                                Load.objects.create(class_pk=self.get_class(),subject_pk=subject,subgroup=subgroup,teacher=teacher_load)
-            else:
-                teacher=self.request.POST.get("subject_"+str(subject.pk))
-                load_check=Load.objects.filter(class_pk=class_pk,subject_pk=subject)
-                update_timetable_begin=self.request.POST.get("begin_"+str(subject.pk))
-                update_timetable_end=self.request.POST.get("end_"+str(subject.pk))
-                delete=self.request.POST.get("del_"+str(subject.pk))
-
-                if delete:
-                    for i in load_check: get_load=i.pk
-                    get_load=Load.objects.get(pk=get_load).delete()
-                else:
-                    if load_check and teacher:
-                        
-                        for i in load_check: get_teacher=i.pk
-                        teacher_get=UserNet.objects.get(pk=teacher)
-                        get_load=Load.objects.get(pk=get_teacher)
-                        get_load.teacher=teacher_get
-                        get_load.save()
-                        if update_timetable_begin and update_timetable_end:
-                            get_lessons=Lessons.objects.filter(subject_pk=get_load, date__gte=update_timetable_begin, date__lte=update_timetable_end)
-                            for lesson in get_lessons:
-                                lesson.teacher=teacher_get
-                                lesson.save()
-
-                    else:
-                        if teacher:
-                            teacher_load=UserNet.objects.get(pk=teacher)
-                            Load.objects.create(class_pk=self.get_class(),subject_pk=subject,teacher=teacher_load)
-
-
-        messages.success(request,'Нагрузка успешно обновлена!')
-        return redirect(request.META.get('HTTP_REFERER'))
-
-
-#Расписание
-class Timetable(PermissionRequiredMixin,ListView):
-    model = Classes
-    template_name = 'classes/timetable_classes.html'
-    permission_required = 'classes.view_timetabletemplates'
-    def get_context_data(self):
-        context = super().get_context_data()
-        context['title'] = 'Расписание'
-        context['classes'] = Classes.objects.filter(institution=self.request.user.institution.pk, year=self.request.user.institution.year.pk)
-        return context
-
-class TimetableTemplatesView(PermissionRequiredMixin,TimetableSettigns,ListView):
-    model = TimetableTemplates
-    template_name = 'classes/timetable_templates.html'
-    permission_required = 'classes.view_timetabletemplates'
-    def get_context_data(self):
-        context = super().get_context_data()
-        context['title'] = 'Шаблоны расписания '+str(self.get_class().class_number)+str(self.get_class().letter)+' класса'
-        context['class']=self.get_class()
-        context['templates'] = TimetableTemplates.objects.filter(class_pk=self.get_class())
-        context['curriculums'] = Сurriculum.objects.filter(
-            institution=self.request.user.institution.pk,year=self.request.user.institution.year.pk)
-        return context
-
-class AddTimetableTemplate(PermissionRequiredMixin, TimetableSettigns, View):
-    template_name = 'classes/timetable_add_template.html'
-    permission_required = 'classes.view_timetabletemplates'
-    def post(self,request):
-        context={}
-        context['days'] = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
-        context['title'] = 'Добавление шаблона расписания'
-        context['loads']=Load.objects.filter(class_pk=self.request.POST.get("class"))
-        context['class_pk']=self.request.POST.get("class")
-        return render(request, self.template_name,context)
-
-class CreateTimetableTemplate(PermissionRequiredMixin,View):
-    permission_required = 'classes.view_timetabletemplates'
-    def post(self,request):
-        class_pk=request.POST.get("class_pk")
-        class_get=Classes.objects.get(pk=class_pk)
-        bell_filter=BellTimetable.objects.filter(profile=class_get.bell_profile).order_by('day','lesson')
-        profile_name=request.POST.get("profile")
-        template=TimetableTemplates.objects.create(сurriculum=class_get.сurriculum,name=profile_name,class_pk=class_get)
-        for bell in bell_filter:
-            lesson=bell
-            loads=request.POST.getlist(str(bell.day)+str((bell.lesson)))
-            
-            for load in loads:
-                if load:
-                    get_subject=Load.objects.get(pk=int(load))
-                    SubjectTemplate.objects.create(day=bell.day,lesson=bell.lesson,profile=template,subject_pk=get_subject)
-
-        return redirect(class_get.timetable_templates())
-
-
-class UpdateTimetableTemplate(PermissionRequiredMixin,View):
-    template_name = 'classes/timetable_add_template.html'
-    permission_required = 'classes.view_timetabletemplates'
-    def get_template(self):
-        return TimetableTemplates.objects.get(pk=self.kwargs['pk'])
-    def get(self, request, *args, **kwargs):
-        context={}
-        context['class_pk']=self.get_template().class_pk.pk
-        context['template']=self.get_template()
-        context['loads']=Load.objects.filter(class_pk=self.get_template().class_pk.pk)
-        context['days'] = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
-        context['title'] = 'Редактирование'+'"'+self.get_template().name+'"'
-
-        return render(request, self.template_name,context)
-    def post(self,request,*args, **kwargs):
-        class_pk=request.POST.get("class_pk")
-        class_get=Classes.objects.get(pk=class_pk)
-        bell_filter=BellTimetable.objects.filter(profile=class_get.bell_profile).order_by('day','lesson')
-        profile_name=request.POST.get("profile")
-        template=TimetableTemplates.objects.get(pk=self.get_template().pk)
-        template.name=profile_name
-        template.save()
-
-        get_template_subjects=SubjectTemplate.objects.filter(profile=template)
-        for subject in get_template_subjects:
-            loads=request.POST.getlist(str(subject.day)+str((subject.lesson)))
-            if str(subject.subject_pk.pk) not in loads:
-
-                get_template_subject=SubjectTemplate.objects.get(pk=subject.id).delete()
-
-        for bell in bell_filter:
-            lesson=bell
-            loads=request.POST.getlist(str(bell.day)+str((bell.lesson)))
-            new_loads=list(filter(None, loads))
-            for load in new_loads:
-                 check_template_subjects=SubjectTemplate.objects.filter(day=bell.day,lesson=bell.lesson,profile=template,subject_pk__id=load).values_list('subject_pk')
-                 if check_template_subjects:
-                    sub_template=check_template_subjects[0][0]
-                 else:
-                        get_subject=Load.objects.get(pk=int(load))
-                        SubjectTemplate.objects.create(day=bell.day,lesson=bell.lesson,profile=template,subject_pk=get_subject)
-
-
-        return redirect(class_get.timetable_templates())
-
-class TimetableWeek(PermissionRequiredMixin, TimetableSettigns, View):
-    template_name = 'classes/timetable_weeks.html'
-    permission_required = 'classes.view_timetabletemplates'
-    def get(self, request, *args, **kwargs):
-        context={}
-        context['class_pk']=self.get_class()
-        profile=PeriodProfile.objects.get(pk=self.get_class().period_profile.pk)
-        if profile.typePeriod==4:
-            context['name_period']='Четверть'
-        elif profile.typePeriod==3:
-            context['name_period']='Триместр'
-        elif profile.typePeriod==2:
-            context['name_period']='Полугодие'
-        if 'period' in self.kwargs:
-            context['period_pk']=self.kwargs['period']
-        context['class']=self.get_class()
-        context['templates']=TimetableTemplates.objects.filter(class_pk=self.get_class())
-        context['weeks']=self.get_weeks()
-        context['periods']=Periods.objects.filter(profile=self.get_class().period_profile)
-        context['title'] = 'Распределение уроков '+str(self.get_class().class_number)+str(self.get_class().letter)+' класса'
-        return render(request, self.template_name,context)
-    def post(self, request, *args, **kwargs):
-        context={}
-
-        context['class_pk']=self.get_class()
-        profile=PeriodProfile.objects.get(pk=self.get_class().period_profile.pk)
-        i=0
-        for week in self.get_weeks():
-            i+=1
-            post_week=request.POST.get(str('template')+str(i))
-            if post_week:
-                start=week[0]
-                end=week[1]
-                dates=get_dates(start,end)
-                for date_week in dates:
-                    if date_week>=self.get_period().start and date_week<=self.get_period().end:
-                        weekday=date_week.isoweekday()
-                        get_lesson=SubjectTemplate.objects.filter(profile__id=post_week,day=weekday)
-                        for lesson in get_lesson:
-                            lesson_save=Lessons.objects.create(number=lesson.lesson,date=date_week,class_pk=self.get_class(),subject_pk=lesson.subject_pk,teacher=lesson.subject_pk.teacher)
-                            lesson_save.types.add(1)
-        messages.success(request,'Уроки успешно распределены')
-        return redirect(request.META.get('HTTP_REFERER'))
-class EditLessons(PermissionRequiredMixin,TimetableSettigns,View):
-    template_name='classes/timetable_editlesson.html'
-    permission_required = 'classes.view_timetabletemplates'
-    def get(self,request,class_pk):
-        context={}
-        context['title']='Редактирование уроков'
-        context['date']=self.get_date()
-        context['lessons']=self.get_lessons()
-        context['class']=self.get_class()
-        context['loads']=self.get_loads()
-        context['teachers']=UserNet.objects.filter(institution=request.user.institution,groups__name='Учитель',is_active=True)
-        return render(request, self.template_name, context)
-    def post(self,request,class_pk):
-        self.save_edit_timetable()
-
-        return redirect(request.META.get('HTTP_REFERER'))
-class DeleteLessons(PermissionRequiredMixin, View):
-    permission_required = 'journal.delete_lessons'
-    def get(self,request,class_pk):
-        begin=request.GET.get("begin")
-        end=request.GET.get("end")
-        lesson=Lessons.objects.filter(class_pk=class_pk,date__gte=begin,date__lte=end).delete()
-        return redirect(request.META.get('HTTP_REFERER'))
-
-
-#Ученики
-class StudentListView(PermissionRequiredMixin, ListView):
-    paginate_by = 35
-    model = Student
-    template_name = 'classes/students.html'
-    permission_required = 'classes.view_student'
-    def query(self):
-        surname=self.request.GET.get('surname')
-        name=self.request.GET.get('name')
-        middle_name=self.request.GET.get('middle_name')
-        class_pk=self.request.GET.get('class_pk')
-        if (surname or name or middle_name or class_pk) is not None:
-            return surname,name,middle_name,class_pk
-    def get_class(self):
-        if self.request.user.has_perm('classes.delete_student'):
-            return Classes.objects.filter(institution=self.request.user.institution, year=self.request.user.institution.year.pk)
-        else:
-            return Classes.objects.filter(class_teacher=self.request.user,year=self.request.user.institution.year.pk)
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data()
-        context['title'] = 'Обучающиеся'
-        if self.query():
-            context['surname']=self.query()[0]
-            context['name']=self.query()[1]
-            context['middle_name']=self.query()[2]
-        
-            context['class_pk']=int(self.query()[3])
-        context['classes']=self.get_class()
-        return context
-
-    def get_queryset(self):
-        
-        if self.query() and (self.query()[0] or self.query()[1] or self.query()[2]):
-            users=UserNet.objects.filter(institution=self.request.user.institution, groups__name='Ученик', is_active=True, 
-                last_name__iregex=r"[[:<:]]{0}".format(self.query()[0]), first_name__iregex=r"[[:<:]]{0}".format(self.query()[1])
-                , middle_name__iregex=r"[[:<:]]{0}".format(self.query()[2])
-
-                )
-
-            
-        else:
-            users=UserNet.objects.filter(institution=self.request.user.institution, groups__name='Ученик', is_active=True)
-
-
-        if self.query() and self.query()[3].isdigit():
-            students=Student.objects.filter(user__in=users,class_pk=self.query()[3]).order_by('user__last_name')
-        else:
-            students=Student.objects.filter(user__in=users, class_pk__in=self.get_class()).order_by('user__last_name')
-        return students
-class AddStudent(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
-    form_class = OldStudentForm
-    template_name = 'user_account/user_update.html'
-    permission_required = 'classes.add_student'
-    def get_form_kwargs(self):
-        kwargs = super(AddStudent, self).get_form_kwargs()
-        kwargs['user'] =self.request.user
-        return kwargs
-    def form_valid(self, form):
-        chars = 'abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
-        self.login = ''
-        self.password = ''
-        for i in range(8):
-            self.password += random.choice(chars)
-        for i in range(8):
-            self.login += random.choice(chars)
-        user = form.save(commit=False)        
-        user.set_password(self.password)
-        user.username=self.login
-        user.institution_id = self.request.user.institution.pk
-
-        user.save()
-        group=Group.objects.get(name='Ученик')
-        user.groups.add(group)
-        Student.objects.create(user=user,class_pk=form.cleaned_data['class'],date_of_enrollment=form.cleaned_data['date_of_enrollment'])
-        return super().form_valid(form)
-
-    def get_context_data(self):
-        context = super().get_context_data()
-        context['title'] = 'Добавление обучающегося'
-        return context
-
-    def get_success_url(self):
-        return reverse('StudentList')
-    def get_success_message(self, cleaned_data):
-        ms = "Логин:" + self.login + "\n" + "Пароль:" + self.password
-        success_message = ms
-        return success_message % cleaned_data
-
-class ImportStudent(View):
-    def get(self,request):
-        context={}
-        context['title']='Импорт пользователей'
-        context['file']=FileTemplates.objects.filter(name='Шаблон для импорта учеников').first()
-        return render(request,'classes/import_student.html',context)
-    def post(self,request):
-        context={}
-
-        if 'add' in request.POST:
-            get_users=request.POST.getlist("users")
-            get_classes=request.POST.getlist("users_classes")
-            date=request.POST.get('add')
-            
-            i=0
-            for user in get_users:
-                user_get=UserNet.objects.get(pk=user)
-                user_get.is_active=True
-                user_get.save()
-                pk_class=get_classes[i]
-                get_class=Classes.objects.get(pk=pk_class)
-                
-                Student.objects.create(user=user_get,class_pk=get_class,date_of_enrollment=date)
-                i+=1
-            messages.success(request, 'Учащиеся успешно импортированы!')
-            return redirect('StudentImport')
-        else:
-            file=request.FILES['file']
-            date=request.POST.get('date')
-            users=get_user(file)
-            arr=[]
-            my_group=Group.objects.get(name='Ученик')
-            for row in range(2,users.max_row+1):
-                last_name=users[row][0].value
-                first_name=users[row][1].value
-                if last_name:
-                    patronymic=users[row][2].value
-                    gender=users[row][3].value
-                    birth_day=users[row][4].value
-                    class_=users[row][5].value
-                    letter=re.sub("[0-9]", "", class_)
-                    class_=class_.rsplit('-')
-                    class_ = "".join(c for c in class_[0] if  c.isdecimal())
-                    class_find=Classes.objects.filter(institution=request.user.institution,class_number=class_,letter=letter).first()
-                    login=generate_login()[0]
-                    password=generate_login()[1]
-                    user_pk=UserNet.objects.create_user(is_active=False,username=login,password=password,last_name=last_name,first_name=first_name,middle_name=patronymic,gender=gender,birth_day=birth_day,institution=self.request.user.institution)
-                    
-                    my_group.user_set.add(user_pk)
-
-
-                    arr.append([last_name,first_name,patronymic,gender,birth_day,login,password,user_pk.pk,class_find])
-                    
-        
-        context['title']='Результат импорта'
-        context['date']=date
-        context['users']=arr
-        return render(request,'classes/import_result.html',context)
-
-
-
-class StudentEditView(PermissionRequiredMixin,SuccessMessageMixin,View):
-    model = Student
-    form_class = StudentUserForm
-    second_form_class = StudentForm
-
-
-    template_name = 'classes/student.html'
-    pk_url_kwarg = 'student_pk'
-    success_message = 'Информация обновлена'
-    error_message='Ошибка'
-    permission_required = 'classes.change_student'
-    login_url='login'
-
-    def get_student(self):
-        return Student.objects.get(pk=self.kwargs['student_pk'])
 
     def get(self,request, **kwargs):
         context = {}
         
         
-        context['title'] = 'Личное дело учащегося'
+        context['title'] = 'Настройки организации'
+        context['types']=LessonType.objects.filter(Q(institution=request.user.institution) | Q(institution=None))
         if 'form' not in context:
-            context['form'] = self.form_class(instance=self.get_student().user)
+            context['form'] = self.form_class(instance=self.get_object())
+
         if 'form2' not in context:
-            context['form2'] = self.second_form_class(instance=self.get_student())
+            context['form2'] = self.second_form_class()
+
 
         return render(request, self.template_name, context)
     
@@ -663,45 +46,391 @@ class StudentEditView(PermissionRequiredMixin,SuccessMessageMixin,View):
     def post(self,request, **kwargs):
 
 
-        if 'first_name' in request.POST:
-            form=self.form_class(request.POST,request.FILES or None,instance=self.get_student().user)
+        if 'title' in request.POST:
+            form=self.form_class(request.POST,request.FILES or None,instance=self.get_object())
             if form.is_valid():
                 form.save()
 
-        if 'class_pk' in request.POST:
-            form2=self.second_form_class(request.POST,instance=self.get_student())
+        if 'name' in request.POST:
+            form2=self.second_form_class(request.POST,)
             if form2.is_valid():
+                form2.instance.institution=request.user.institution
                 form2.save()
             
         return redirect(request.META.get('HTTP_REFERER'))
 
-class Deduction(PermissionRequiredMixin,SuccessMessageMixin,View):
-    permission_required = 'classes.delete_student'
-    def post(self,request, **kwargs):
-        date=self.request.POST.get("date")
-        student=self.request.POST.get("pk")
-        get_student=Student.objects.get(pk=student)
-        get_student.user.is_active=False
-        get_student.user.save()
-        StudentShifting.objects.create(student=get_student, type_shift=2, date=date)
+
+    def get_object(self, **kwargs):
+        return Institutions.objects.get(pk=self.request.user.institution.pk)
+
+
+class AdsCreateView(CreateView):
+
+    form_class=AdsForm
+    template_name='institutions/ads.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
+        context['title'] = "Объявления"
+        context['ads']=AdsInstitution.objects.filter(institution=self.request.user.institution)
+        return context
+    def form_valid(self, form):
+        form.instance.institution_id = self.request.user.institution.pk
+        form.instance.author=self.request.user
+        return super().form_valid(form)
+    def get_success_url(self):
+        return reverse('create_ad')
+
+class AdsDeleteView(View):
+    
+
+    def get(self, request, *args, **kwargs):
+        id_ = self.kwargs.get("pk")
+        AdsInstitution.objects.get(pk=id_).delete()
         return redirect(request.META.get('HTTP_REFERER'))
 
-class ReturnStudents(View):
 
-    def get(self,request,class_pk):
+class StudyPeriodsView(PermissionRequiredMixin,ListView):
+    model = PeriodProfile
+    template_name = 'institutions/study_periods.html'
+    permission_required = 'institutions.view_periodprofile'
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
+        period_profile = PeriodProfile.objects.filter(institution=self.request.user.institution.pk,year=self.request.user.institution.year.pk)
+        context['period_profile'] = period_profile
+        context['title'] = "Профили учебных периодов"
+        return context
 
+
+class Add_periods(AdminPermissionMixin, CreateView):
+    form_class = PeriodsForm
+    template_name = 'institutions/add_periods.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
+        context['title'] = "Добавление учебного периода"
+        return context
+
+    def form_valid(self, form):
+        form.instance.typePeriod = self.request.POST.get("type_period")
+        form.instance.institution_id = self.request.user.institution.pk
+        form.instance.year_id = self.request.user.institution.year.pk
+        type_period = self.request.POST.get("type_period")
+        period_profile = form.save(commit=False)
+        period_profile.save()
+        profile_pk = period_profile
+        one_start = self.request.POST.get("one_start")
+        one_end = self.request.POST.get("one_end")
+        one_period = Periods.objects.create(profile=profile_pk, start=one_start, end=one_end)
+        two_start = self.request.POST.get("two_start")
+        two_end = self.request.POST.get("two_end")
+        two_period = Periods.objects.create(profile=profile_pk, start=two_start, end=two_end)
+
+        if int(type_period) == 3 or int(type_period) == 4:
+            three_start = self.request.POST.get("three_start")
+            three_end = self.request.POST.get("three_end")
+            three_period = Periods.objects.create(profile=profile_pk, start=three_start, end=three_end)
+        if int(type_period) == 4:
+            four_start = self.request.POST.get("four_start")
+            four_end = self.request.POST.get("four_end")
+            four_period = Periods.objects.create(profile=profile_pk, start=four_start, end=four_end)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('StudyPeriods')
+
+
+class DeleteProfilePeriods(InstitutionsMixin,AdminPermissionMixin, DeleteView):
+    template_name = 'institutions/study_periods.html'
+
+    def get_object(self, **kwargs):
+        id_ = self.kwargs.get("pk")
+        return get_object_or_404(PeriodProfile, id=id_)
+
+    def get_success_url(self):
+        return reverse('StudyPeriods')
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+
+
+class StudyPeriodsUpdateView(View, Study_Periods):
+    template_name = 'institutions/study_periods_edit.html'
+    def get(self,request,profile_pk):
+        context={}
+        context['title']='Редактирование учебных периодов'
+        context['periods']=self.get_periods()
+        context['period_profile']=self.get_period_profile()
+        return render(request,self.template_name,context)
+    def post(self,request,profile_pk):
+        self.get_update_period()
+
+        return redirect('StudyPeriods')
+
+#Звонки
+class BellProfileView(AdminPermissionMixin, ListView):
+    model = BellProfile
+    template_name = 'institutions/bell_profile.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
+        context['title'] = "Профили звонков"
+        context['bell_profiles'] = BellProfile.objects.filter(institution=self.request.user.institution.pk)
+        return context
+
+
+class BellProfileCreateView(AdminPermissionMixin, CreateView):
+    form_class = BellForm
+    template_name = 'institutions/bell_profile_create.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
+        context['title'] = "Добавление профиля звонков периода"
+        context['days'] = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
+        return context
+
+    def form_valid(self, form):
+        bell_profile = form.save(commit=False)
+        form.instance.institution_id = self.request.user.institution.pk
+        bell_profile.save()
+        profile = bell_profile
+        n = 8
+        a = 0
+        while a <= 5:
+            a += 1
+            for i in range(n):
+                i += 1
+                bell_start = self.request.POST.get("b" + str(a) + str(i))
+                bell_end = self.request.POST.get("e" + str(a) + str(i))
+                if bell_start and bell_end:
+                    bell_period = BellTimetable.objects.create(profile=bell_profile, start=bell_start, end=bell_end,
+                                                               day=a, lesson=i)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('Bell_profile_list')
+
+
+class SubjectView(AdminPermissionMixin, CreateView):
+    form_class = SubjectForm
+    template_name = 'institutions/subject_list.html'
+
+    def form_valid(self, form):
+        form.instance.institution_id = self.request.user.institution.pk
+        return super().form_valid(form)
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['title'] = 'Учебные предметы'
+        context['subjects'] = Subject.objects.filter(
+            Q(institution=self.request.user.institution.pk) | Q(institution=None)).order_by('title')
+        context['institution']=self.request.user.institution
+        return context
+
+    def get_success_url(self):
+        return reverse('Subject_list')
+
+
+class DeleteSubject(InstitutionsMixin, DeleteView):
+    def get_object(self, **kwargs):
+        id_ = self.kwargs.get("pk")
+        return get_object_or_404(Subject, id=id_)
+
+    def get_success_url(self):
+        return reverse('Subject_list')
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+
+#Админка ###############################################################################
+class InstitutionCreate(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
+    form_class = InstitutionForm
+    template_name = 'institutions/institutions_create.html'
+    permission_required='institutions.add_institutions'
+
+    def get_types(self):
         
-        students_get=Student.objects.filter(class_pk=class_pk)
+        if self.request.user.is_superuser:
+            types=TypeInstitutions.objects.all()
+        elif self.request.user.institution.typeInstitutions.title == 'Орган управления':
+            types=TypeInstitutions.objects.filter(title='Образовательная организация')
+        return types
+
+    def get_departmental(self):
         
-        students_fio=[]
-        students_pk=[]
 
-        for student in students_get:
-            students_fio.append(student.user.last_name+ ' ' +student.user.first_name)
-            students_pk.append(student.pk)
-        response={
-            'fio':students_fio,
-            'pk': students_pk  
-        }
-        return JsonResponse(response)
+        if self.request.user.is_superuser == True:
+            departmentals=Institutions.objects.filter(typeInstitutions__title='Орган управления')
+        else:
+            departmentals=Institutions.objects.filter(typeInstitutions__title='Орган управления', pk = self.request.user.institution.pk)
+        return departmentals
 
+    def get_form_kwargs(self):
+        kwargs = super(InstitutionCreate, self).get_form_kwargs()
+        kwargs['types']=self.get_types().values_list('pk')
+        return kwargs
+
+    def form_valid(self, form):
+        chars = 'abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+        self.login = ''
+        self.password = ''
+
+        institutions_create = form.save(commit=True)
+        if self.request.user.is_superuser == False:
+            institutions_create.departmental_organization.set(self.request.user.institution)
+            department_institution = Institutions.objects.get(pk=self.request.user.institution.pk)
+            lim = department_institution.lim-1
+            department_institution.save()
+        institutions_create.save()
+        for i in range(8):
+            self.password += random.choice(chars)
+        for i in range(8):
+            self.login += random.choice(chars)
+        group = TypeInstitutions.objects.get(pk=self.request.POST.get("typeInstitutions")).group.all()[0]
+        user = UserNet.objects.create_user(username=self.login, password=self.password,
+                                           institution=institutions_create)
+        user.groups.set([group])
+        if self.request.user.is_superuser == False:
+        return super().form_valid(form)
+
+    def query(self):
+
+        short_title=self.request.GET.get('short_title')
+        ban=self.request.GET.get("ban")
+        if (short_title or ban) is not None:
+            return short_title,ban
+
+
+    def get_institution(self):
+        if self.request.user.is_superuser == True:
+            department_q = Q(departmental_organization__in=self.get_departmental()) | Q(departmental_organization=None)
+        else:
+            department_q = Q(departmental_organization__in=self.get_departmental())
+        if self.query():
+            department=self.request.GET.get('department')
+
+            if department!='-':
+                instituion=Institutions.objects.filter(departmental_organization=department,short_title__icontains=self.query()[0])
+            elif int(self.query()[1])==1:
+                instituion=Institutions.objects.filter(department_q,short_title__icontains=self.query()[0])
+            else:
+                instituion=Institutions.objects.filter(department_q,short_title__icontains=self.query()[0],is_active=True)
+        else:
+            instituion=Institutions.objects.filter(department_q, is_active=True)
+        return instituion
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['title'] = 'Реестр ОО'
+        context['institutions'] = self.get_institution()
+        context['departmentals']=self.get_departmental()
+        department=self.request.GET.get('department')
+        if department!='-' and department:
+            context['department'] = int(department)
+        else:
+            context['department'] = 0
+        context['types']=self.get_types()
+        if self.query():
+            context['short_title']=self.query()[0]
+
+        if self.query():
+            if int(self.query()[1])==1:
+                context['ban']=True
+        else:
+            context['ban']=False
+        return context
+
+    def get_success_url(self):
+        return reverse('InstitutionCreate')
+
+    def get_success_message(self, cleaned_data):
+        ms = "Логин:" + self.login + "\n" + "Пароль:" + self.password
+        success_message = ms
+        return success_message % cleaned_data
+
+
+
+
+class BlockInstitution(PermissionRequiredMixin, View):
+    permission_required = 'institutions.delete_institutions'
+    def get(self,request,institution):
+
+        get_institution=Institutions.objects.get(pk=institution)
+        get_institution.is_active=False
+        get_institution.save()
+        return redirect(request.META.get('HTTP_REFERER'))
+
+
+
+
+class UnblockInstitution(PermissionRequiredMixin, View):
+    permission_required = 'institutions.delete_institutions'
+    def get(self,request,institution):
+
+        get_institution=Institutions.objects.get(pk=institution)
+        get_institution.is_active=True
+        get_institution.save()
+        return redirect(request.META.get('HTTP_REFERER'))
+
+class EditInstitutuonView(UpdateView):
+    template_name='institutions/institutions.html'
+    form_class=InstitutionsInfoForm
+
+    def form_valid(self,form):
+        return super().form_valid(form)
+
+    def get_object(self,**kwargs):
+        return Institutions.objects.get(pk=int(self.kwargs.get('pk')))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['title'] = 'Редактирование организации'
+        return context
+    def get_form_kwargs(self):
+        kwargs = super(EditInstitutuonView, self).get_form_kwargs()
+        kwargs['is_admin'] = self.request.user.is_superuser
+        
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('InstitutionCreate')
+
+#######################################################################
+
+class TranslationOfTheYear(PermissionRequiredMixin, View):
+
+    permission_required='institutions.change_year'
+    template_name='institutions/translate_year.html'
+
+    def get(self,request):
+        year=Year.objects.get(pk=request.user.institution.year.pk+1)
+        context={}
+        context['title']='Перевод года'
+        context['year']=year
+        context['classes']=Classes.objects.filter(
+                institution=self.request.user.institution.pk,year=self.request.user.institution.year.pk)
+        context['new_classes']=Classes.objects.filter(
+                institution=self.request.user.institution.pk,year=self.request.user.institution.year.pk+1)
+        context['one_student'] = Student.objects.filter(class_pk__institution=self.request.user.institution, class_pk__institution__year = self.request.user.institution.year, user__is_active= True ).first()
+        
+        return render(request,self.template_name,context )
+
+    def post(self,request):
+
+        class_pk = int(self.request.POST.get('class_pk'))
+        get_old_class = Classes.objects.get(pk=class_pk)
+        students = Student.objects.filter(class_pk__pk=class_pk)
+        get_new_class = Classes.objects.get(pk=class_pk)
+        for student in students:
+            student.old_classes.add(get_old_class)
+            if self.request.POST.get('new_class_'+str(student.pk)):
+                class_student = int(self.request.POST.get('new_class_'+str(student.pk)))
+                if class_student!=0:
+                    get_new_class = Classes.objects.get(pk=class_student)
+                    student.class_pk=get_new_class
+                    
+            else:
+                student.class_pk = None
+            
+            student.save()
+        messages.success(request, 'Учащиеся успешно переведены!')
+        return redirect(request.META.get('HTTP_REFERER'))

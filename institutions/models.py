@@ -1,153 +1,138 @@
+from django.contrib.auth.models import Group
 from django.db import models
 from django.urls import reverse
-from user_account.models import *
-from institutions.models import *
 
 
-class Classes(models.Model):
-    CHOICES = (
-        (1, 1),
-        (2, 2),
-        (3, 3),
-        (4, 4),
-        (5,5),
-        (6, 6),
-        (7, 7),
-        (8, 8),
-        (9, 9),
-        (10, 10),
-        (11, 11),
+class Year(models.Model):
+    title = models.CharField(max_length=150, verbose_name='Наименование учебного года')
+    start = models.DateField(verbose_name='Дата начала учебного года')
+    end = models.DateField(verbose_name='Дата окончания учебного года')
+    is_active=models.BooleanField(default=False, verbose_name='Активен')
+    def __str__(self):
+        return self.title
 
-    )
-
-    class_number = models.IntegerField(verbose_name='Номер', choices=CHOICES)
-    letter = models.CharField(max_length=10, verbose_name='Литер', blank=True)
-    institution = models.ForeignKey(Institutions, on_delete=models.PROTECT, verbose_name='Организация')
-    year = models.ForeignKey(Year, on_delete=models.PROTECT, verbose_name='Учебный год')
-    сurriculum = models.ForeignKey('Сurriculum', on_delete=models.SET_NULL, verbose_name='Учебный план', null=True)
-    bell_profile = models.ForeignKey(BellProfile, on_delete=models.SET_NULL, verbose_name="Профиль звонков", null=True)
-    period_profile = models.ForeignKey(PeriodProfile, on_delete=models.SET_NULL, verbose_name="Профиль учебных периодов",
-                                       null=True)
-    class_teacher=models.ForeignKey(UserNet, on_delete=models.SET_NULL, verbose_name="Классный руководитель",
-                                       null=True)
-
-
-    CHANGE_CHOICES = (
-    (1, ("Первая смена")),
-    (2, ("Вторая смена")),
-
-    )
-    change=models.IntegerField(choices=CHANGE_CHOICES, default=1, verbose_name="Смена")   
-    def get_absolute_url(self):
-        return reverse('ClassEdit', kwargs={"pk": self.pk})
-    def class_load(self):
-        return reverse('LoadPk', kwargs={"pk": self.pk})
-    def timetable_templates(self):
-        return reverse('TimetableTemplates', kwargs={"pk": self.pk})
-    def timetable_weeks(self):
-        return reverse('TimetableWeek', kwargs={"pk": self.pk})
-
-    
     class Meta:
-        ordering=['class_number','letter']
-        verbose_name="класс"
-        verbose_name_plural="Классы"
+        verbose_name = 'Учебный год'
+        verbose_name_plural = 'Учебные года'
+        ordering = ['-pk']
+
+
+
+class TypeInstitutions(models.Model):
+    title = models.CharField(max_length=150, verbose_name='Тип организации')
+    group = models.ManyToManyField(Group, null=True)
+
+    class Meta:
+        verbose_name = 'Тип организации'
+        verbose_name_plural = 'Типы организаций'
 
     def __str__(self):
-        return str(self.class_number)+str(self.letter)
-class Subgroups(models.Model):
-    class_pk = models.ForeignKey(Classes, on_delete=models.CASCADE,null=True)
-    subject_pk = models.ForeignKey('СurriculumSubject', on_delete=models.CASCADE,null=True, verbose_name='Предмет')
-    name = models.CharField(max_length=150, verbose_name='Наименование подгруппы',null=True)
+        return self.title
+
+class KindInstitutions(models.Model):
+    title = models.CharField(max_length=150, verbose_name='Вид организации')
+
     class Meta:
-        ordering=['subject_pk','name']
+        verbose_name = 'Вид организации'
+        verbose_name_plural = 'Виды организаций'
 
-# Учебный план
-
-class Сurriculum(models.Model):
-    title = models.CharField(max_length=40, verbose_name='Наименование профиля')
-    institution = models.ForeignKey(Institutions, on_delete=models.PROTECT, verbose_name='Организация')
-    year = models.ForeignKey(Year, on_delete=models.PROTECT, verbose_name='Учебный год')
-    def curriculum_edit(self):
-        return reverse('CurriculumEdit', kwargs={"pk": self.pk})
-    def curriculum_delete(self):
-        return reverse('DeleteCurriculum', kwargs={"pk": self.pk})
     def __str__(self):
         return self.title
 
 
-class СurriculumSubject(models.Model):
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    hour = models.FloatField(null=True)
-    class_number = models.IntegerField()
-    profile = models.ForeignKey(Сurriculum, on_delete=models.CASCADE)
+class Institutions(models.Model):
+    title = models.CharField(max_length=150, verbose_name='Наименование организации')
+    short_title = models.CharField(max_length=50, verbose_name='Краткое наименование')
+    photo = models.ImageField(upload_to='photos/%Y/%m/%d/', null=True, verbose_name='Фото', blank=True)
+    year = models.ForeignKey(Year, on_delete=models.PROTECT, verbose_name='Учебный год')
+    typeInstitutions = models.ForeignKey(TypeInstitutions, on_delete=models.PROTECT, verbose_name='Тип', null=True)
+    kindInstitutions = models.ForeignKey(KindInstitutions, on_delete=models.PROTECT, verbose_name='Вид', null=True)
+    last_edit = models.DateTimeField(verbose_name='Последнее редактирование',auto_now=True,null=True)
+    system_mark=models.ForeignKey('SystemMarks',verbose_name='Система оценивания',on_delete=models.PROTECT,default=1)
+    departmental_organization = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, verbose_name='Ведомственная организация')
+    is_active=models.BooleanField(default=True)
+    lim = models.IntegerField(default = 0)
+    class Meta:
+        verbose_name = 'Организацию'
+        verbose_name_plural = 'Организации'
+        ordering = ['-pk']
 
     def __str__(self):
-        return self.subject.title
+        return self.title
 
-#нагрузка и расписание 
+    def edit_url(self):
+        return reverse('EditInstitution', kwargs={"pk":self.pk})
 
-class Load(models.Model):
-    teacher=models.ForeignKey(UserNet, on_delete=models.SET_NULL, verbose_name="Учитель",
-                                       null=True)
-    class_pk = models.ForeignKey(Classes, on_delete=models.CASCADE,null=True)
-    subject_pk = models.ForeignKey('СurriculumSubject', on_delete=models.CASCADE,null=True, verbose_name='Предмет')
-    subgroup=models.ForeignKey('Subgroups', on_delete=models.CASCADE,null=True, blank=True, verbose_name='Подгруппа')
+# Расписание звонков
+class BellProfile(models.Model):
+    title = models.CharField(max_length=150, verbose_name='Наименование профиля')
+    institution = models.ForeignKey(Institutions, on_delete=models.PROTECT, verbose_name='Организация')
+
+    def delete_url(self):
+        return reverse('Delete_profile_bell', kwargs={"pk": self.pk})
+
+    def __str__(self):
+        return self.title
+
     class Meta:
-        ordering=['subject_pk','subgroup']
-    def periods(self):
-        return reverse('CheckPeriod', kwargs={"load": self.pk})
-class TimetableTemplates(models.Model):
-    сurriculum = models.ForeignKey('Сurriculum', on_delete=models.SET_NULL, verbose_name='Учебный план', null=True)
-    name = models.CharField(max_length=150, verbose_name='Наименование шаблона',null=True)
-    class_pk = models.ForeignKey(Classes, on_delete=models.CASCADE,null=True)
-    def get_absolute_url(self):
-        return reverse('UpdateTimetableTemplate', kwargs={"pk": self.pk})
-    class Meta:
-        ordering=['name']
-class SubjectTemplate(models.Model):
-    profile = models.ForeignKey(TimetableTemplates, on_delete=models.CASCADE)
+        verbose_name = 'Расписание звонков'
+        verbose_name_plural = 'Профили расписания звонков'
+        ordering = ['-pk']
+
+
+
+class BellTimetable(models.Model):
+    start = models.TimeField()
+    end = models.TimeField()
+    profile = models.ForeignKey(BellProfile, on_delete=models.CASCADE, verbose_name="Профиль")
     lesson = models.IntegerField(null=True)
     day = models.IntegerField(null=True)
-    subject_pk = models.ForeignKey('Load', on_delete=models.CASCADE,null=True, verbose_name='Предмет')
 
 
-    
-#Ученики
-class Student(models.Model):
-    user=models.ForeignKey(UserNet, on_delete=models.SET_NULL, verbose_name="Пользователь",
-                                       null=True)
-    class_pk = models.ForeignKey(Classes, on_delete=models.CASCADE,null=True)
-    old_classes = models.ManyToManyField(Classes, null=True, related_name='old_classes')
-    date_of_enrollment=models.DateField(verbose_name='Дата зачслениия', default='2021-09-01')
-    def edit(self):
-        return reverse('StudentEdit',kwargs={'student_pk':self.pk})
+# Уч.Предметы
+class Subject(models.Model):
+    title = models.CharField(max_length=150, verbose_name='Наименование предмета')
+    short_title = models.CharField(max_length=150, verbose_name='Краткое наименование предмета', null=True)
+    institution = models.ForeignKey(Institutions, null=True, blank=True, on_delete=models.CASCADE)
+
+    def delete_url(self):
+        return reverse('Delete_subject', kwargs={"pk": self.pk})
+
     def __str__(self):
-        return  self.user.last_name  + ' ' + self.user.first_name 
+        return self.title
+
     class Meta:
-        ordering=['user']
-        verbose_name="ученик"
-        verbose_name_plural="Ученики"
-
-class StudentSubgroup(models.Model):
-    student=models.ForeignKey(Student, on_delete=models.SET_NULL, verbose_name="Ученик",
-                                       null=True)
-    subject=models.ForeignKey(СurriculumSubject, on_delete=models.SET_NULL, verbose_name="Предмет",
-                                       null=True)
-    subgroup=models.ForeignKey(Subgroups, on_delete=models.SET_NULL, verbose_name="Подгруппа",
-                                       null=True)
-
-class StudentShifting(models.Model):
-
-    Shift_CHOICES = (
-    (1, ("Зачисление")),
-    (2, ("Отчисление")),
-    (3, ("Перевод")),
-
-    )
-    student=models.ForeignKey(Student, on_delete=models.SET_NULL, verbose_name="Ученик",
-                                       null=True)
+        ordering = ['title']
 
 
-    type_shift = models.IntegerField(null=False, choices=Shift_CHOICES)
-    date=models.DateField(verbose_name='Дата')
+
+
+# Учебные периоды
+class PeriodProfile(models.Model):
+    title = models.CharField(max_length=150, verbose_name='Профиль учебного периода')
+    year = models.ForeignKey(Year, on_delete=models.PROTECT, verbose_name='Учебный год')
+    institution = models.ForeignKey(Institutions, on_delete=models.PROTECT, verbose_name='Организация')
+    typePeriod = models.IntegerField()
+
+    def delete_url(self):
+        return reverse('Delete_profile_periods', kwargs={"pk": self.pk})
+    def update_url(self):
+        return reverse('StudyPeriodsUpdate', kwargs={"profile_pk": self.pk})
+    def __str__(self):
+        return self.title
+
+
+class Periods(models.Model):
+    profile = models.ForeignKey(PeriodProfile, on_delete=models.CASCADE, verbose_name='Профиль учебного периода')
+    start = models.DateField(verbose_name='Дата начала учебного периода')
+    end = models.DateField(verbose_name='Дата окончания учебного периода')
+    def get_absolute_url(self):
+        return reverse('TimetableWeekPk', kwargs={"period": self.pk})
+
+class SystemMarks(models.Model):
+    name=models.CharField(max_length=150)
+    min_mark=models.IntegerField()
+    max_mark=models.IntegerField()
+
+    def __str__(self):
+        return self.name
