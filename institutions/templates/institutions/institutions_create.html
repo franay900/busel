@@ -5,39 +5,6 @@
 {% endblock %}
 
 
-{% block content %}
-
-
-<div class="card mt-">
-  <h5 class="card-header">Поиск организаций</h5>
-  <div class="card-body">
-   <form class="needs-validation" novalidate method="get">
-  <div class="form-row">
-    <div class="col-md-4 mb-3">
-      <label for="validationCustom01">Краткое наименование</label>
-      <input type="text" class="form-control" id="validationCustom01" placeholder="" value="{% if short_title %}{{ short_title }}{%endif%}" required name="short_title">
-   
-    </div>
-    <div class="col-md-4 mb-3">
-      <label for="validationCustom02">Ведомственная организация</label>
-
-        <select class="custom-select " name="department">
-        	<option >-</option>
-        	{% for departamental in departmentals %}
-
-        	<option value="{{ departamental.pk }}"  {% if departamental.pk == department %} selected {% endif %}>{{ departamental.title }}</option>
-        	{% endfor %}
-     
-        </select>
-
-   
-    </div>
-    <div class="col-md-4 mb-3">{% extends 'user_index.html' %}
-{% load number_tags %}
-{% block h2 %}
-<i class="bi bi-motherboard"></i> Реестр организаций
-{% endblock %}
-
 
 {% block content %}
 
