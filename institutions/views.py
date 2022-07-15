@@ -283,11 +283,10 @@ class InstitutionCreate(PermissionRequiredMixin, SuccessMessageMixin, CreateView
             department_institution.save()
         institutions_create.save()
         for i in range(8):
-            self.password += random.choice(chars)
-        for i in range(8):
             self.login += random.choice(chars)
+
         group = TypeInstitutions.objects.get(pk=self.request.POST.get("typeInstitutions")).group.all()[0]
-        user = UserNet.objects.create_user(username=self.login, password=self.password,
+        user = UserNet.objects.create_user(username=self.login, code=self.login,
                                            institution=institutions_create)
         user.groups.set([group])
         return super().form_valid(form)
@@ -342,7 +341,7 @@ class InstitutionCreate(PermissionRequiredMixin, SuccessMessageMixin, CreateView
         return reverse('InstitutionCreate')
 
     def get_success_message(self, cleaned_data):
-        ms = "Логин:" + self.login + "\n" + "Пароль:" + self.password
+        ms = "Пригласительный код:" + self.login 
         success_message = ms
         return success_message % cleaned_data
 

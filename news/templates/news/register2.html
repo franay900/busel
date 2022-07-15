@@ -1,0 +1,79 @@
+{% extends 'auth_reg.html' %}
+{% load static %}
+
+
+{% block title %}
+  Регистрация
+{% endblock %}
+{% block sidebar %}
+{% endblock %}
+
+{% block content %}
+
+
+        {% if messages %}
+         {% for message in messages %}
+
+
+
+
+
+          <div class="alert alert-primary" role="alert">
+          {{ message }}
+        </div>
+       
+
+            
+          {% endfor %}
+          {% endif %}
+
+<body class="my-login-page">
+	<section class="h-100">
+		<div class="container h-100">
+			<div class="row justify-content-md-center align-items-center h-100">
+				<div class="card-wrapper">
+					<div class="brand">
+						<img src="{% static 'img/busel2_0-logo.png' %}" alt="bootstrap 4 login page">
+					</div>
+					<div class="card fat">
+						<div class="card-body">
+							<h4 class="card-title">Регистрация</h4>
+							<form method="POST" class="my-login-validation" novalidate="">
+								{% csrf_token %}
+								{% for i in form %}
+								<div class="form-group ">
+									<label for="email">{{ i.label }} </label>
+									{{ i }}
+									<div class="">
+										{{ i.errors }}
+									</div>
+									<div class="form-text text-muted">
+										
+									</div>
+								</div>
+								{% endfor %}
+								<div class="form-group m-0">
+									<button type="submit" class="btn btn-success btn-block">
+										Регистрация
+									</button>
+								</div>
+							</form>
+						</div>
+					</div>
+					<div class="footer">
+						Copyright &copy; 2020-2022 &mdash; ПК "Бусел"
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+
+
+<script>
+var el=document.getElementById('email');
+el.focus();
+el.setSelectionRange(el.value.length,el.value.length);
+</script>
+
+{% endblock %}

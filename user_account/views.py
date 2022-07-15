@@ -19,6 +19,7 @@ from classes.models import Load,Classes
 from news.models import AdsInstitution
 
 
+
 class HomePageAccountView(RegisterMixin,LoginRequiredMixin, ListView):
     model = UserNet
     login_url = 'login'
@@ -42,7 +43,7 @@ class UsersView(PermissionRequiredMixin,UserMixin, ListView):
 
 def user_edit_view(request,user_id):
     user=UserNet.objects.get(pk=user_id)
-    if user.institution== request.user.institution and UserNet.objects.get(pk=request.user.pk,groups__name__in=["Администратор ОО", 'Секретарь']):
+    if user.institution== request.user.institution and UserNet.objects.get(pk=request.user.pk,groups__name__in=["Администратор ОО", 'Секретарь', 'Администратор УО']):
         password_form=SetPassword(user=user)
         form=UserEditForm(instance=user,user=user.institution.typeInstitutions)
         load=Load.objects.filter(class_pk__year=user.institution.year, teacher=user)
@@ -75,7 +76,7 @@ class UserEditView(PermissionRequiredMixin,SuccessMessageMixin,InstitutionsMixin
     login_url='login'
     def get_form_kwargs(self):
         kwargs = super(UserEditView, self).get_form_kwargs()
-        kwargs['user'] =kwargs['instance'].institution.typeInstitutions
+        kwargs['user'] = kwargs['instance'].institution.typeInstitutions
         return kwargs
     def get_context_data(self):
         context = super().get_context_data()
@@ -98,29 +99,28 @@ class Registration(UpdateView):
         return reverse('HomePageUserAccount')
 
 
-class AddUser(AdminPermissionMixin, SuccessMessageMixin, CreateView):
+class AddUser(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
     form_class = UserEditForm
     template_name = 'user_account/user_update.html'
+    permission_required = 'user_account.add_usernet'
     def get_form_kwargs(self):
         kwargs = super(AddUser, self).get_form_kwargs()
         kwargs['user'] =self.request.user.institution.typeInstitutions
         return kwargs
     def form_valid(self, form):
+
         chars = 'abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
-        self.login = ''
-        self.password = ''
-        institutions_create = form.save()
+        self.code = ''
         for i in range(8):
-            self.password += random.choice(chars)
-        for i in range(8):
-            self.login += random.choice(chars)
+            self.code += random.choice(chars)
         
         user = form.save(commit=False)
-        user.set_password(self.password)
-        user.username=self.login
+        user.code = self.code
+        user.username = self.code
         user.institution_id = self.request.user.institution.pk
         user.save()
         return super().form_valid(form)
+
 
     def get_context_data(self):
         context = super().get_context_data()
@@ -130,7 +130,7 @@ class AddUser(AdminPermissionMixin, SuccessMessageMixin, CreateView):
     def get_success_url(self):
         return reverse('users')
     def get_success_message(self, cleaned_data):
-        ms = "Логин:" + self.login + "\n" + "Пароль:" + self.password
+        ms = "Пользователь успешно добавлен!"
         success_message = ms
         return success_message % cleaned_data
 

@@ -1,16 +1,61 @@
-{% extends 'base.html' %}
+{% extends 'auth_reg.html' %}
+{% load static %}
+
+
 {% block title %}
-	Добавление новости
+  Регистрация
 {% endblock %}
 {% block sidebar %}
-{% include 'inc/sidebar.html' %}	
 {% endblock %}
 
 {% block content %}
-    		<h1>Регистрация</h1>
-    		<form method="post">
-    			{% csrf_token %}
-    			{{ form.as_p }}
-    			<button class="btn btn-primary btn-block" type="submit">Регистрация</button>
-    		</form>
+
+<body class="my-login-page">
+	<section class="h-100">
+		<div class="container h-100">
+			<div class="row justify-content-md-center align-items-center h-100">
+				<div class="card-wrapper">
+					<div class="brand">
+						<img src="{% static 'img/busel2_0-logo.png' %}" alt="bootstrap 4 login page">
+					</div>
+					<div class="card fat">
+						<div class="card-body">
+							<h4 class="card-title">Регистрация</h4>
+							<form method="POST" class="my-login-validation" novalidate="">
+								{% csrf_token %}
+								<div class="form-group">
+									<label for="email">Пригласительный код</label>
+									<input id="email" type="" class="form-control  {% if error %}is-invalid{% endif %}" name="code" value="{{ code }}" required autofocus>
+									<div class="invalid-feedback">
+										Код неверный
+									</div>
+									<div class="form-text text-muted">
+										Его можно получить у администрации вашей организации
+									</div>
+								</div>
+
+								<div class="form-group m-0">
+									<button type="submit" class="btn btn-success btn-block">
+										Регистрация
+									</button>
+								</div>
+							</form>
+						</div>
+					</div>
+					<div class="footer">
+						Copyright &copy; 2020-2022 &mdash; ПК "Бусел"
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+
+
+<script>
+var el=document.getElementById('email');
+el.focus();
+el.setSelectionRange(el.value.length,el.value.length);
+</script>
+
 {% endblock %}

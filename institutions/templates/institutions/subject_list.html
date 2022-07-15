@@ -1,7 +1,7 @@
 {% extends 'user_index.html' %}
 {% load subject_tags %}
 {% block h2 %}
-<i class="bi bi-book"></i> Учебные предметы
+<i class="bi bi-journal-text"></i> Учебные предметы
 {% endblock %}
 
 
@@ -36,12 +36,12 @@
 	</button>
 
 	<!-- Modal -->
-	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
 	  <div class="modal-dialog" role="document">
 	    <div class="modal-content">
-	      <div class="modal-header bg-success text-white">
+	      <div class="modal-header ">
 	        <h5 class="modal-title" id="exampleModalLabel">Добавление учебного предмета</h5>
-	        <button type="button" class="close text-white"  data-dismiss="modal" aria-label="Close">
+	        <button type="button" class="close "  data-dismiss="modal" aria-label="Close">
 	          <span aria-hidden="true">&times;</span>
 	        </button>
 	      </div>

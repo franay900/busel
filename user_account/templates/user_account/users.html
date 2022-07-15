@@ -2,7 +2,7 @@
 
 
 {% block h2 %}
-<i class="bi bi-person-fill"></i> {{ title }}
+<i class="bi bi-person-lines-fill"></i> {{ title }}
 {% endblock %}
 
 {% block content %}
@@ -15,6 +15,7 @@
        <th >ФИО</th>
        <th >Логин</th>
        <th>Должность</th>
+       <th>Пригласительный код</th>
        <th>Дата рождения</th>
        <th style="text-align: center;"  colspan="2">Действие</th>       
      </tr>
@@ -22,11 +23,12 @@
      	{% for i in users %}
      	<tr>
      		<td>{{ forloop.counter }}</td>
-     		<td>{{ i.last_name  }}  {{ i.first_name }} {{ i.middle_name }}</td>
+     		<td>{% if i.last_name %}{{ i.last_name  }}  {{ i.first_name }} {{ i.middle_name }} {% else %} <a class="text-danger">Заполните информацию!</a> {% endif %}</td>
 
-        <td>{{ i.username }}</td>
+        <td>{% if not i.code %} {{i.username}} {% endif %}</td>
         <td>{% if i.position %}{{ i.position|truncatechars:20 }}{% endif %}</td>
-        <td>{{ i.birth_day }}</td>
+        <td>{% if i.code %} {{i.code}} {% endif %}</td>
+        <td>{% if i.birth_day %}{{ i.birth_day }} {% else %} <a class="text-danger">Не указана</a> {% endif %}</td>
      		<td ><a href="{{ i.get_absolute_url }}">Редактировать</a></td>
      		<td >
             {%if i != request.user%}

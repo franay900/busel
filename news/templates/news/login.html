@@ -2,8 +2,8 @@
 {% load static %}
 
 
-{% block title_page %}
-	Авторизация
+{% block title %}
+  Авторизация
 {% endblock %}
 {% block sidebar %}
 {% endblock %}
@@ -13,57 +13,75 @@
 
 
 
-    		<form class="form-signin" method="post">
-    			{% csrf_token %}
-  <div class="text-center mb-4">
-    <img class="mb-4" src="{% static 'img/busel2_0-logo.png' %}"  width="72" height="72">
-    <h1 class="h3 mb-3 font-weight-normal">Авторизация</h1>
-    <p>Внимательно вводите  <code>логин и пароль</code>
-  </div>
+<body class="my-login-page">
 
-{% if messages %}
-        {% for message in messages %}
-
-        {% if message.tags == 'error' or message.tags == 'warning' %}
-          <div class="alert alert-danger" role="alert">
-            {{ message }}
+  <section class="h-100">
+    <div class="container h-100">
+      <div class="row justify-content-md-center h-100">
+        <div class="card-wrapper">
+          <div class="brand">
+            <img src="{% static 'img/busel2_0-logo.png' %}" alt="logo">
           </div>
-        {% else %}
-           <div class="alert alert-success" role="alert">
-            {{ message }}
+          <div class="card fat">
+            <div class="card-body">
+              <h4 class="card-title">Авторизация</h4>
+              <form class="form-signin" method="post">
+          {% csrf_token %}
+                <div class="form-group">
+                  <label for="email">Логин</label>
+                  <input id="email" value="{{ login }}" type="" class="form-control {% if error %}is-invalid{% endif %}" name="username" value="" required autofocus name="username" > 
+                  <div class="invalid-feedback">
+                    Введите правильный логин
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="password">Пароль
+                    <!--
+                    <a href="forgot.html" class="float-right">
+                      Забыли пароль?
+                    </a>
+                  -->
+                  </label>
+                  <input id="password" type="password" class="form-control {% if error %}is-invalid{% endif %}" name="password" required data-eye name="password">
+                    <div class="invalid-feedback">
+                      Пароль неверный
+                    </div>
+                </div>
+
+                <div class="form-group">
+                  <div class="custom-checkbox custom-control">
+                    <input type="checkbox" name="remember" id="remember" class="custom-control-input">
+                    <label for="remember" class="custom-control-label">Запомнить меня</label>
+                  </div>
+                </div>
+
+                <div class="form-group m-0">
+                  <button type="submit" class="btn btn-primary btn-block">
+                    Войти
+                  </button>
+                </div>
+                <div class="mt-4 text-center">
+                  У вас нет аккаунта? <a href="{% url 'register' %}">Регистрация</a>
+                </div>
+              </form>
+            </div>
           </div>
-        {% endif %}
-        {% endfor %}
-        {% endif %}
+          <div class="footer">
+            Copyright &copy; 2020-2022 &mdash; ПК "Бусел"
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</body>
+
+<script>
+var el=document.getElementById('email');
+el.focus();
+el.setSelectionRange(el.value.length,el.value.length);
+</script>
 
 
-  <div class="form-label-group">
-    <label for="inputEmail">Логин</label>
-    <input type="text" class="form-control {% if error %}is-invalid{% endif %}" id="validationServer03" aria-describedby="validationServer03Feedback" required name="username"> 
-    
-    
-  </div>
-
-  <div class="form-label-group">
-    <label for="inputPassword">Пароль</label>
-    <input type="password" class="form-control {% if error %}is-invalid{% endif %}" id="validationServer03" aria-describedby="validationServer03Feedback" required name="password"> 
-    
-  </div>
-
-  <div class="checkbox mb-3">
-    <label>
-      <input type="checkbox" value="remember-me"> Запомнить меня
-    </label>
-  </div>
-  <button class="btn btn-lg btn-primary btn-block" type="submit">Войти</button>
-  <p class="mt-5 mb-3 text-muted text-center">©Бусел 2020-2022</p>
-</form>
-
-<style>
-	
-	body{
-
-		background-color: #f5f5f5;
-	}
-</style>
 {% endblock %}
