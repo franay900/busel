@@ -59,6 +59,8 @@ def register(request):
 
 def register_user_info(request, code):
 	get_user = UserNet.objects.filter(code=code).first()
+	context = {}
+	context['title'] = 'Регистрация'
 	if get_user:
 		if request.method=="POST":
 			print(1)
