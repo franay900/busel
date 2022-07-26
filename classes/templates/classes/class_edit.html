@@ -1,126 +1,116 @@
 {% extends 'user_index.html' %}
 {% block h2 %}
-Редактирование класса
+<i class="bi bi-pencil-fill"></i> Редактирование класса
 {% endblock %}
 
 
 {% block content %}
 
-  <div class="parrent ">
-    <ul class="nav nav-tabs nav-stacked">
-      <li class="tab-pane active"><a href="#tab1" data-toggle="tab" class="nav-link active">Информация</a></li>
-      <li class="tab-pane"><a href="#tab2" data-toggle="tab" class="nav-link">Подгруппы</a></li>
-
-    </ul>
-  </div>
-  <div class="tab-content">
-    <div class="tab-pane active in mt-3" id="tab1">
-      <form method="POST">
-    {% csrf_token %}
-   {% for i in form %}
-                      
-                        <div class="form-group row">
-                    <label class="col-lg-3 col-form-label form-control-label">{{ i.label }}:</label>
-                    <div class="col-lg-9">
-                        {{ i }}
-                        {{ i.errors }}
-                        {% if i.errors %}
-                          <script>
-                            $('#id_{{ i.id }}').attr('class','is-invalid')
-                          </script>
-                        {% endif %}
-                        <div class="invalid-feedback">
-                            {{ i.errors }}
-                          </div>
+<div class=" light-style  ">
 
 
-                    </div>
+
+    <div class="card overflow-hidden">
+      <div class="row no-gutters row-bordered row-border-light">
+        <div class="col-md-3 pt-0">
+          <div class="list-group list-group-flush account-settings-links">
+            <a class="list-group-item list-group-item-action active" data-toggle="list" href="#account-general">Основная информация</a>
+            <a class="list-group-item list-group-item-action" data-toggle="list" href="#subgroup">Подгруппы</a>
+
+
+          </div>
+        </div>
+        <div class="col-md-9">
+          <div class="tab-content">
+            
+            <div class="tab-pane fade active show" id="account-general">
+              <form action="" method="POST">
+              {% csrf_token %}
+
+              <div class="card-body">
+                {% for i in form %}
+                {% if i != form.avatar %}
+                <div class="form-group">
+                  <label class="form-label">{{ i.label }}:</label>
+                  {{ i  }}
                 </div>
-                      
-                        {% endfor %}
+                {% endif %}
+                {% endfor %}
+              </div>
+              <div class="text-right mt-3">
+      <input type="submit" class="btn btn-primary" name="info" value="Обновить">
+ 
+          </div>
 
-    <button name="info" type="submit" class="btn btn-primary mt-3"><i class="bi bi-pencil-square"></i> Обновить</button>
     </form>
-    </div>
+            </div>
+          
+          
+            <div class="tab-pane fade" id="subgroup">
+              <div class="card-body pb-2">
+                
+                
+                 <table class="rtable mt-3">
+                  <thead>
+                  <tr>
+                    <th>№</th>
+                    <th>Предмет</th>
+                    <th>Подгруппа</th>
+                  </tr>
+                  </thead>
+                  {% for subgroup in subgroups %}
+                  <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ subgroup.subject_pk }}</td>
+                    <td>{{ subgroup.name }}</td>
+                  </tr>
+                  {% endfor %}
+              </table>
+                <button type="button" class="btn btn-success mt-3" data-toggle="modal" data-target="#exampleModal">
+                  <i class="bi bi-file-earmark-plus"></i> Добавить
+                </button>
+                <form method="post">
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Добавление учебных подгрупп</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
 
-    <div class="tab-pane " id="tab2">
-       <table class="rtable mt-3">
-        <thead>
-        <tr>
-          <th>№</th>
-          <th>Предмет</th>
-          <th>Подгруппа</th>
-        </tr>
-        </thead>
-        {% for subgroup in subgroups %}
-        <tr>
-          <td>{{ forloop.counter }}</td>
-          <td>{{ subgroup.subject_pk }}</td>
-          <td>{{ subgroup.name }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-<button type="button" class="btn btn-success mt-3" data-toggle="modal" data-target="#exampleModal">
-  <i class="bi bi-file-earmark-plus"></i> Добавить
-</button>
+                        {% csrf_token %}
+                        {{subroups}}
 
-<form method="post">
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Добавление учебных подгрупп</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+                        
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                        <button name="subroups" type="submit" class="btn btn-success"><i class="bi bi-file-earmark-plus"></i> Добавить</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                </form>
+
+              </div>
+      
+            </div>
+
+
+
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="modal-body">
-
-        {% csrf_token %}
-        {{subroups}}
-
-        
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-        <button name="subroups" type="submit" class="btn btn-success"><i class="bi bi-file-earmark-plus"></i> Добавить</button>
-      </div>
-    </div>
-  </div>
-</div>
-</form>
     </div>
 
-    <div class="tab-pane" id="tab3">
-      <p>Hello 3</p>
-    </div>
-  </div> <!--/.tab-content-->
-</div><!--/.tab-wrap-->
-
-
-   
-
-  <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">...</div> 
-   <script type="text/javascript">
-    $(function(){
-  var hash = window.location.hash;
-  hash && $('ul.nav a[href="' + hash + '"]').tab('show');
-
-  $('.nav-tabs a').click(function (e) {
-    $(this).tab('show');
-    var scrollmem = $('body').scrollTop() || $('html').scrollTop();
-    window.location.hash = this.hash;
-    $('html,body').scrollTop(scrollmem);
-  });
-});
-  </script>
-  
-
+    
 
 
     
     
-   
-
 
 {% endblock %}

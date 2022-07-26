@@ -89,7 +89,7 @@
         {% if perms.classes.delete_student %}
      		<td>
           
-          <a class="delete_student" href="#" pk="{{ i.pk }}" name="{{ i.user.last_name  }} {{ i.user.first_name }} ({{ i.class_pk }} класс)">Отчислить</a>
+          <a class="delete_student" href="#" pk="{{ i.pk }}" name="{{ i.user.last_name  }} {{ i.user.first_name }}">Отчислить</a>
           
         </td>
         {% endif %}
@@ -126,7 +126,7 @@
 
 {% else %}
 <div class="alert alert-warning" role="alert">
-  На {{ request.user.institution.year }} не найдены классы.
+  <i class="bi bi-exclamation-circle"></i> На {{ request.user.institution.year }} не найдены классы.
 </div>
 
 {% endif %}
@@ -136,9 +136,9 @@
 
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header bg-danger text-white">
+      <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Отчисление обучающегося <a id="name_student"></a></h5>
         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>

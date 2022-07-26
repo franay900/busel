@@ -20,7 +20,8 @@ from classes.models import Classes, Student
 class InstitutionsHomeView(PermissionRequiredMixin,SuccessMessageMixin, View):
     model = Institutions
     form_class = InstitutionsInfoForm
-    second_form_class=TypeLesson
+    second_form_class = TypeLessonForm
+    form_class_3 = TypeExamsForm
     template_name = 'institutions/institutions.html'
     success_message = 'Информация об организации успешно обновлена!'
     permission_required = 'institutions.view_institutions'
@@ -29,16 +30,16 @@ class InstitutionsHomeView(PermissionRequiredMixin,SuccessMessageMixin, View):
 
     def get(self,request, **kwargs):
         context = {}
-        
-        
         context['title'] = 'Настройки организации'
         context['types']=LessonType.objects.filter(Q(institution=request.user.institution) | Q(institution=None))
+        context['typese']=TypeExams.objects.filter(Q(institution=request.user.institution) | Q(institution=None))
         if 'form' not in context:
             context['form'] = self.form_class(instance=self.get_object())
 
         if 'form2' not in context:
             context['form2'] = self.second_form_class()
-
+        if 'form3' not in context:
+            context['form3'] = self.form_class_3()
 
         return render(request, self.template_name, context)
     
@@ -51,11 +52,17 @@ class InstitutionsHomeView(PermissionRequiredMixin,SuccessMessageMixin, View):
             if form.is_valid():
                 form.save()
 
-        if 'name' in request.POST:
-            form2=self.second_form_class(request.POST,)
+        if 'typelesson' in request.POST:
+            form2=self.second_form_class(request.POST)
             if form2.is_valid():
                 form2.instance.institution=request.user.institution
                 form2.save()
+
+        if 'exams' in request.POST:
+            form3=self.form_class_3(request.POST)
+            if form3.is_valid():
+                form3.instance.institution=request.user.institution
+                form3.save()
             
         return redirect(request.META.get('HTTP_REFERER'))
 

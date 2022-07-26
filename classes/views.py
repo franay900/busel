@@ -448,13 +448,14 @@ class TimetableWeek(PermissionRequiredMixin, TimetableSettigns, View):
                 start=week[0]
                 end=week[1]
                 dates=get_dates(start,end)
+                get_types = LessonType.objects.get(name='Ответ на уроке')
                 for date_week in dates:
                     if date_week>=self.get_period().start and date_week<=self.get_period().end:
                         weekday=date_week.isoweekday()
                         get_lesson=SubjectTemplate.objects.filter(profile__id=post_week,day=weekday)
                         for lesson in get_lesson:
                             lesson_save=Lessons.objects.create(number=lesson.lesson,date=date_week,class_pk=self.get_class(),subject_pk=lesson.subject_pk,teacher=lesson.subject_pk.teacher)
-                            lesson_save.types.add(1)
+                            lesson_save.types.add(get_types.pk)
         messages.success(request,'Уроки успешно распределены')
         return redirect(request.META.get('HTTP_REFERER'))
 class EditLessons(PermissionRequiredMixin,TimetableSettigns,View):
@@ -580,27 +581,13 @@ class ImportStudent(View):
         context={}
 
         if 'add' in request.POST:
-            get_users=request.POST.getlist("users")
-            get_classes=request.POST.getlist("users_classes")
-            date=request.POST.get('add')
-            
-            i=0
-            for user in get_users:
-                user_get=UserNet.objects.get(pk=user)
-                user_get.is_active=True
-                user_get.save()
-                pk_class=get_classes[i]
-                get_class=Classes.objects.get(pk=pk_class)
-                
-                Student.objects.create(user=user_get,class_pk=get_class,date_of_enrollment=date)
-                i+=1
+
             messages.success(request, 'Учащиеся успешно импортированы!')
             return redirect('StudentImport')
         else:
             file=request.FILES['file']
             date=request.POST.get('date')
             users=get_user(file)
-            arr=[]
             my_group=Group.objects.get(name='Ученик')
             for row in range(2,users.max_row+1):
                 last_name=users[row][0].value
@@ -610,23 +597,19 @@ class ImportStudent(View):
                     gender=users[row][3].value
                     birth_day=users[row][4].value
                     class_=users[row][5].value
-                    letter=re.sub("[0-9]", "", class_)
+                    if str(letter[-1]) in '1,2,3,4,5,6,7,8,9':
+                        letter = letter[-1]
+                    else:
+                        letter=re.sub("[0-9]", "", class_)
                     class_=class_.rsplit('-')
                     class_ = "".join(c for c in class_[0] if  c.isdecimal())
                     class_find=Classes.objects.filter(institution=request.user.institution,class_number=class_,letter=letter).first()
                     login=generate_login()[0]
-                    password=generate_login()[1]
-                    user_pk=UserNet.objects.create_user(is_active=False,username=login,password=password,last_name=last_name,first_name=first_name,middle_name=patronymic,gender=gender,birth_day=birth_day,institution=self.request.user.institution)
+                    user_pk=UserNet.objects.create_user(is_active=False,username=login,code=login,last_name=last_name,first_name=first_name,middle_name=patronymic,gender=gender,birth_day=birth_day,institution=self.request.user.institution)
                     
                     my_group.user_set.add(user_pk)
-
-
-                    arr.append([last_name,first_name,patronymic,gender,birth_day,login,password,user_pk.pk,class_find])
-                    
         
         context['title']='Результат импорта'
-        context['date']=date
-        context['users']=arr
         return render(request,'classes/import_result.html',context)
 
 

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View, ListView
 from user_account.permissions import AdminPermissionMixin
-from classes.models import Load, Classes, Student,StudentSubgroup
+from classes.models import Load, Classes, Student,StudentSubgroup, СurriculumSubject
 from institutions.models import Periods, BellProfile
 from django.http import HttpResponseForbidden, HttpResponse
 from .models import *
@@ -496,3 +496,24 @@ def save_reason(request):
     ReasonSkipping.objects.create(reason=reason, student=student, day=date)
 
     return HttpResponse()
+
+
+
+#КТП
+
+class List_KTP(View):
+
+    template_name = 'journal/ktp_list.html'
+
+    def get(self,request):
+        context = {}
+        get_subject = СurriculumSubject.objects.filter(Q(profile__institution=request.user.institution) | Q(profile__institution=None))
+        classes = [
+            1,2,3,4,5,6,7,8,9,10,11
+        ]
+        context['title'] = 'Календарно-тематическое планирование (КТП)'
+        context['classes'] = classes
+        context['subjects'] = get_subject
+        context['teachers'] = UserNet.objects.filter(institution=request.user.institution,groups__name='Учитель',is_active=True)
+        return render(request,self.template_name, context)
+

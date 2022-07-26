@@ -1,7 +1,7 @@
 from django import forms
 from .models import *
 from user_account.models import *
-from journal.models import LessonType
+from journal.models import LessonType, TypeExams
 from news.models import AdsInstitution
 
 class InstitutionsInfoForm(forms.ModelForm):
@@ -25,7 +25,7 @@ class InstitutionsInfoForm(forms.ModelForm):
 				self.fields[field].widget.attrs['class']='custom-select'
 
 
-class TypeLesson(forms.ModelForm):
+class TypeLessonForm(forms.ModelForm):
 
 	class Meta:
 		model=LessonType
@@ -35,6 +35,18 @@ class TypeLesson(forms.ModelForm):
 		super().__init__(*args,**kwargs)
 		self.fields['name'].widget.attrs['class']='form-control'
 		self.fields['short_name'].widget.attrs['class']='form-control'
+
+class TypeExamsForm(forms.ModelForm):
+
+	class Meta:
+		model=TypeExams
+		fields=['name','short_name']
+
+	def __init__(self,*args,**kwargs):
+		super().__init__(*args,**kwargs)
+		self.fields['name'].widget.attrs['class']='form-control'
+		self.fields['short_name'].widget.attrs['class']='form-control'
+
 
 
 class PeriodsForm(forms.ModelForm):

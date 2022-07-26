@@ -1,5 +1,5 @@
 from django.db import models
-from institutions.models import Institutions,Periods
+from institutions.models import Institutions,Periods, SystemMarks, Subject
 from classes.models import Load,Classes,Student
 from user_account.models import UserNet
 
@@ -14,6 +14,18 @@ class LessonType(models.Model):
 		ordering=['name']
 	def __str__(self):
 		return self.name
+
+class TypeExams(models.Model):
+    name = models.CharField(max_length=150, verbose_name='Наименование типа')
+    short_name = models.CharField(max_length=10, verbose_name='Сокращенное наименование типа') 
+    institution = models.ForeignKey(Institutions, on_delete=models.PROTECT, verbose_name='Организация',null=True,blank=True)
+    class Meta:
+        verbose_name='Тип экзамена'
+        verbose_name_plural='Типы экзаменов'
+        ordering=['name']
+    def __str__(self):
+        return self.name
+
 class Lessons(models.Model):
     number = models.IntegerField(null=True)
     date=models.DateField(verbose_name='Дата урока')
@@ -55,3 +67,31 @@ class ReasonSkipping(models.Model):
     student=models.ForeignKey(Student, on_delete=models.SET_NULL, verbose_name='Ученик',null=True,blank=True)
     day=models.DateField()
     reason=models.IntegerField(choices=reasons)
+
+
+class KTP(models.Model):
+    CHOICES = (
+    (1, 1),
+    (2, 2),
+    (3, 3),
+    (4, 4),
+    (5,5),
+    (6, 6),
+    (7, 7),
+    (8, 8),
+    (9, 9),
+    (10, 10),
+    (11, 11),
+
+    )
+
+
+    class_number = models.IntegerField(verbose_name='Номер', choices=CHOICES)
+    name = models.CharField(max_length=300, verbose_name='Тема ктп')
+    subject_ktp = models.ForeignKey(Subject, verbose_name='Предмет ктп', on_delete=models.CASCADE)
+    author = models.ForeignKey(UserNet, verbose_name='Автор', on_delete=models.SET_NULL, null=True)
+
+
+class Sections_KTP(models.Model):
+    ktp = models.ForeignKey(KTP, on_delete=models.CASCADE)
+    name = models.CharField(max_length=300, verbose_name='Тема ктп')

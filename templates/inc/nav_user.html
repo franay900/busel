@@ -76,7 +76,6 @@
           <a class="dropdown-item" href="{% url 'SubgroupView' %}">Подгруппы</a>
           <a class="dropdown-item" href="{% url 'Load' %}">Учебная нагрузка</a>
           <a class="dropdown-item" href="{% url 'TimetableClasses' %}">Расписание</a>
-
           
         </div>
       </li>
@@ -102,6 +101,9 @@
           {% if perms.journal.view_marks %} 
           <a class="dropdown-item" href="{% url 'AttendanceJournal' %}">Журнал посещаемости</a>
           {% endif %}
+          <!--
+          <a class="dropdown-item" href="{% url 'KTPList' %}">КТП</a>
+          --->
         </div>
       </li>
 

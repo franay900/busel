@@ -21,9 +21,9 @@
     <nav class="nav  nav-borders">
   
     <a class="nav-link active" data-toggle="tab" href="#description">Основная информация</a>
-    <!--
-    <a class="nav-link" data-toggle="tab" href="#characteristics">Дополнительная</a>
-    --->
+
+    <a class="nav-link" data-toggle="tab" href="#characteristics">Типы экзаменов</a>
+
     {% if not departmentals %}
     <a class="nav-link" data-toggle="tab" href="#opinion">Типы уроков</a>
     {% endif %}
@@ -96,9 +96,55 @@
   <div class="tab-pane fade" id="characteristics">
     
 
+    <table class="rtable">
+        <thead>
+            <th>№</th>
+            <th>Полное наименование</th>
+            <th>Краткое наименование</th>
+            <th>Тип</th>
+        </thead>
+                <tbody>
+            {% for type in typese %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ type.name }}</td>
+                <td>{{ type.short_name }}</td>
+                <td>{% if type.institution %}Индвидуальный{% else %}Системный{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
 
+    </table>
 
-    <button class="btn btn-primary" type="submit">Сохранить изменения</button>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  Добавить тип экзамена
+</button> 
+
+<form method="POST">
+{% csrf_token %}
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Добавление типа экзамена</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        {{ form3 }}
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="submit" class="btn btn-primary" name="exams">Добавить</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
 
   </div>
   <div class="tab-pane fade" id="opinion">
@@ -126,14 +172,14 @@
     </table>
 
 
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-  Добавить тип
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal1">
+  Добавить тип урока
 </button> 
 
 <form method="POST">
 {% csrf_token %}
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -149,7 +195,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-        <button type="submit" class="btn btn-primary">Добавить</button>
+        <button type="submit" class="btn btn-primary" name="typelesson">Добавить</button>
       </div>
     </div>
   </div>
