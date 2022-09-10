@@ -11,7 +11,7 @@ register = template.Library()
 def is_group(context, subject=0):
 
     class_ = context['class']
-    groups = Subgroups.objects.filter(subject_pk=subject)
+    groups = Subgroups.objects.filter(subject_pk=subject, class_pk=class_)
     if not groups:
         return True
 

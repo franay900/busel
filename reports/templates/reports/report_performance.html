@@ -11,7 +11,7 @@
   <div class="row mt-3">
 
     <div class="col-1">
-       <select class="custom-select custom-select-sm "  name="class_pk" id="classes" style="width:auto">
+       <select class="custom-select custom-select-sm "  name="class_pk" id="classes_" style="width:auto">
            {% for class_ in classes %}
             <option  {% if class.pk == class_.pk %} selected="" {% endif %}   value="{{ class_.pk }}" url="{% url 'GetPeriods' class_pk=class_.pk %}">{{ class_.class_number }}{{ class_.letter }}</option>
           {% endfor %}
@@ -111,7 +111,7 @@ function select(url){
 }
 
 
-$(document).on('change', 'select#classes', function () {
+$(document).on('change', 'select#classes_', function () {
 
 select($(this).find('option:selected').attr('url'))
 
@@ -149,10 +149,11 @@ th.vertical{
   padding-top: 10%;
   padding-bottom: : 0%;
   
-  font-size: 9px;
+  font-size: 11px;
 }
 .rtable td .rtable th{
   padding: 2px 12px;
+
 }
 </style>
 {% endblock %}

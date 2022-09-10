@@ -8,8 +8,8 @@
 	
 
 
-<table class="rtable mt-3">
-  <thead>
+<table class="rtable table-hover mt-3">
+  <thead class="">
     <tr>
       <th>Номер</th>
       <th>Литер</th>
@@ -29,8 +29,8 @@
           <td>{{ class.period_profile }}</td>
 					<td>{{ class.change }} смена</td>
 					<td>{{ class.class_teacher }}</td>
-					<td> <a href="{{ class.get_absolute_url  }}">Редактировать</a></td>
-					<td><a class="deleteClass" name="{{ class }}" pk="{{ class.pk }}">Удалить</a></td>
+					<td class="action"> <a href="{{ class.get_absolute_url  }}">Редактировать</a></td>
+					<td class="action"><a class="deleteClass" name="{{ class }}" pk="{{ class.pk }}">Удалить</a></td>
 				</tr>
 				{% endfor %}
 
@@ -98,7 +98,11 @@
   </div>
 </div>
 
-
+<style>
+  .action{
+    width: 10%;
+  }
+</style>
 
 
 <script type="text/javascript">

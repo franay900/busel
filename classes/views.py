@@ -22,7 +22,8 @@ from django.db.models import Q
 from journal.utils import Journal
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
-
+import csv
+import codecs
 
 
 class ClassView(PermissionRequiredMixin, CreateView):
@@ -579,37 +580,24 @@ class ImportStudent(View):
         return render(request,'classes/import_student.html',context)
     def post(self,request):
         context={}
-
-        if 'add' in request.POST:
-
-            messages.success(request, 'Учащиеся успешно импортированы!')
-            return redirect('StudentImport')
-        else:
-            file=request.FILES['file']
-            date=request.POST.get('date')
-            users=get_user(file)
-            my_group=Group.objects.get(name='Ученик')
-            for row in range(2,users.max_row+1):
-                last_name=users[row][0].value
-                first_name=users[row][1].value
-                if last_name:
-                    patronymic=users[row][2].value
-                    gender=users[row][3].value
-                    birth_day=users[row][4].value
-                    class_=users[row][5].value
-                    if str(letter[-1]) in '1,2,3,4,5,6,7,8,9':
-                        letter = letter[-1]
-                    else:
-                        letter=re.sub("[0-9]", "", class_)
-                    class_=class_.rsplit('-')
-                    class_ = "".join(c for c in class_[0] if  c.isdecimal())
-                    class_find=Classes.objects.filter(institution=request.user.institution,class_number=class_,letter=letter).first()
-                    login=generate_login()[0]
-                    user_pk=UserNet.objects.create_user(is_active=False,username=login,code=login,last_name=last_name,first_name=first_name,middle_name=patronymic,gender=gender,birth_day=birth_day,institution=self.request.user.institution)
-                    
-                    my_group.user_set.add(user_pk)
-        
-        context['title']='Результат импорта'
+        file=request.FILES['file']
+        date=request.POST.get('date')
+        myreader = csv.DictReader(codecs.iterdecode(file, 'utf-8'))
+        old_class = None
+        class_pk = 0
+        for row in myreader:
+            print(row)
+            class_str = row['Класс']
+            
+            get_class = Classes.objects.filter(institution=self.request.user.institution).values_list('pk', 'class_number', 'letter')
+            if class_str!=old_class:
+                for class_ in get_class:
+                    class_pk = class_[0]
+            code = generate_login()[0]
+            user = UserNet.objects.create_user(is_active=False, username=code, code=code,last_name=row['Фамилия'],first_name=row['Имя'],middle_name=row['Отчество'])
+            print(user)
+            user.delete()
+            old_class = class_str
         return render(request,'classes/import_result.html',context)
 
 

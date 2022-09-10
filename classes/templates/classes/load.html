@@ -35,6 +35,8 @@
 		{% endfor %}
 	</select>
 
+
+
 	<form method="POST" action="">
 	{% csrf_token %}
 	<table class="rtable mt-3">
@@ -54,6 +56,7 @@
 		</tr>
 		</thead>
 		{% for subject in subjects %}
+		
 		{% is_group subject=subject.pk as group_true %}
 		{% if group_true %}
 		<tr>

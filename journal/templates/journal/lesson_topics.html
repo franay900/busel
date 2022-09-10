@@ -13,6 +13,17 @@
   <i class="bi bi-info-circle"></i> Не забудьте сохранить информацию!
 </div>
 
+<div class="row">
+	<div class="col font-weight-bold">КТП:</div>
+	<div class="col">
+		{% if ktp.0 %}
+		{{ ktp.0.name }}
+		{% else %}
+		<a class="text-danger font-weight-bold">Не выбрано</a>
+		{% endif %}
+	</div>
+</div>
+
 {% if success %}
 <div class="position-fixed bottom-0 right-0 p-3" style="z-index: 5; right: 0; bottom: 0;">
   <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
@@ -35,10 +46,12 @@
 </script>
 
 {% endif %}
+
+<div class="mt-3">
 <form action="" method="POST">
 {% csrf_token %}
-<table class="rtable">
-	<thead>
+<table class="table table-bordered table-sm table-hover">
+	<thead class="thead-light">
 	<tr>
 		<th style="width:3%">№</th>
 		<th style="width:10%">Дата</th>
@@ -52,9 +65,9 @@
 	<tr>
 		<td>{{ forloop.counter }}</td>
 		<td>{{ lesson.date|date:'d.m.Y' }}</td>
-		<td><textarea name="topic{{ lesson.pk }}" class="form-control" id="" rows="">{% if lesson.topic %}{{ lesson.topic }}{% endif %}</textarea></td>
+		<td><textarea name="topic{{ lesson.pk }}" class="form-control" {% if lesson.ktp %} disabled {% endif %}>{% if lesson.ktp %}{{ lesson.ktp.name }}{% else %}{% if lesson.topic %}{{ lesson.topic }}{% endif %}{% endif %}</textarea></td>
 		<td>
-			<textarea name="homework{{ lesson.pk }}" class="form-control" id="" rows="">{% if lesson.homework %}{{ lesson.homework }}{% endif %}</textarea>
+			<textarea name="homework{{ lesson.pk }}" class="form-control" >{% if lesson.homework %}{{ lesson.homework }}{% endif %}</textarea>
 			{% get_dates date=lesson.date  as dates %}
 			<select name="date_homework{{ lesson.pk }}"  class="custom-select custom-select-sm mt-1"  name="" id="">
 				{% if not dates %}
@@ -94,13 +107,15 @@
 </table>
 <div>
 
-
+</div>
 
 
 
 <button type="submit" class="btn btn-primary "><i class="bi bi-pencil-square"></i> Обновить</button>
 
 <a class="btn btn-danger" href="{% url 'DeleteTopics' load=load.pk period=period.pk %}"><i class="bi bi-trash"></i> Очистить</a>
+
+<button class="btn btn-success" type="submit" name="upload_ktp" value="1"><i class="bi bi-upload"></i> Импорт из КТП</button>
 <input name="referer" value="{{ referer }}" style="display: none">
 </div>
 </form>

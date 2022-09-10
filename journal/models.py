@@ -1,7 +1,8 @@
 from django.db import models
-from institutions.models import Institutions,Periods, SystemMarks, Subject
+from institutions.models import Institutions,Periods, SystemMarks, Subject, Year
 from classes.models import Load,Classes,Student
 from user_account.models import UserNet
+from django.urls import reverse
 
 
 class LessonType(models.Model):
@@ -37,6 +38,7 @@ class Lessons(models.Model):
     types=models.ManyToManyField(LessonType)
     teacher=models.ForeignKey(UserNet, on_delete=models.SET_NULL, verbose_name="Учитель",
                                        null=True)
+    ktp = models.ForeignKey('TopiCktp', on_delete=models.SET_NULL, null=True)
 
 
 class Marks(models.Model):
@@ -87,11 +89,22 @@ class KTP(models.Model):
 
 
     class_number = models.IntegerField(verbose_name='Номер', choices=CHOICES)
-    name = models.CharField(max_length=300, verbose_name='Тема ктп')
-    subject_ktp = models.ForeignKey(Subject, verbose_name='Предмет ктп', on_delete=models.CASCADE)
+    name = models.CharField(max_length=300, verbose_name='Наименование КТП')
+    subject_ktp = models.ForeignKey(Subject, verbose_name='Предмет', on_delete=models.CASCADE)
     author = models.ForeignKey(UserNet, verbose_name='Автор', on_delete=models.SET_NULL, null=True)
-
+    institution = models.ForeignKey(Institutions, verbose_name='Организация', on_delete=models.SET_NULL, null=True)
+    loads = models.ManyToManyField(Load)
+    year = models.ForeignKey(Year, on_delete=models.PROTECT, verbose_name='Учебный год', null=True)
+    def view_ktp(self):
+        return reverse('KTP_pk', kwargs={'pk':self.pk})
 
 class Sections_KTP(models.Model):
     ktp = models.ForeignKey(KTP, on_delete=models.CASCADE)
     name = models.CharField(max_length=300, verbose_name='Тема ктп')
+
+class TopiCktp(models.Model):
+    name = models.CharField(max_length=700,verbose_name='Наименование')
+    section = models.ForeignKey(Sections_KTP, on_delete=models.CASCADE)
+    hour = models.IntegerField(verbose_name='Количество часов')
+    homework = models.CharField(max_length=700, verbose_name='Домашнее задание')
+    

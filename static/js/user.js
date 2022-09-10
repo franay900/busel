@@ -43,7 +43,7 @@ $('#two').click(function(){
        $(this).addClass('custom-select')
     });
 
-
+    $('#classes').removeClass('custom-select')
     
    var size=$('#periods option').length; 
 

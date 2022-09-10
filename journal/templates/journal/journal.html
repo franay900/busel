@@ -53,7 +53,7 @@
   {% if type_journal == 'school' %}
   <div class="row">
     <div class="col">
-       <select class="custom-select custom-select-sm "  name="load" id="classes" style="width:auto">
+       <select class="custom-select custom-select-sm "  name="load" id="classes_list" style="width:auto">
            {% for class in classes %}
             <option  {% if load_pk.class_pk.pk == class.pk %} selected="" {% endif %}  value="{{ class.pk }}" value="" url="{% url 'GetLoad' class_pk=class.pk %}">{{ class.class_number }}{{ class.letter }}</option>
           {% endfor %}
@@ -162,7 +162,7 @@
         {% for lesson in lessons %}
         <th id=""  colspan="{{ lesson.types.all.count }}" class="date">
 
-          <a  class="date_l" data-toggle="popover" title="Тема: {{ lesson.topic }}" data-content="Дз на следующий урок: {{ lesson.homework }}">{{ lesson.date|date:'d' }}</a>
+          <a  class="date_l" data-toggle="popover" title="Тема: {% if lesson.ktp %}{{ lesson.ktp.name }}{% else %}{% if lesson.topic %}{{ lesson.topic }}{% endif %}{% endif %}" data-content="Дз на следующий урок: {{ lesson.homework }}">{{ lesson.date|date:'d' }}</a>
 
 
         </th>
@@ -407,7 +407,7 @@ $(document).on('change', 'select#loads', function () {
 });
 
 
-$(document).on('change', 'select#classes', function () {
+$(document).on('change', 'select#classes_list', function () {
 
 var url = $(this.options[this.selectedIndex]).attr("url"); 
 $.ajax({

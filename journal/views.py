@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect
-from django.views.generic import View, ListView
+from django.shortcuts import render, redirect, reverse
+from django.views.generic import View, ListView, CreateView
 from user_account.permissions import AdminPermissionMixin
 from classes.models import Load, Classes, Student,StudentSubgroup, СurriculumSubject
-from institutions.models import Periods, BellProfile
+from institutions.models import Periods, BellProfile, Subject
 from django.http import HttpResponseForbidden, HttpResponse
 from .models import *
 from .utils import Journal, TimetableSettigns
@@ -13,6 +13,12 @@ import time
 from datetime import date, timedelta, datetime
 from django.db.models import Q
 import json
+from .forms import KTPForm, SectionsKTPForm
+import csv
+import codecs
+from user_account.models import FileTemplates
+
+
 
 
 
@@ -89,6 +95,7 @@ class LessonTopics(View):
         context['types'] = LessonType.objects.filter(Q(institution=request.user.institution) | Q(institution=None))
         context['BellProfile'] = BellProfile.objects.get(pk=get_class.bell_profile.pk)
         context['referer']=self.referer
+        context['ktp'] = KTP.objects.filter(loads=load)
         return render(request, 'journal/lesson_topics.html', context)
 
     def post(self, request, *args, **kwargs):
@@ -97,7 +104,8 @@ class LessonTopics(View):
         period_pk = self.kwargs.get("period")
         period = Periods.objects.get(pk=period_pk)
         get_class = Classes.objects.get(pk=load.class_pk.pk)
-        lessons = Lessons.objects.filter(subject_pk=load, date__range=[period.start, period.end])
+        lessons = Lessons.objects.filter(subject_pk=load).order_by('pk')
+        ktp = KTP.objects.filter(loads=load)
         context = {}
         context['title'] = 'Темы уроков и дз'
         context['period'] = period
@@ -107,35 +115,53 @@ class LessonTopics(View):
         context['BellProfile'] = BellProfile.objects.get(pk=get_class.bell_profile.pk)
         context['success']=True
         context['referer']=self.request.POST.get("referer")
-        for lesson in lessons:
-            topic = request.POST.get("topic" + str(lesson.pk))
-            homework = request.POST.get("homework" + str(lesson.pk))
-            date_homework = request.POST.get("date_homework" + str(lesson.pk))
-            types = request.POST.getlist("types" + str(lesson.pk))
-            types_red = request.POST.getlist("typesred" + str(lesson.pk))
+        context['ktp'] = ktp
+        if self.request.POST.get('upload_ktp'):
+            get_topics = TopiCktp.objects.filter(section__ktp=ktp.first()).order_by('section','pk')
+            arr = []
+            for topic in get_topics:
+                for i in range(0,topic.hour):
+                    arr.append(topic)
+            
+            i = 0
+            for lesson in lessons:
+                if lesson.date >= period.start and lesson.date <= period.end and not lesson.ktp and len(arr)-1>=i:
+                    lesson.topic = arr[i].name
+                    lesson.homework = arr[i].homework
+                    lesson.ktp = arr[i]
+                    lesson.save()
 
-            for type_red in types_red:
-                type_p=type_red.split('/')
-                new_type=type_p[1]
-                old_type=type_p[0]
-                get_type=lesson.types.filter(pk=old_type).first()
+                i+=1
+        else:
+            for lesson in lessons:
+                topic = request.POST.get("topic" + str(lesson.pk))
+                homework = request.POST.get("homework" + str(lesson.pk))
+                date_homework = request.POST.get("date_homework" + str(lesson.pk))
+                types = request.POST.getlist("types" + str(lesson.pk))
+                types_red = request.POST.getlist("typesred" + str(lesson.pk))
 
-                if old_type!=new_type:
-                    lesson.types.remove(get_type)
-                    if int(new_type)!=0:
-                        lesson.types.add(new_type)
+                for type_red in types_red:
+                    type_p=type_red.split('/')
+                    new_type=type_p[1]
+                    old_type=type_p[0]
+                    get_type=lesson.types.filter(pk=old_type).first()
 
-            for type_ in types:
-                if type_:
-                    
-                    lesson.types.add(type_)
+                    if old_type!=new_type:
+                        lesson.types.remove(get_type)
+                        if int(new_type)!=0:
+                            lesson.types.add(new_type)
 
-            if date_homework:
-                get_lesson_homework = Lessons.objects.get(pk=date_homework)
-                lesson.date_homework = get_lesson_homework
-            lesson.homework = homework
-            lesson.topic = topic
-            lesson.save()
+                for type_ in types:
+                    if type_:
+                        
+                        lesson.types.add(type_)
+
+                if date_homework:
+                    get_lesson_homework = Lessons.objects.get(pk=date_homework)
+                    lesson.date_homework = get_lesson_homework
+                lesson.homework = homework
+                lesson.topic = topic
+                lesson.save()
 
         return render(request, 'journal/lesson_topics.html', context)
 
@@ -344,6 +370,7 @@ class DeleteTopics(View):
         for lesson in lessons:
             lesson.topic=''
             lesson.homework=''
+            lesson.ktp = None
             lesson.save()
         return redirect(request.META.get('HTTP_REFERER'))
 
@@ -501,19 +528,134 @@ def save_reason(request):
 
 #КТП
 
-class List_KTP(View):
 
+
+class List_KTP(CreateView):
     template_name = 'journal/ktp_list.html'
+    form_class = KTPForm
+    def query(self, *args, **kwargs):
 
-    def get(self,request):
-        context = {}
-        get_subject = СurriculumSubject.objects.filter(Q(profile__institution=request.user.institution) | Q(profile__institution=None))
+        if self.request.GET.get('subject'):
+            author = self.request.GET.get('author')
+            class_pk = self.request.GET.get('class')
+            subject = self.request.GET.get('subject')
+            return author,class_pk, subject
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data()
+        authors = UserNet.objects.filter(institution=self.request.user.institution,groups__name='Учитель',is_active=True)
+        ktp = None
         classes = [
             1,2,3,4,5,6,7,8,9,10,11
         ]
+        get_subject = Subject.objects.filter(Q(institution=self.request.user.institution) | Q(institution=None))
+
+        if self.query():
+            if int(self.query()[0])==0:
+                ktp = KTP.objects.filter(institution=self.request.user.institution, class_number=self.query()[1], subject_ktp__pk=self.query()[2])
+            else:
+                ktp = KTP.objects.filter(institution=self.request.user.institution, class_number=self.query()[1], subject_ktp__pk=self.query()[2], author=self.query()[0] )
+        else:
+            ktp = KTP.objects.filter(institution=self.request.user.institution, class_number=1, subject_ktp=get_subject.first())
+
         context['title'] = 'Календарно-тематическое планирование (КТП)'
         context['classes'] = classes
         context['subjects'] = get_subject
-        context['teachers'] = UserNet.objects.filter(institution=request.user.institution,groups__name='Учитель',is_active=True)
-        return render(request,self.template_name, context)
+        context['teachers'] = authors
+        context['form'] = self.form_class()
+        if self.query():
+            context['author'] = int(self.query()[0])
+            context['class'] = int(self.query()[1])
+            context['subject'] = int(self.query()[2])
+        context['ktp_list'] = ktp
+        return context
+    def form_valid(self, form):
+        form.instance.institution_id = self.request.user.institution.pk
+        form.instance.year = self.request.user.institution.year
+        form.instance.author=self.request.user
+        return super().form_valid(form)
 
+    def get_success_url(self):
+        return reverse('KTP_pk', kwargs={'pk':self.object.pk})
+
+
+class KTPView(View):
+    template_name = 'journal/ktp_view.html'
+    form_class = SectionsKTPForm
+
+
+
+    def get(self,request, *args, **kwargs):
+        ktp_get = KTP.objects.get(pk=self.kwargs['pk'])
+        sections_ktp = Sections_KTP.objects.filter(ktp=ktp_get).order_by('pk')
+        get_ktp_classes = KTP.objects.filter(class_number=ktp_get.class_number, subject_ktp=ktp_get.subject_ktp)
+        loads = Load.objects.filter(class_pk__class_number=ktp_get.class_number, subject_pk__subject=ktp_get.subject_ktp).order_by('class_pk')
+        context = {
+            'title': 'Просмотр КТП',
+            'ktp': ktp_get, 
+            'form': self.form_class,
+            'sections_ktp': sections_ktp, 
+            'loads': loads,
+            'ktps': get_ktp_classes,
+            'file':FileTemplates.objects.filter(name='Шаблон для импорта ктп').first()
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+
+        ktp_get = KTP.objects.get(pk=self.kwargs['pk'])
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            form.instance.ktp = ktp_get
+            form.save()
+        else:
+            ktp_get = KTP.objects.get(pk=self.kwargs['pk'])
+            load_get = request.POST.getlist('loads')
+            ktp_get.loads.set(load_get,clear=True)
+
+            get_sections = Sections_KTP.objects.filter(ktp=ktp_get)
+            for section in get_sections:
+                i = 0
+                get_themes = request.POST.getlist('section' + str(section.pk))
+                get_homeworks = request.POST.getlist('homeworks' + str(section.pk))
+                get_hours = request.POST.getlist('hours' + str(section.pk))
+                for theme in get_themes:
+                    if theme!='':
+                        TopiCktp.objects.create(name=get_themes[i], section=section, hour=get_hours[i],homework=get_homeworks[i])
+                    i = i+1
+            edit_topics = self.request.POST.getlist('topics')
+            edit_hours = self.request.POST.getlist('hours')
+            edit_homeworks = self.request.POST.getlist('homeworks')
+            pks = self.request.POST.getlist('ids')
+            if pks:
+                a=0
+                
+                for i in pks:
+                    i = int(i)
+                    get_topic = TopiCktp.objects.get(pk=i)
+                    get_topic.name = edit_topics[a]
+                    get_topic.hour = int(edit_hours[a])
+                    get_topic.homework = edit_homeworks[a]
+                    get_topic.save()
+                    a+=1
+                    
+
+        if 'import' in request.POST:
+            file = request.FILES['file']
+            # f = open(uploaded_file_url, 'rt',encoding='utf8')
+
+            myreader = csv.DictReader(codecs.iterdecode(file, 'utf-8'))
+            section_old = ''
+            section = None
+            for row in myreader:
+                section_name = row['Разделы']
+                topic = row['Темы уроков']
+                hour = row['Количество часов']
+                homework = row['Домашнее задание']
+                if section_name!=section_old and section_name!='':
+                    
+                    section = Sections_KTP.objects.create(ktp=ktp_get, name=section_name)
+                
+                if (topic and hour)!='':
+                    TopiCktp.objects.create(name=topic, hour=hour,section=section, homework=homework)
+                section_old = row['Разделы']
+        return redirect(request.META.get('HTTP_REFERER'))

@@ -1,0 +1,261 @@
+{% extends 'user_index.html' %}
+{% load get_ktp_topics %}
+{% block h2 %}
+<i class="bi bi-layout-text-sidebar"></i> {{ title }}
+{% endblock %}
+
+{% block content %}
+
+
+<div class="alert alert-warning mt-1">
+  <i class="bi bi-exclamation-circle"></i> Для редактирования КТП нажмите на наименование темы урока.
+</div>
+
+<form method="POST">
+{% csrf_token %}
+<div class="card">
+  
+  <div class="card-header">
+    Информация
+  </div>
+  <div class="card-body">
+
+
+    <div class="row">
+      <div class="col font-weight-bold">Класс:</div>
+      <div class="col">{{ ktp.class_number }}</div>
+    </div>
+    <div class="row">
+      <div class="col font-weight-bold">Предмет:</div>
+      <div class="col">{{ ktp.subject_ktp }}</div>
+    </div>
+
+    <div class="row">
+      <div class="col font-weight-bold">Наименование:</div>
+      <div class="col">{{ ktp.name }}</div>
+    </div>
+
+    <div class="row">
+      <div class="col font-weight-bold">Классы:</div>
+      <div class="col">
+        <select class="selectpicker" multiple title="Выберите классы" id="classes" name="loads">
+          {% for load in loads %}
+          <option {% if load in ktp.loads.all %} selected {% endif %}  value="{{ load.pk }}"  data-subtext="{% if load.subgroup %}{{ load.subgroup.name }}{% endif %}">{{ load.class_pk }}</option>
+          {% endfor %}
+        </select>
+
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<div class="mt-3">
+
+
+
+  <table class="rtable" >
+    {% for section_ktp in sections_ktp %}
+
+    {% get_topics section=section_ktp.pk as topics %}
+    <thead class="bg-light">
+      
+      <tr class="bg-light">
+        <th class="text-center" colspan="4">Раздел {{ forloop.counter }}. {{ section_ktp.name }}</th>
+      </tr>
+      <tr>
+        <td class="time">№</td>
+        <td class="ktp">Наименование</td>
+        <td class="time">Часы</td>
+        <td class="ktp">Домашнее задание</td>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for topic in topics %}
+      <tr class="tr1">
+        <td>{{ forloop.counter }}</td>
+        <td ><a class="topic" pk="{{topic.pk}}">{{ topic.name }}</a></td>
+        <td>{{ topic.hour }}</td>
+        <td >{{ topic.homework }}</td>
+      </tr>
+      {% endfor %}
+
+      <tr class="tre">
+        <td></td>
+        <td ><input class="form-control form-control-sm" type="text" name="section{{section_ktp.pk}}"></td>
+        <td><input type="number" class="form-control form-control-sm" value="1" name="hours{{section_ktp.pk}}"></td>
+        <td ><input class="form-control form-control-sm" type="text" name="homeworks{{section_ktp.pk}}"></td>
+      </tr>
+
+
+        <tr>
+        <td class="font-weight-bold" colspan="2">Итого за раздел:</td>
+        <td class="text-center">-</td>
+
+        <td  class="text-center add_theme" ><a >Добавить новую тему</a></td>
+
+      </tr>
+
+    </tbody>
+
+
+    {% endfor %}
+
+  </table>
+
+<button type="submit" class="btn btn-success">Сохранить</button>
+
+  <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  Добавить раздел
+</button>
+
+</form>
+
+<input type="number" class="ids" style="display:none"  val="0">
+
+
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2">
+  Импорт из файла
+</button>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+  <form method="POST">
+{% csrf_token %}
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title" id="exampleModalLabel">Добавление раздела</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {{ form }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="submit" class="btn btn-primary">Добавить</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+</div>
+
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+<!-- Modal -->
+<div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title" id="exampleModalLabel">Импорт из файла</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="row">
+          <div class="col ">Образец:</div>
+            <a href="{{ file.file.url }}" class="alert-link" download>{{ file.name }}</a>
+          <div class="col"></div>
+        </div>
+        <div class="row">
+          <div class="col">Ваш файл</div>
+          <div class="col"><input name="file" type="file" accept=".csv"></div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="submit" class="btn btn-primary" name="import">Сохранить</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+
+<style>
+  td {
+    max-width: 608px;
+    word-wrap: break-word;
+  }
+
+
+
+  .tre{
+    display: none;
+  }
+
+
+  .time{
+    max-width: 7%;
+  }
+
+  .ktp{
+    width: 42%;
+  }
+
+
+
+</style>
+
+
+<script>
+$('.add_theme').on('click', function(){
+  var this_tr = $(this).closest('tr')
+  var this_tbody = $(this).closest('tbody')
+  var this_tr1 = $(this_tbody).children('.tr1').last()
+  
+  var example_tr = $(this_tbody).children('.tre')
+  var num_tr1 = $(this_tr1).children('td').eq(0).text()
+    if (num_tr1){
+    
+    var num_tr1 =  parseInt(num_tr1)+ 1
+} else{
+    var num_tr1 = 1
+  }
+  var clone_row  = $('<tr class="tr1"></tr>').insertBefore(this_tr)
+
+  $(clone_row).append('<td>'+  num_tr1 +'</td>')
+  var td2 = $(clone_row).append($(example_tr).children('td').clone().eq(1))
+  var td3 = $(clone_row).append($(example_tr).children('td').clone().eq(2))
+  var td4 = $(clone_row).append($(example_tr).children('td').clone().eq(3))
+
+  })
+
+  $('.topic').on('click', function(){
+    let get_tr = $(this).closest('tr')
+    let this_tbody = $(this).closest('tbody')
+    let example_tr = $(this_tbody).children('.tre')
+    let topic = $(this).text()
+    let hour = get_tr.children('td').eq(2).text()
+    let homework = get_tr.children('td').eq(3).text()
+    $(get_tr).children('td').not($(get_tr).children('td').eq(0)).empty()
+
+    var input1 = $(get_tr.children('td').eq(1)).append($(example_tr).children('td').clone(true).eq(1).children('input'))
+    var input2 = $(get_tr.children('td').eq(2)).append($(example_tr).children('td').clone(true).eq(2).children('input'))
+    var input3 = $(get_tr.children('td').eq(3)).append($(example_tr).children('td').clone(true).eq(3).children('input'))
+
+    $(get_tr.children('td').eq(1)).append($('.ids').last().clone(true))
+    $(get_tr.children('td').eq(1).children('input[class="ids"]')).attr('value', $(this).attr('pk')).attr('name','ids')
+    let topic_input = $(get_tr.children('td').eq(1).children('input')).eq(0).val(topic).focus()
+    let hour_input = $(get_tr.children('td').eq(2).children('input')).eq(0).val(hour)
+    let homework_input = $(get_tr.children('td').eq(3).children('input')).eq(0).val(homework)
+    $(topic_input).attr('name', 'topics')
+    $(hour_input).attr('name', 'hours')
+    $(homework_input).attr('name', 'homeworks')
+
+  })
+
+</script>
+
+{% endblock %}
