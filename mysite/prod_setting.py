@@ -20,7 +20,7 @@ DATABASES = {
     'default': {
         #
 
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'new_busel',
         'USER' : 'busel_admin',
         'PASSWORD' : 'masterAdminBusel#345',
