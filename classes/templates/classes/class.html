@@ -8,29 +8,33 @@
 	
 
 
-<table class="rtable table-hover mt-3">
-  <thead class="">
+
+<table class="table table-sm table-bordered  table-hover mt-3">
+  <thead class="bg-info text-white">
+
     <tr>
-      <th>Номер</th>
-      <th>Литер</th>
-      <th>Учебный план</td>
-      <th>Профиль периодов</th>
-      <th>Смена</th>
-      <th>Классный руководитель</th>
-      <th class="text-center" colspan="2">Действие</th>
+      <th class="text-center">Класс</th>
+      <th class="text-center">Буква</th>
+      <th class="text-center">Учебный план</td>
+      <th class="text-center">Профиль периодов</th>
+      <th class="text-center">Смена</th>
+      <th class="text-center">Классный руководитель</th>
+      <th class="text-center" >Действие</th>
     </tr>
   </thead>
   <tbody>
     {% for class in classes %}
 				<tr>
-					<td>{{ class.class_number }}</td>
-					<td>{{ class.letter }}</td>
+					<td class="text-center">{{ class.class_number }}</td>
+          <td class="text-center">{{ class.letter }}</td>
 					<td>{{ class.сurriculum }}</td>
           <td>{{ class.period_profile }}</td>
 					<td>{{ class.change }} смена</td>
 					<td>{{ class.class_teacher }}</td>
-					<td class="action"> <a href="{{ class.get_absolute_url  }}">Редактировать</a></td>
-					<td class="action"><a class="deleteClass" name="{{ class }}" pk="{{ class.pk }}">Удалить</a></td>
+					<td class="action text-center"> 
+              <a href="{{ class.get_absolute_url  }}" title="Редактировать"><i class="bi bi-pencil-square"></i></a>
+              <a class="deleteClass text-info" name="{{ class }}" pk="{{ class.pk }}" title="Удалить"><i class="bi bi-trash-fill"></i></a>
+          </td>
 				</tr>
 				{% endfor %}
 
@@ -40,20 +44,20 @@
 
 
 
-
-
-
 		<!-- Button trigger modal -->
-		<button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">
-  			<i class="bi bi-plus-square-dotted"></i> Добавить
+		<button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">
+  			<i class="bi bi-folder-plus"></i> Добавить
 		</button>
+
+
+
 		<form method="POST">
 		<div class="modal fade bd-example-modal-xl" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
   			<div class="modal-dialog" role="document">
     			<div class="modal-content ">
-      				<div class="modal-header ">
-        			<h5 class="modal-title">Добавление класса</h5>
-        			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      				<div class="modal-header bg-info">
+        			<h5 class="modal-title text-white"><i class="bi bi-folder-plus"></i> Добавление класса</h5>
+        			<button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           				<span aria-hidden="true">&times;</span>
         			</button>
       				</div>
@@ -62,8 +66,7 @@
         	{{ form }}
       	</div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-        <button type="submit" class="btn btn-success">Сохранить</button>
+        <button type="submit" class="btn btn-info"><i class="bi bi-folder-plus"></i> Добавить в журнал</button>
       </div>
     </div>
   </div>
@@ -76,8 +79,8 @@
 <div class="modal fade" id="staticBackdrop" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <div class="modal-header bg-danger text-whiteы">
-        <h5 class="modal-title" id="exampleModalLabel"><i class="bi bi-exclamation-circle"></i> Удаление класса</h5>
+      <div class="modal-header bg-danger ">
+        <h5 class="modal-title text-white" id="exampleModalLabel"><i class="bi bi-exclamation-circle"></i> Удаление класса</h5>
         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

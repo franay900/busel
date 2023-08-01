@@ -6,23 +6,23 @@
 
 {% block content %}
 
-
-<table class="rtable">
+{% if ads %}
+<table class="table table-bordered table-sm table-hover">
 	
-	<thead>
+	<thead class="bg-info text-white">
 		<tr>
-			<th>№</th>
-			<th>Заголовок</th>
-			<th>Автор</th>
-			<th>Дата публикации</th>
-			<th>Действие</th>
+			<th class="text-center">№</th>
+			<th class="text-center">Заголовок</th>
+			<th class="text-center">Автор</th>
+			<th class="text-center">Дата публикации</th>
+			<th class="text-center">Действие</th>
 		</tr>
 	</thead>
 	<tbody>
 		{% for ad in ads %}
 		<tr>
-			<td>{{ forloop.counter }}</td>
-			<td>{{ ad.title }}</td>
+			<td class="text-center">{{ forloop.counter }}</td>
+			<td class="">{{ ad.title }}</td>
 			<td>{{ ad.author }}</td>
 			<td>{{ ad.date_public }}</td>
 			<td><a href="{% url 'delete_ads' pk=ad.pk %}">Удалить</a></td>
@@ -32,10 +32,15 @@
 	</tbody>
 </table>
 
+{% else %}
+<div class="alert alert-danger">
+	Новостей нет.
+</div>
+{% endif %}
 
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-success" data-toggle="modal" data-target="#staticBackdrop">
-  Добавить
+<button type="button" class="btn btn-info" data-toggle="modal" data-target="#staticBackdrop">
+  <i class="bi bi-folder-plus"></i> Добавить
 </button>
 
 
@@ -45,9 +50,9 @@
 <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Добавление объявления</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <div class="modal-header bg-primary">
+        <h5 class="modal-title text-white" id="staticBackdropLabel"><i class="bi bi-folder-plus"></i> Добавление объявления</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -55,8 +60,8 @@
         {{ form }}
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-        <button type="submit" class="btn btn-success">Сохранить</button>
+   
+        <button type="submit" class="btn btn-info"><i class="bi bi-folder-plus"></i> Сохранить</button>
       </div>
     </div>
   </div>

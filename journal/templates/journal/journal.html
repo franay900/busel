@@ -50,19 +50,19 @@
 
 <form method="POST">
   {% csrf_token %}
-  {% if type_journal == 'school' %}
-  <div class="row">
-    <div class="col">
+
+  <div class="row mt-3">
+      {% if type_journal == 'school' %}
+
+    <div class="col-1">
        <select class="custom-select custom-select-sm "  name="load" id="classes_list" style="width:auto">
            {% for class in classes %}
             <option  {% if load_pk.class_pk.pk == class.pk %} selected="" {% endif %}  value="{{ class.pk }}" value="" url="{% url 'GetLoad' class_pk=class.pk %}">{{ class.class_number }}{{ class.letter }}</option>
           {% endfor %}
        </select>
     </div>
-  </div>
   {% endif %}
 
-  <div class="row mt-3">
     <div class="col">
         <select class="custom-select custom-select-sm "  name="load" id="loads">
           {% if type_journal == 'school' %}
@@ -87,7 +87,7 @@
        </select>
     </div>
     <div class="col">
-      <button class=" btn btn-sm btn-secondary">Показать</button>
+      <button class=" btn btn-sm btn-primary">Показать</button>
     </div>
   </div>
 </form>
@@ -98,8 +98,8 @@
 
 <div class="row mt-3">
   <div class="col">
-    <a href="{% url 'LessonTopics' load=load_pk.pk period=period.pk %}" class="btn btn-secondary btn-sm" target="_blank">Темы уроков и дз</a>
-    <a  href="{% url 'ItogView' load=load_pk.pk period=period.pk %}" class="btn btn-secondary mr-3 btn-sm">Итоговая ведомость</a>
+    <a href="{% url 'LessonTopics' load=load_pk.pk period=period.pk %}" class="btn btn-primary btn-sm" target="_blank">Темы уроков и дз</a>
+    <a  href="{% url 'ItogView' load=load_pk.pk period=period.pk %}" class="btn btn-primary mr-3 btn-sm">Итоговая ведомость</a>
   </div>
 
 </div>
@@ -118,7 +118,7 @@
     <table class="myTable " >
       <thead>
       <tr>
-        <th id="start"  id="row-2" style="width: 15%;" style="">№</th>
+        <th class="text-center" id="start"  id="row-2" style="width: 15%;" >№</th>
         <th   id="row-2" style="text-align:center;">Фамилия, имя</th>
       </tr>
      
@@ -126,7 +126,7 @@
       <tbody>
         {% for student in students %}
           <tr >
-            <td   class="student">{{ forloop.counter }}</td>
+            <td   class="student text-center">{{ forloop.counter }}</td>
             <td   class="student">{{ student.user.last_name }} {{ student.user.first_name }}</td>
           </tr>
         {% endfor %}
@@ -288,7 +288,7 @@ thead th{
 background-color: #EEEEEE;
 border: none;
 color: grey;
-padding: 5px;
+padding: 4px;
 height: 32px;
 text-align: left;
 text-shadow: 1px 1px 1px #fff;
@@ -299,7 +299,10 @@ width:200px;
 }
 tbody td{
 height: 32px;
-width: 42px;
+
+}
+.date{
+  min-width: 39.2px;
 }
 table{
 width:100%;

@@ -14,28 +14,35 @@
 
 
 
-  <select onchange="top.location=this.value" class="custom-select custom-select-sm" style="width:auto" name="" id="">
+<div class="row">
+	<div class="col">
+		Класс:
+		  <select onchange="top.location=this.value" class="custom-select custom-select-sm" style="width:auto" name="" id="">
     {% for classes in classes %}
     <option  {% if class.pk == classes.pk %} selected="" {% endif %} value="{% url 'SubgroupViewPk' pk=classes.pk %}">{{ classes.class_number }}{{ classes.letter }}</option>
     {% endfor %}
-  </select>
+    </select>
+	</div>
+</div>
+
+  
 
 {% if subgroup_list and students %}
 <form method="post" action="">
 	{% csrf_token %}
-  <table class="rtable mt-3">
-  	<thead>
+  <table class="table table-sm table-bordered table-hover mt-3">
+  	<thead class="bg-info text-white">
   	<tr>
-  		<th rowspan="2">№</th>
+  		<th rowspan="2" class="text-center">№</th>
   		<th rowspan="2">Фамилия,имя</th>
   		{% for subgroup in subgroups %}
-  		<th   id="s{{subgroup.subject_pk.pk}}" colspan="2" style="text-align: center;">{{subgroup.subject_pk}}</th>
+  		<th   id="s{{subgroup.subject_pk.pk}}" colspan="2" style="text-align: center;">{{subgroup}}</th>
   		{% endfor %}
   	</tr>
   	<tr>
 
   		{% for subgroup in subgroup_list %}
-  		<th class="subgroup" subject="{{subgroup.subject_pk.pk}}">{{ subgroup.name }}</th>
+  		<th class="subgroup text-center" subject="{{subgroup.subject_pk.pk}}">{{ subgroup.name }}</th>
   		{% endfor %}
   	</tr>
 	</thead>
@@ -44,7 +51,7 @@
 	<tbody>
 		{% for student in students %}
   		<tr>
-  			<td>{{ forloop.counter }}</td>
+  			<td class="text-center">{{ forloop.counter }}</td>
   			<td>{{ student.user.last_name }} {{ student.user.first_name }}</td>
   			{% for subgroup in subgroup_list %}
 
@@ -59,7 +66,7 @@
 	</tbody>
 
   </table>
- <button type="submit" class="btn btn-primary "><i class="bi bi-pencil-square"></i> Обновить</button>
+ <button type="submit" class="btn btn-info "><i class="bi bi-pencil-square"></i> Обновить</button>
  </form>
 {% endif %}
 

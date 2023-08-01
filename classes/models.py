@@ -120,6 +120,7 @@ class Student(models.Model):
     class_pk = models.ForeignKey(Classes, on_delete=models.CASCADE,null=True)
     old_classes = models.ManyToManyField(Classes, null=True, related_name='old_classes')
     date_of_enrollment=models.DateField(verbose_name='Дата зачслениия', default='2021-09-01')
+    delete_code = models.CharField(max_length=40, verbose_name='Код удаления', blank=True, null=True)
     def edit(self):
         return reverse('StudentEdit',kwargs={'student_pk':self.pk})
     def __str__(self):
@@ -128,6 +129,7 @@ class Student(models.Model):
         ordering=['user']
         verbose_name="ученик"
         verbose_name_plural="Ученики"
+
 
 class StudentSubgroup(models.Model):
     student=models.ForeignKey(Student, on_delete=models.SET_NULL, verbose_name="Ученик",

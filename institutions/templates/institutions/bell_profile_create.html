@@ -1,7 +1,7 @@
 {% extends 'user_index.html' %}
 {% load number_tags %}
 {% block h2 %}
-Добавление профиля звонков
+<i class="bi bi-bell"></i> Добавление профиля звонков
 {% endblock %}
 
 
@@ -12,29 +12,33 @@
 
 	<form action="" method="POST">
 		{% csrf_token %}
-		{{ form }}
+		
 
+		<div class="row mt-3">
+			<div class="col-3">{{ form.title.label_tag }}</div>
+			<div class="col-9">{{ form.title }}</div>
+		</div>
 		<div class="row">
 
 		{% for days in days %}    
     
 
 		<div class="col-4 ">
-		<table class="rtable  mt-3">
-			<thead>
+		<table class="table table-bordered table-sm table-hover  mt-3">
+			<thead class="bg-info text-white">
 			<tr>
 				<th colspan="3" class="text-center">{{ days }}</th>
 			</tr>
 			<tr>
-				<th>№</th>
-				<th>Начало</th>
-				<th>Окончание</th>
+				<th class="text-center">№</th>
+				<th class="text-center">Начало</th>
+				<th class="text-center">Окончание</th>
 			</tr>
 			</thead>
 			<tbody>
 			{% for i in '12345678' %}
 			<tr>
-				<td>{{ i }}</td>
+				<td class="text-center">{{ i }}</td>
 				<td><input id="b{{ forloop.parentloop.counter }}{{ forloop.counter }}" name="b{{ forloop.parentloop.counter }}{{ forloop.counter }}" type="text" class="form-control form-control-sm" placeholder="00:00"></td>
 				<td><input id="e{{ forloop.parentloop.counter }}{{ forloop.counter }}" name="e{{ forloop.parentloop.counter }}{{ forloop.counter }}" type="text" class="form-control form-control-sm" placeholder="00:00"></td>
 			</tr>
@@ -46,8 +50,8 @@
 		{% endfor %}
 		</div>
 		
-		<button class="btn btn-success">Сохранить</button>
-		<button type="button" id="copy" class="btn btn-primary">Копировать (с понедельника)</button>
+		<button class="btn btn-info"><i class="bi bi-folder-plus"></i> Добавить в журнал</button>
+		<button type="button" id="copy" class="btn btn-info"><i class="bi bi-clipboard"></i> Копировать с понедельника</button>
 		<script>
 			copy.onclick=function(){
 			let i = 1;

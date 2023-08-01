@@ -2,6 +2,10 @@ from django import forms
 from .models import News
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from user_account.models import UserNet
+from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+
 
 
 class UserLoginForm(AuthenticationForm):
@@ -41,4 +45,13 @@ class NewsForm(forms.ModelForm):
 
 			}))
 	'''
-	
+
+
+
+class MyPasswordResetForm(PasswordResetForm):
+
+	def clean_email(self):
+		email_id = self.cleaned_data['email']
+		if not UserNet.objects.filter(email__iexact=email_id, is_active=True,mail_conf=True).exists():
+			raise ValidationError("Почта не найдена либо не подтверждена!")
+		return email_id

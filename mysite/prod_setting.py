@@ -1,7 +1,9 @@
 import os
 from pathlib import Path
+import pymysql
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+pymysql.install_as_MySQLdb()
+BASE_DIR =  os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 SECRET_KEY = '84xz4~A15HrFd*B5ec???9IetrvZXZq~ELH*UP5T4ACT0~La{Xou'
@@ -16,15 +18,16 @@ STATICFILES_DIRS = [
 
 ]
 
+
+
+
 DATABASES = {
     'default': {
-        #
-
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'new_busel',
-        'USER' : 'busel_admin',
-        'PASSWORD' : 'masterAdminBusel#345',
-        'HOST' : 'localhost',
-        'PORT' : '5432',
+        'NAME': 'buselxyz_busel',
+        'USER': 'buselxyz_admin',
+        'PASSWORD': '9[2G8BvLYAv',
+        'HOST': 'localhost',
+        'Port': '3306'
     }
 }

@@ -5,9 +5,10 @@
 
 
 {% block content %}
-	
-		<table class="rtable ">
-			<thead>
+		<div class="row">
+		<div class="col-3">
+		<table class="table table-bordered table-sm table-hover ">
+			<thead class="bg-info text-white">
 				<tr>
 					<th>№</th>
 					<th>
@@ -19,14 +20,14 @@
 			</thead>
 			{% for bell_profile in bell_profiles %}
 			<tr>
-				<td>{{ forloop.counter }}</td>
+				<td class="text-center">{{ forloop.counter }}</td>
 				<td>{{ bell_profile.title }}</td>
 
 			</tr>
 			{% endfor %}
 		</table>
-	
-
-	<a class="btn btn-success" href="{% url 'Bell_profile_create' %}"><i class="bi bi-file-earmark-plus"></i> Добавить</a>
+	</div>
+	</div>
+	<a class="btn btn-info" href="{% url 'Bell_profile_create' %}"><i class="bi bi-folder-plus"></i> Добавить</a>
    
 {% endblock %}

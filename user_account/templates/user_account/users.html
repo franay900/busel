@@ -6,44 +6,54 @@
 {% endblock %}
 
 {% block content %}
-
-
-   <table class="rtable table-hover  mt-3">
-    <thead class="thead-light">
+   {% if request.user.is_superuser %}
+   <div class="row mt-3">
+         <div class="col"><strong>Организация:</strong></div>
+         <div class="col">
+            <select class="custom-select custom-select-sm" name="" id=""></select>
+         </div>
+      </div>
+   {% endif %}
+   <table class="table table-bordered table-sm table-hover  mt-3">
+    <thead class="bg-info text-white">
      <tr>
-    	<th >№</th>
-       <th >ФИО</th>
-       <th >Логин</th>
-       <th>Должность</th>
-       <th>Пригласительный код</th>
-       <th>Дата рождения</th>
-       <th style="text-align: center;"  colspan="2">Действие</th>       
+        <th class="text-center">№</th>
+        <th class="text-center" >ФИО</th>
+        <th class="text-center">Должность</th>
+        <th class="text-center">Дата рождения</th>
+        <th class="text-center">Логин</th>
+        <th class="text-center">Пригласительный код</th>
+        <th style="text-align: center;"  >Действие</th>       
      </tr>
      </thead>
      	{% for i in users %}
      	<tr>
-     		<td>{{ forloop.counter }}</td>
-     		<td>{% if i.last_name %}{{ i.last_name  }}  {{ i.first_name }} {{ i.middle_name }} {% else %} <a class="text-danger">Заполните информацию!</a> {% endif %}</td>
+         <td class="text-center">{{ forloop.counter }}</td>
+         <td>{% if i.last_name %}{{ i.last_name  }}  {{ i.first_name }} {{ i.middle_name }} {% else %} <a class="text-danger">Заполните информацию!</a> {% endif %}</td>
+         <td>{% if i.position %}{{ i.position|truncatechars:20 }}{% endif %}</td>
+         <td>{% if i.birth_day %}{{ i.birth_day }} {% else %} <a class="text-danger">Не указана</a> {% endif %}</td>
 
-        <td>{% if not i.code %} {{i.username}} {% endif %}</td>
-        <td>{% if i.position %}{{ i.position|truncatechars:20 }}{% endif %}</td>
-        <td>{% if i.code %} {{i.code}} {% endif %}</td>
-        <td>{% if i.birth_day %}{{ i.birth_day }} {% else %} <a class="text-danger">Не указана</a> {% endif %}</td>
-     		<td ><a href="{{ i.get_absolute_url }}">Редактировать</a></td>
-     		<td >
-            {%if i != request.user%}
-            <a href="{{ i.ban }}"> Заблокировать</a>
-            {% else %}
-            <a  class=" btn-tooltip text-muted" data-toggle="tooltip" data-placement="bottom" title="Невозможно">Заблокировать</a>
+         <td>{% if not i.code %} {{i.username}} {% endif %}</td>
 
-            {% endif %}
+         <td>{% if i.code %} {{i.code}} {% endif %}</td>
+         <td>
+            <a href="{{ i.get_absolute_url }}" title="Редактировать"><i class="bi bi-pencil-square"></i></a>
+               {%if i != request.user%}
+               <a href="{{ i.ban }}" title="Заблокировать"> <i class="bi bi-trash-fill"></i></a>
+               {% else %}
+               <a  class=" btn-tooltip text-muted" data-toggle="tooltip" data-placement="bottom" title="Невозможно"><i class="bi bi-trash-fill"></i></a>
+
+               {% endif %}
          </td>
+
+
      	</tr>
      	{% endfor %}
    </table>
    <div>
     
-   <a style="text-decoration: none;" class="btn btn-success" href="{% url 'AddUser' %}"><i class="bi bi-person-plus"></i> Добавить</a> 
-   <a style="text-decoration: none;" class="btn btn-success" href="{% url 'ImportUser' %}"><i class="bi bi-file-earmark-arrow-up"></i> Импорт</a>
+   <a style="text-decoration: none;" class="btn btn-info " href="{% url 'AddUser' %}"><i class="bi bi-person-plus"></i> Добавить</a> 
+   <a style="text-decoration: none;" class="btn btn-info " href="{% url 'ImportUser' %}"><i class="bi bi-file-earmark-arrow-up"></i> Импорт</a>
    </div>
+
 {% endblock %}

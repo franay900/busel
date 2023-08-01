@@ -1,101 +1,105 @@
 {% extends 'user_index.html' %}
 {% load static %}
 {% load timetable_tags %}
+{% load user_tags %}
+
 
 {% block content %}
 
-
-
-   <div class="container-fluid">
-    <div class="profile-page tx-13">
-        <div class="row">
-            <div class="col-12 grid-margin">
-                <div class="profile-header">
-                    <div class="cover">
-                        <div class="gray-shade"></div>
-                      
-                        <div class="cover-body d-flex justify-content-between align-items-center">
-                            <div>
-                                <img class="profile-pic" src="{% if request.user.avatar %}{{ request.user.avatar.url }} {% else %} {% static 'img/no-user-image-icon-27.jpg' %} {% endif %}" alt="profile">
-                                <span class="profile-name">{{ request.user.last_name }} {{ request.user.first_name }} {{ request.user.middle_name }}</span>
-                            </div>
-                            <div class="d-none d-md-block">
-                                <a href="{% url 'EditMyAccount' %}" class="btn btn-primary btn-icon-text btn-edit-profile">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit btn-icon-prepend">
-                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                    </svg> Редактировать профиль
-                                </a>
-                            </div>
-                        </div>
+<div class="container-fluid">
+    <div class="main-body">
+    
+      
+            
+          <div class="row gutters-sm">
+            <div class="col-md-4 mb-3">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-flex flex-column align-items-center text-center">
+                    <img src="{% if request.user.avatar %}{{ request.user.avatar.url }} {% else %} {% static 'img/no-user-image-icon-27.jpg' %} {% endif %}" alt="Admin" class="rounded-circle" width="150">
+                    <div class="mt-3">
+                      <h4 style="display: block;">{{ request.user.last_name }} {{ request.user.first_name }} {{ request.user.middle_name }}</h4>
+                      <p class="text-secondary mb-1">{{ request.user.institution.short_title }}</p>
+                 
                     </div>
-                    <div class="header-links">
-                        <ul class="links d-flex align-items-center mt-3 mt-md-0">
-                            <li class="header-link-item d-flex align-items-center active">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user mr-1 icon-md">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </svg>
-                                <a class="pt-1px d-none d-md-block" href="#">Личный кабинет</a>
-                            </li>
-                       
-
-                        </ul>
-                    </div>
+                  </div>
                 </div>
-            </div>
-        </div>
-        <div class="row profile-body">
-            <!-- left wrapper start -->
-            <div class="d-none d-md-block col-md-4 col-xl-3 left-wrapper">
-                <div class="card rounded">
+              </div>
+              {% if request.user|teacher %}
+              <div class="card mt-3">
+
                     <div class="card-body">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <h6 class="card-title mb-0">Информация</h6>
-                            <div class="dropdown">
-                                <button class="btn p-0" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal icon-lg text-muted pb-3px">
-                                        <circle cx="12" cy="12" r="1"></circle>
-                                        <circle cx="19" cy="12" r="1"></circle>
-                                        <circle cx="5" cy="12" r="1"></circle>
-                                    </svg>
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <a class="dropdown-item d-flex align-items-center" href="{% url 'EditMyAccount' %}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2 icon-sm mr-2">
-                                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                                        </svg> <span class="">Редактировать</span></a>
-  
-                                </div>
-                            </div>
-                        </div>
-                        <p>Статус.</p>
-                        <div class="mt-3">
-                            <label class="tx-11 font-weight-bold mb-0 text-uppercase">Дата регистрации:</label>
-                            <p class="text-muted">{{ request.user.date_joined }}</p>
-                        </div>
-                        <div class="mt-3">
-                            <label class="tx-11 font-weight-bold mb-0 text-uppercase">Организация:</label>
-                            <p class="text-muted">{{ request.user.institution.short_title }}</p>
-                        </div>
+                      <h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">Расписание уроков</i>{{ now }}</h6>
+                      {% get_timetable user=request.user as timetable %}
+                      {% for lesson in timetable %}
+                      <small><a class="text-danger">№{{ forloop.counter }}</a>  {{ lesson.class_pk }} {{ lesson.subject_pk.subject_pk.subject.short_title }}</small>
+                      <div class="progress mb-3" style="height: 5px">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 100%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
 
-                        <div class="mt-3">
-                            <label class="tx-11 font-weight-bold mb-0 text-uppercase">Должность:</label>
-                            <p class="text-muted">{% if request.user.position %}{{ request.user.position }}{% else%}Не указана{% endif %}</p>
-                        </div>
-
-                        <div class="mt-3">
-                            <label class="tx-11 font-weight-bold mb-0 text-uppercase">Email:</label>
-                            <p class="text-muted">{{ request.user.email}}</p>
-                        </div>
-
-                        
+                      {% endfor %}
                     </div>
                 </div>
+                {% endif %}
+              
             </div>
-            <!-- left wrapper end -->
-            <!-- middle wrapper start -->
-            <div class="col-md-8 col-xl-6 middle-wrapper">
+            <div class="col-md-8">
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">ФИО</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{ request.user.last_name }} {{ request.user.first_name }} {{ request.user.middle_name }}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Организация</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{ request.user.institution.short_title }}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Почта</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{ request.user.email }}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Дата регистрации</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        {{ request.user.date_joined }}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Дата последнего входа</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{ request.user.last_login }}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <a class="btn btn-info "  href="{% url 'EditMyAccount' %}"><i class="bi bi-gear-wide"></i> Настройки</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+                         <div class="col">
                              <!-- Post /////-->
 
                 <!--- \\\\\\\Post-->
@@ -120,6 +124,8 @@
                         </div>
 
                     </div>
+
+
                     <div class="card-body">
                         <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>{{ ad.date_public }}</div>
                         <a class="card-link" href="#">
@@ -133,55 +139,18 @@
                     <div class="card-footer">
                         Автор: {{ ad.author }}
                     </div>
+
                 </div>
                 {% endfor %}
 
 
 
             </div> 
-            <!-- middle wrapper end -->
-            <!-- right wrapper start -->
-            <div class="d-none d-xl-block col-xl-3 right-wrapper">
-                <div class="row">
-                    <div class="col-md-12 grid-margin">
-                        <div class="card rounded">
-                            <div class="card-body">
-                                <h6 class="card-title">Расписание на сегодня</h6>
-                                <div class="latest-photos">
-                                    <div class="row">
-                                        {% get_timetable user=request.user as timetable %}
-                                        
-                                        
-                                        
-                                        <table class="rtable">
-                                          <thead>
-                                          <tr>
-                                            <th>Смена/№</th>
-                                            <th>Урок</th>
-                                          </tr>
-                                          </thead>
 
-                                          <tbody>
-                                            {% for lesson in timetable %}
-                                            <tr>
-                                              <td>{{ lesson.class_pk.change }}/{{ lesson.number }}</td>
-                                              <td>{{ lesson.class_pk }}/{{ lesson.subject_pk.subject_pk.subject.short_title }}</td>
-                                            </tr>
-                                            {% endfor %}
 
-                                          </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-            <!-- right wrapper end -->
-        </div>
-    </div>
-    </div>
-  </div>
+
+            </div>
+          </div>
 </div>
 
 
@@ -396,9 +365,10 @@ img {
   border-radius: 0.25rem;
 }
 
-    h4{
-        display: none;
-    }
+h4{
+    display: none;
+}
+ 
     </style>
 
 

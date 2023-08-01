@@ -27,6 +27,8 @@ urlpatterns = [
     path('classes/',include('classes.urls')),
     path('journal/',include('journal.urls')),
     path('reports/',include('reports.urls')),
+
+    path('diary/',include('diary.urls')),
     
 ]
 if settings.DEBUG:

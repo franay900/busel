@@ -44,7 +44,7 @@ class Lessons(models.Model):
 class Marks(models.Model):
     student=models.ForeignKey(Student, on_delete=models.SET_NULL, verbose_name='Ученик',null=True,blank=True)
     lesson=models.ForeignKey(Lessons, on_delete=models.SET_NULL, verbose_name='Урок',null=True,blank=True)
-    lesson_type=models.ForeignKey(LessonType, on_delete=models.SET_NULL, verbose_name='Тип урока',null=True,blank=True)
+    lesson_type=models.ForeignKey(LessonType, on_delete=models.CASCADE, verbose_name='Тип урока',null=True,blank=True)
     mark=models.IntegerField(null=True,blank=True)
     mark2=models.IntegerField(null=True,blank=True)
     attendance=models.IntegerField(null=True,blank=True)

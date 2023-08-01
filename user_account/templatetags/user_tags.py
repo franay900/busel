@@ -17,6 +17,12 @@ def teacher(user):
 	if groups:
 		return groups.exists()
 
+@register.filter(name='student') 
+def student(user):
+	groups=user.groups.filter(name='Ученик')
+	if groups:
+		return groups.exists()
+
 
 @register.filter(name='class_manager') 
 def class_manager(user):

@@ -37,6 +37,11 @@
                      Пароль
                   </a>
 
+                  <a class="nav-link" id="auth-tab" data-toggle="pill" href="#auth" role="tab" aria-controls="auth" aria-selected="false">
+                     <i class="bi bi-envelope-fill mr-1"></i>
+                     Авторизация
+                  </a>
+
                </div>
             </div>
             <div class="tab-content p-4 p-md-5" id="v-pills-tabContent">
@@ -76,6 +81,24 @@
                   </div>
                   </form>
                </div>
+
+               <div class="tab-pane fade show " id="auth" role="tabpanel" aria-labelledby="account-tab">
+
+                  {% if not request.user.mail_conf %}
+                  <div class="alert alert-secondary">
+                     На ваш e-mail <strong><u>{{ request.user.email }}</u></strong> была отправлена ссылка для подтверждения электронной почты.
+                     Если вы не получили письмо, проверьте папку "спам". <br>
+                     <a href="{% url 'SendAgain' %}" class="alert-link">Отправить письмо еще раз</a>
+                  </div>
+                  {% else %}
+                  <div class="alert alert-success">
+                        Ваша электронная почта успешно подтверждена <strong><i class="bi bi-check-lg"></i></strong>
+                  </div>
+
+                  {% endif %}
+               </div>
+
+
                <div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
                   <h3 class="mb-4">Смена пароля</h3>
                   <form method="POST" >

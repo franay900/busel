@@ -10,7 +10,7 @@
 
 
 <div class="card mt-">
-  <h5 class="card-header">Поиск организаций</h5>
+  <h6 class="card-header"><i class="bi bi-search"></i> Поиск организаций</h6>
   <div class="card-body">
    <form class="needs-validation" novalidate method="get">
   <div class="form-row">
@@ -61,58 +61,63 @@
     </div>
   </div>
 
-  <button class="btn btn-secondary" type="submit"><i class="fa fa-search"></i> Поиск</button>
+  <button class="btn btn-info" type="submit"><i class="fa fa-search"></i> Поиск</button>
 </form>
 
   </div>
 </div>
 
 
-	<table class="rtable mt-3">
-		<thead>
+	<table class="table table-bordered table-sm  table-hover mt-3">
+		<thead class="bg-info text-white">
 			<tr>
-				<th>№</th>
-				<th>Наименование</th>
+				<th class="text-center">№</th>
+				<th class="text-center">Наименование</th>
 				
-				<th>Учебный год</th>
+				<th class="text-center">Учебный год</th>
 				
-				<th>Ведомственная организация</th>
-				<th class="text-center" colspan="2">Действие</th>
+				<th class="text-center">Ведомственная организация</th>
+				<th class="text-center" >Действие</th>
 			</tr>
 			</thead>
 		<tbody>
 			{% for institution in institutions %}
 			<tr>
-				<td>{{ forloop.counter }}</td>
+				<td class="text-center">{{ forloop.counter }}</td>
 				<td>{{ institution.short_title }}</td>
 				
 				<td>{{ institution.year }}</td>
 				
 				<td> {{ institution.departmental_organization }} </td>
-				<td><a href="{{ institution.edit_url }}">Редактировать</a></td>
-				<td>
-					{% if institution.is_active %}
-					<a href="{% url 'BlockInstitution' institution=institution.pk %}">Заблокировать</a>
+
+
+				<td class="action text-center"> 
+              <a href="{{ institution.edit_url }}" title="Редактировать"><i class="bi bi-pen"></i></a>
+            
+
+{% if institution.is_active %}
+					<a href="{% url 'BlockInstitution' institution=institution.pk %}" title="Заблокировать"><i class="bi bi-trash-fill"></i></a>
 					{% else %}
-					<a href="{% url 'UnBlockInstitution' institution=institution.pk %}">Разблокировать</a>
+					<a href="{% url 'UnBlockInstitution' institution=institution.pk %}" title="Разблокировать"><i class="bi bi-arrow-return-left"></i></a>
 					{% endif %}
+          </td>
 			</tr>
 			{% endfor %}
 		</tbody>
 	</table>
 	
 	{% if not request.user.institution or request.institution.lim != '0' %}
-	<button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">
-	  <i class="bi bi-plus-circle-dotted"></i> Добавить
+	<button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">
+	  <i class="bi bi-folder-plus"></i> Добавить
 	</button>
 	{% endif %}
 	<!-- Modal -->
 	<div class="modal fade " id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
 	  <div class="modal-dialog" role="document">
 	    <div class="modal-content">
-	      <div class="modal-header">
-	        <h5 class="modal-title" id="exampleModalLabel">Добавление образовательной организации</h5>
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	      <div class="modal-header  bg-info">
+	        <h5 class="modal-title text-white" id="exampleModalLabel"><i class="bi bi-folder-plus"></i> Добавление образовательной организации</h5>
+	        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
 	          <span aria-hidden="true">&times;</span>
 	        </button>
 	      </div>
@@ -122,8 +127,8 @@
 	        {% csrf_token %}
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-	        <button type="submit" class="btn btn-success">Добавить</button>
+	   
+	        <button type="submit" class="btn btn-info"><i class="bi bi-folder-plus"></i> Добавить</button>
 	      </div>
 	      </form>
 	    </div>

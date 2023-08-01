@@ -22,15 +22,15 @@
     {% endfor %}
   </select>
 
-<div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
+<div class="btn-group btn-group-toggle " data-toggle="buttons">
 
 
-<button class="btn btn-sm btn-secondary active" id="notice" type="radio" status="enable">Отметить пропуски</button>
+<button class="btn btn-sm btn-primary active" id="notice" type="radio" status="enable">Отметить пропуски</button>
 
 
 
 <div class="dropdown">
-  <button class="btn btn-secondary btn-sm dropdown-toggle  " type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  save_reason_url="{% url 'SaveReason' %}">
+  <button class="btn btn-primary btn-sm dropdown-toggle  " type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  save_reason_url="{% url 'SaveReason' %}">
     Указать причину
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -40,6 +40,7 @@
   </div>
 </div>
 </div>
+
 
 <div class="tables mt-3">
 	<div class="row">

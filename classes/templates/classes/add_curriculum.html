@@ -5,10 +5,10 @@
 
 
 {% if form.instance.title %}
-<i class="bi bi-pencil-fill"></i> Редактирование учебного плана
+<i class="bi bi-table"></i> Редактирование учебного плана
 {% else %}
 
-<i class="bi bi-file-earmark-plus-fill"></i> Добавление учебного плана
+<i class="bi bi-table"></i> Добавление учебного плана
 
 {% endif %}
 
@@ -42,9 +42,10 @@
   <div class="col-12">
     <div class="tab-content tab-content-horizontal" id="nav-tabContent">
       <div class="tab-pane fade show active" id="list-home" role="tabpanel" aria-labelledby="list-home-list">
-      	<table class="rtable mt-3">
-      		<thead>
+      	<table class="table table-sm table-bordered table-hover mt-3">
+      		<thead class="bg-info text-white">
       			<tr>
+              <th class="text-center">№</th>
       				<th>Предметы</th>
       				<th>1 класс</th>
       				<th>2 класс</th>
@@ -55,11 +56,12 @@
       		<tbody>
       			{% for subject in subjects %}
       			<tr>
+              <td class="text-center">{{ forloop.counter }}</td>
       				<td>{{ subject.title }}</td>
       				{% for class in '1234' %}
               {% get_curriculum_subject subject_pk=subject.id class_number=class as hour %}
       				<td>
-      					<input class="form-control form-control-sm" type="" name="h{{ subject.id }}c{{ class }}" placeholder="0" value="{{hour.hour|formatted_float}}" min="1"> 
+      					<input class="form-control form-control-sm" type="number" name="h{{ subject.id }}c{{ class }}" placeholder="0" value="{{hour.hour|formatted_float}}" min="1"> 
       				</td>
       				{% endfor %}
       			</tr>
@@ -68,9 +70,10 @@
       	</table>
       </div>
       <div class="tab-pane fade mt-3" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">
-      	<table class="rtable">
-      		<thead>
+      	<table class="table table-sm table-bordered table-hover">
+      		<thead class="bg-info text-white">
       			<tr>
+              <td class="text-center">№</td>
       				<th>Предметы</th>
       				<th>5 класс</th>
       				<th>6 класс</th>
@@ -83,6 +86,7 @@
       			{% for subject in subjects %}
 
       			<tr>
+              <td class="text-center">{{ forloop.counter }}</td>
       				<td>{{ subject.title }}</td>
       				{% for class in '56789' %}
                {% get_curriculum_subject subject_pk=subject.id class_number=class as hour %}
@@ -96,9 +100,10 @@
       	</table>
       </div>
       <div class="tab-pane fade mt-3" id="list-messages" role="tabpanel" aria-labelledby="list-messages-list">
-      	<table class="rtable">
-      		<thead>
+      	<table class="table table-sm table-bordered table-hover ">
+      		<thead class="bg-info text-white">
       			<tr>
+              <th class="text-center">№</th>
       				<th>Предметы</th>
       				<th>10 класс</th>
       				<th>11 класс</th>
@@ -108,6 +113,7 @@
       		<tbody>
       			{% for subject in subjects %}
       			<tr>
+              <td class="text-center">{{ forloop.counter }}</td>
       				<td>{{ subject.title }}</td>
       				{% for class in class %}
               {% get_curriculum_subject subject_pk=subject.id class_number=class as hour %}
@@ -125,10 +131,10 @@
 </div>
 
 {% if form.instance.title %}
-<button class="btn btn-primary"  type="submit"><i class="bi bi-pencil-square"></i> Обновить</button>
+<button class="btn btn-info"  type="submit"><i class="bi bi-folder-symlink"></i> Сохранить изменения</button>
 {% else %}
 
-<button class="btn btn-success"  type="submit"><i class="bi bi-plus-square-dotted"></i> Добавить</button>
+<button class="btn btn-info"  type="submit"><i class="bi bi-folder-plus"></i> Добавить</button>
 
 {% endif %}
 </form>

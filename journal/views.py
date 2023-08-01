@@ -139,8 +139,9 @@ class LessonTopics(View):
                 date_homework = request.POST.get("date_homework" + str(lesson.pk))
                 types = request.POST.getlist("types" + str(lesson.pk))
                 types_red = request.POST.getlist("typesred" + str(lesson.pk))
-
+                type_red_old = 0
                 for type_red in types_red:
+                    
                     type_p=type_red.split('/')
                     new_type=type_p[1]
                     old_type=type_p[0]
@@ -148,8 +149,16 @@ class LessonTopics(View):
 
                     if old_type!=new_type:
                         lesson.types.remove(get_type)
+                        
+
                         if int(new_type)!=0:
                             lesson.types.add(new_type)
+                        if type_red_old == new_type:
+                            Marks.objects.filter(lesson=lesson,lesson_type__pk=old_type).delete()
+
+                        Marks.objects.filter(lesson=lesson,lesson_type=get_type).update(lesson_type=new_type)
+                        lesson.types.remove(get_type)
+                    type_red_old = new_type
 
                 for type_ in types:
                     if type_:
@@ -191,7 +200,6 @@ class Mark(View):
             if int(red_mark) == 0 and int(del_mark) == 0:
                 if int(mark) == 0:
                     
-                    print(2)
                     create_mark = Marks.objects.create(student=get_student, lesson=get_lesson,
                                                    lesson_type=get_lesson_type, attendance=attendance)
                 else:
@@ -216,7 +224,6 @@ class Mark(View):
                     get_mark.attendance = 0
 
                     if int(two_mark)==0:
-                        print(two_mark)
                         get_mark.mark2=0
                 get_mark.save()
                 mark_pk = get_mark.pk
@@ -334,7 +341,6 @@ class TeacherTimeatable(View):
         
 
         lessons=Lessons.objects.filter(teacher=request.user, date__range=[start,end])
-        #print(lessons)
         arr1={}
         changes=[[
             {},{},{},{},{},{},{}
@@ -408,7 +414,7 @@ class AttendanceJournal(View, Journal):
     def days_cur_month(self):
         m = datetime.now().month
         y = datetime.now().year
-        ndays = (date(y, m+1, 1) - date(y, m, 1)).days
+        ndays = (date(y, m, 1) - date(y, m-1, 1)).days
         d1 = date(y, m, 1)
         d2 = date(y, m, ndays)
         delta = d2 - d1
@@ -450,7 +456,7 @@ def get_lessons_attendance(request):
     for lesson in lessons:
         lesson_array.append(lesson.subject_pk.subject_pk.subject.short_title)
         pk_array.append(lesson.pk)
-    for mark in Marks.objects.filter(student_id=student,lesson__in=lessons,attendance=1).distinct('lesson'):
+    for mark in Marks.objects.filter(student_id=student,lesson__in=lessons,attendance=1).distinct():
 
 
         mark_array.append(mark.lesson.pk)

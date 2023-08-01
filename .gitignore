@@ -2,4 +2,4 @@ logs/
 config/
 media/
 
-!_migrations/__init__.py
+

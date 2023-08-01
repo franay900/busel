@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, get_user_model
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, View
 from .forms import UserEditForm,RegisterForm,SetPassword, EditMyAccountForm
 from .permissions import AdminPermissionMixin,RegisterMixin
@@ -12,11 +12,14 @@ from .utils import *
 from django.urls import reverse
 from django.contrib.messages.views import SuccessMessageMixin
 from institutions.permissions import InstitutionsMixin
-from modules.users import get_user, generate_login
+from modules.users import get_user, generate_login, confirm_email
 from django.contrib import messages
 from django.http import HttpResponseForbidden,HttpResponseRedirect
 from classes.models import Load,Classes
 from news.models import AdsInstitution
+from .tokens import account_activation_token
+from django.utils.timezone import now
+
 
 
 
@@ -25,10 +28,12 @@ class HomePageAccountView(RegisterMixin,LoginRequiredMixin, ListView):
     login_url = 'login'
     template_name = 'user_account/index.html'
     def get_context_data(self, *, object_list=None, **kwargs):
+        today = now().date()
         context = super().get_context_data()
 
         context['title'] = "Главная"
         context['ads']=AdsInstitution.objects.filter(institution=self.request.user.institution).order_by('-date_public')
+        context['now'] = today
         return context
 
 class UsersView(PermissionRequiredMixin,UserMixin, ListView):
@@ -43,7 +48,8 @@ class UsersView(PermissionRequiredMixin,UserMixin, ListView):
 
 def user_edit_view(request,user_id):
     user=UserNet.objects.get(pk=user_id)
-    if user.institution== request.user.institution and UserNet.objects.get(pk=request.user.pk,groups__name__in=["Администратор ОО", 'Секретарь', 'Администратор УО']):
+    if (user.institution !=  None and (user.institution== request.user.institution \
+    and UserNet.objects.get(pk=request.user.pk,groups__name__in=["Администратор ОО", 'Секретарь', 'Администратор УО']))) or request.user.is_staff:
         password_form=SetPassword(user=user)
         form=UserEditForm(instance=user,user=user.institution.typeInstitutions)
         load=Load.objects.filter(class_pk__year=user.institution.year, teacher=user)
@@ -63,6 +69,8 @@ def user_edit_view(request,user_id):
             
         context={"form":form,'password_form':password_form,'title':'Редактирование пользователя', 'load':load, 'classes':classes}
         return render(request,'user_account/new_user_update.html',context)
+    elif request.user.is_staff == True and user.is_staff == True:
+        return HttpResponseForbidden()
     else:
         return HttpResponseForbidden()
 class UserEditView(PermissionRequiredMixin,SuccessMessageMixin,InstitutionsMixin,UpdateView):
@@ -95,6 +103,7 @@ class Registration(UpdateView):
         user.save()
         login(self.request, user)
         return super().form_valid(form)
+
     def get_success_url(self): 
         return reverse('HomePageUserAccount')
 
@@ -199,9 +208,9 @@ class EditMyAccount(SuccessMessageMixin,View):
             context['form'] = self.form_class(instance=self.request.user)
         if 'form2' not in context:
             context['form2'] = self.second_form_class(user=self.request.user)
-
+        us = self.request.user
         return render(request, self.template_name, context)
-    
+
 
     def post(self,request, **kwargs):
 
@@ -221,4 +230,29 @@ class EditMyAccount(SuccessMessageMixin,View):
                 messages.success(request,"Пароль успешно обновлен! Введите измененные данные.")
                 
                 return redirect('Registration')
-        
+
+
+def send_again(request):
+    confirm_email(request.user,request)
+    return redirect('EditMyAccount')
+
+def activate(request, uidb64, token):
+    User = get_user_model()
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except:
+        user = None
+
+    if user is not None and account_activation_token.check_token(user, token) and user == request.user:
+        user.mail_conf = True
+        user.save()
+
+        messages.success(request, "Спасибо! Теперь вы можете использовать e-mail для восстановления пароля.")
+        return redirect('HomePageUserAccount')
+    else:
+        messages.error(request, "Ссылка нерабочая!")
+
+    return redirect('HomePageUserAccount')
+
+

@@ -13,7 +13,7 @@ from .models import *
 from journal.models import *
 from .utils import TimetableSettigns, CurruculumMixin
 from institutions.permissions import InstitutionsMixin
-from modules.users import get_user, generate_login
+from modules.users import generate_login
 from modules.weeks import get_dates
 import random
 import re
@@ -21,9 +21,12 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db.models import Q
 from journal.utils import Journal
 from django.contrib.auth.models import Group
-from django.http import JsonResponse
-import csv
-import codecs
+from io import BytesIO
+from openpyxl import load_workbook
+import tablib
+
+
+
 
 
 class ClassView(PermissionRequiredMixin, CreateView):
@@ -119,7 +122,18 @@ class SubgroupView(View,Journal):
         context['class']=self.get_class()
         context['subgroup_list']=self.get_subgroups()
         if self.get_subgroups():
-            context['subgroups']=self.get_subgroups().distinct('subject_pk')
+            arr = []
+            sb = None
+            for subroup in self.get_subgroups():
+                
+                if sb != None:
+                    if subroup.subject_pk.pk!=sb.pk:
+                        arr.append(subroup.subject_pk)
+                else:
+                    arr.append(subroup.subject_pk)
+                sb = subroup.subject_pk
+                
+            context['subgroups']=arr
         return context
 
     def get(self, request, *args, **kwargs):
@@ -129,7 +143,7 @@ class SubgroupView(View,Journal):
     def post(self, request, *args, **kwargs):
         
         if self.get_subgroups():
-            for subgroup in self.get_subgroups().distinct('subject_pk'):
+            for subgroup in self.get_subgroups().distinct():
                 subgroup_pk=subgroup.subject_pk.pk
                 for student in self.get_student():
                     student_pk=student.pk
@@ -509,8 +523,14 @@ class StudentListView(PermissionRequiredMixin, ListView):
             context['surname']=self.query()[0]
             context['name']=self.query()[1]
             context['middle_name']=self.query()[2]
-        
-            context['class_pk']=int(self.query()[3])
+            if self.query()[3] == "None":
+                context['class_pk']=self.query()[3]
+            else:
+                context['class_pk']=int(self.query()[3])
+        if self.kwargs.get('delete_code'):
+
+            context['delete_code'] = self.kwargs.get('delete_code')
+
         context['classes']=self.get_class()
         return context
 
@@ -518,21 +538,45 @@ class StudentListView(PermissionRequiredMixin, ListView):
         
         if self.query() and (self.query()[0] or self.query()[1] or self.query()[2]):
             users=UserNet.objects.filter(institution=self.request.user.institution, groups__name='Ученик', is_active=True, 
-                last_name__iregex=r"[[:<:]]{0}".format(self.query()[0]), first_name__iregex=r"[[:<:]]{0}".format(self.query()[1])
-                , middle_name__iregex=r"[[:<:]]{0}".format(self.query()[2])
+                last_name__icontains=self.query()[0], first_name__icontains=self.query()[1]
+                , middle_name__icontains=self.query()[2]
 
                 )
 
             
         else:
             users=UserNet.objects.filter(institution=self.request.user.institution, groups__name='Ученик', is_active=True)
-
-
-        if self.query() and self.query()[3].isdigit():
-            students=Student.objects.filter(user__in=users,class_pk=self.query()[3]).order_by('user__last_name')
+        if self.query() and self.query()[3] != 'None':
+            students=Student.objects.filter(user__in=users,class_pk=int(self.query()[3])).order_by('user__last_name')
         else:
             students=Student.objects.filter(user__in=users, class_pk__in=self.get_class()).order_by('user__last_name')
         return students
+
+class CancelImport(PermissionRequiredMixin,View):
+
+    permission_required='classes.delete_classes'
+    def get(self, request, delete_code):
+        students = Student.objects.filter(delete_code=delete_code)
+        for student in students:
+            student.user.delete()
+            student.delete()
+        return redirect('StudentList')
+
+
+class ExportStudent(View):
+
+    def get(self,request):
+        headers = ('Класс', 'Фамилия','Имя','Отчество' , 'Дата рождения', 'Пол')
+        data = []
+        data = tablib.Dataset(*data, headers=headers)
+        students = Student.objects.filter(user__institution=self.request.user.institution,user__is_active=True)
+        for student in students:
+            data.append((student.class_pk.class_number,student.user.first_name,student.user.last_name, student.user.middle_name, student.user.birth_day, student.user.gender  ))
+        response = HttpResponse(data.xlsx, content_type='application/vnd.ms-excel;charset=utf-8')
+        response['Content-Disposition'] = "attachment; filename=export.xlsx"
+
+        return response
+
 class AddStudent(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
     form_class = OldStudentForm
     template_name = 'user_account/user_update.html'
@@ -576,62 +620,41 @@ class ImportStudent(View):
     def get(self,request):
         context={}
         context['title']='Импорт пользователей'
+        context['classes'] = self.get_class()
         context['file']=FileTemplates.objects.filter(name='Шаблон для импорта учеников').first()
         return render(request,'classes/import_student.html',context)
     def post(self,request):
         context={}
-
-        if 'add' in request.POST:
-            get_users=request.POST.getlist("users")
-            get_classes=request.POST.getlist("users_classes")
-            date=request.POST.get('add')
-            
-            i=0
-            for user in get_users:
-                user_get=UserNet.objects.get(pk=user)
-                user_get.is_active=True
-                user_get.save()
-                pk_class=get_classes[i]
-                get_class=Classes.objects.get(pk=pk_class)
-                
-                Student.objects.create(user=user_get,class_pk=get_class,date_of_enrollment=date)
-                i+=1
-            messages.success(request, 'Учащиеся успешно импортированы!')
-            return redirect('StudentImport')
-        else:
-            file=request.FILES['file']
-            date=request.POST.get('date')
-            users=get_user(file)
-            arr=[]
-            my_group=Group.objects.get(name='Ученик')
-            for row in range(2,users.max_row+1):
-                last_name=users[row][0].value
-                first_name=users[row][1].value
-                if last_name:
-                    patronymic=users[row][2].value
-                    gender=users[row][3].value
-                    birth_day=users[row][4].value
-                    class_=users[row][5].value
-                    letter=re.sub("[0-9]", "", class_)
-                    class_=class_.rsplit('-')
-                    class_ = "".join(c for c in class_[0] if  c.isdecimal())
-                    class_find=Classes.objects.filter(institution=request.user.institution,class_number=class_,letter=letter).first()
-                    login=generate_login()[0]
-                    password=generate_login()[1]
-                    user_pk=UserNet.objects.create_user(is_active=False,username=login,password=password,last_name=last_name,first_name=first_name,middle_name=patronymic,gender=gender,birth_day=birth_day,institution=self.request.user.institution)
-                    
-                    my_group.user_set.add(user_pk)
-
-
-                    arr.append([last_name,first_name,patronymic,gender,birth_day,login,password,user_pk.pk,class_find])
-                    
-        
         context['title']='Результат импорта'
-        context['date']=date
-        context['users']=arr
-        return render(request,'classes/import_result.html',context)
+        date_of_enrollment = self.request.POST.get('date')
+        class_pk = self.request.POST.get('class_pk')
+        my_group=Group.objects.get(name='Ученик')
+        class_object = Classes.objects.get(pk=class_pk)
+        f = request.FILES['file']
+        file_import = load_workbook(filename=BytesIO(f.read()))
+        code = generate_login()
 
+        sheet = file_import.active
+        rows = sheet.max_row
+        cols = sheet.max_column
+        for i in range(2,rows+1):
 
+            last_name = sheet.cell(row=i,column=1).value
+            first_name = sheet.cell(row=i,column=2).value
+            patronymic = sheet.cell(row=i,column=3).value
+            gender = sheet.cell(row=i,column=5).value
+            birth_day = sheet.cell(row=i,column=4).value
+            login = generate_login()
+            user_pk=UserNet.objects.create_user(is_active=True,username=login[1],code=login[0],last_name=last_name,first_name=first_name,middle_name=patronymic,gender=gender,birth_day=birth_day,institution=self.request.user.institution)
+            Student.objects.create(user=user_pk,class_pk=class_object,date_of_enrollment=date_of_enrollment, delete_code=code)
+            my_group.user_set.add(user_pk)
+        return redirect('StudentList', delete_code = code)
+
+    def get_class(self):
+        if self.request.user.has_perm('classes.delete_student'):
+            return Classes.objects.filter(institution=self.request.user.institution, year=self.request.user.institution.year.pk)
+        else:
+            return Classes.objects.filter(class_teacher=self.request.user,year=self.request.user.institution.year.pk)
 
 class StudentEditView(PermissionRequiredMixin,SuccessMessageMixin,View):
     model = Student

@@ -12,7 +12,7 @@
 
 {% if classes %}
 <div class="card mt-">
-  <h5 class="card-header">Поиск учащихся</h5>
+  <h6 class="card-header"><i class="bi bi-search"></i> Поиск учащихся</h6>
   <div class="card-body">
    <form class="needs-validation" novalidate method="get">
   <div class="form-row">
@@ -55,36 +55,53 @@
 
   </div>
 
-  <button class="btn btn-secondary" type="submit"><i class="fa fa-search"></i> Поиск</button>
+  <button class="btn btn-info" type="submit"><i class="fa fa-search"></i> Поиск</button>
 </form>
 
   </div>
 </div>
 
 
-   <table class="rtable mt-3">
-    <thead class="thead-light">
+  {% if perms.classes.add_student %}
+  <div class="btns mt-3">
+   <a class="btn btn-info" href="{% url 'StudentAdd' %}"><i class="bi bi-person-plus"></i> Добавить</a>
+   <a class="btn btn-info" href="{% url 'StudentImport' %}"><i class="bi bi-file-earmark-arrow-up"></i> Импорт</a>
+   <a class="btn btn-info" href="{% url 'StudentExport' %}"><i class="bi bi-file-arrow-down"></i> Экспорт в excel</a>
+   </div>
+  {% endif %}
+
+
+  {% if delete_code %}
+
+    <div class="alert alert-info mt-3"><i class="bi bi-check-lg"></i> Учащиеся успешно были импортированы! Если вы сделали это ошибочно, вы можете <a href="{% url 'CancelImport' delete_code=delete_code %}" class="alert-link">отменить действие</a>.</div>
+
+  {% endif %}
+   <table class="table table-sm table-bordered table-hover mt-3">
+    <thead class="bg-info text-white">
      <tr>
-    	<th>№</th>
-       <th style="text-align: center">ФИО</th>
-       <th>Пол</th>
-       <th>Дата рождения</th>
-       <th>Дата зачисления</th>
-       <th>Класс</th>
-       <th style="text-align: center" {% if perms.classes.delete_student %} colspan="2" {% endif %}>Действие</th>       
+    	<th class="text-center">№</th>
+       <th class="text-center">ФИО</th>
+       <th class="text-center">Пол</th>
+       <th class="text-center">Дата рождения</th>
+       <th class="text-center">Дата зачисления</th>
+       <th class="text-center">Класс</th>
+       <th class="text-center">Код</th>
+       <th class="text-center" {% if perms.classes.delete_student %} colspan="2" {% endif %}>Действие</th>       
      </tr>
      </thead>
      	{% for i in object_list  %}
       {% if i.user %}
      	<tr>
-     		<td>
+     		<td class="text-center">
           {{forloop.counter0|add:page_obj.start_index }} 
         </td>
      		<td>{{ i.user.last_name  }}  {{ i.user.first_name }} {{ i.user.middle_name }}</td>
         <td>{{ i.user.gender }}</td>
         <td>{{ i.user.birth_day }}</td>
         <td>{{ i.date_of_enrollment }}</td>
+
         <td>{{ i.class_pk }}</td>
+        <td>{% if i.user.code %}{{ i.user.code }}{% endif %}</td>
      		<td><a href="{{ i.edit }}">Личное дело</a></td>
         {% if perms.classes.delete_student %}
      		<td>
@@ -119,10 +136,7 @@
   </ul>
 </nav>
 
-  {% if perms.classes.add_student %}
-   <a class="btn btn-success" href="{% url 'StudentAdd' %}"><i class="bi bi-person-plus"></i> Добавить</a>
-   <a class="btn btn-success" href="{% url 'StudentImport' %}"><i class="bi bi-file-earmark-arrow-up"></i> Импорт</a>
-  {% endif %}
+
 
 {% else %}
 <div class="alert alert-warning" role="alert">

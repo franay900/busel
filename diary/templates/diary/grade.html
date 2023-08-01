@@ -1,0 +1,227 @@
+{% extends 'diary.html' %}
+{% load diary_tags %}
+{% block h2 %}
+<i class="bi bi-bar-chart-fill"></i> Табель успеваемости
+{% endblock %}
+
+
+
+
+{% block content %}
+
+
+
+<div class="alert alert-info mt-3" role="alert">
+
+  <div class="row">
+    <div class="col">ФИО ученика:</div>
+    <div class="col">{{ student.user }}</div>
+  </div>
+  <div class="row">
+    <div class="col">Классный руководитель:</div>
+    <div class="col">{{ student.class_pk.class_teacher }}</div>
+  </div>
+  <div class="row">
+    <div class="col">Класс:</div>
+    <div class="col">{{ student.class_pk }}</div>
+  </div>
+  <div class="row">
+    <div class="col">Учебный год:</div>
+    <div class="col">{{ student.class_pk.year }}</div>
+  </div>
+
+  
+  <div class="row">
+  <div class="col"><strong>Период: </strong></div>
+  <div class="col">
+  <select id="periods" class="select custom-select custom-select-sm" >
+  {% for periodf in periods%}
+  <option {% if period == periodf %} selected {% endif %}  {% if forloop.counter == 1 %}selected{% endif %} value="?period={{ periodf.pk }}">{{ forloop.counter }}</option>
+
+  {% endfor %}
+</select>
+</div>
+</div>
+ <br>
+</div>
+
+{% if not year %}
+  
+
+
+ <table class="table table-bordered table-sm table-hover">
+   <thead class="thead-light">
+     <tr>
+      <th class="text-center">№</th>
+       <th class="text-center">Предмет</th>
+       <th class="text-center">Оценки</th>
+       <th class="text-center">Средний балл</th>
+       <th class="text-center">Итоговая</th>
+     </tr>
+   </thead>
+
+   <tbody>
+    {% for subject in subjects %}
+     <tr>
+       <td class="text-center">{{ forloop.counter }}</td>
+       <td>{{ subject.subject_pk }}</td>
+       {% get_marks_period period=period subject=subject as marks %}
+       <td>
+         {% for mark in marks.0 %}
+         {% if mark.attendance %}
+         н
+         {% else %}
+         {{ mark.mark }}
+         {% if mark.mark2 %}
+         {{ mark.mark2 }}
+         {% endif %}
+         {% endif %}
+         {% endfor %}
+       </td>
+       <td>{{ marks.1 }}</td>
+      {% get_marks_itog subject=subject period=period as itog %}
+       <td>{{ itog.mark }}</td>
+      
+     </tr>
+    {% endfor %}
+   </tbody>
+ </table>
+<script>
+  
+$(document).ready(function(){
+  $('.select').change(function(){
+    window.location.href = $(this).val();
+  });
+});
+
+
+   var size=$('#periods option').length; 
+
+    if (size==2){
+      $('#periods option').append(' полугодие')
+    }
+    if (size==4){
+      $('#periods option').append(' четверть')
+    }
+    if (size==3){
+      $('#periods option').append(' триместр')
+    }
+  $('#periods').append('<option  value="?year=true">Год</option>')
+
+ 
+</script>
+
+{% else %}
+<table class="table table-bordered table-sm table-hover">
+    
+    <thead class="thead-light">
+      <tr>
+        <th class="text-center">№</th>
+        <th class="text-center">Предмет</th>
+        {% for periodf in periods %}
+        <th class="period_th text-center">
+          {{ forloop.counter }}
+        </th>
+        {% endfor %}
+        <th class="text-center">П/А</th>
+        <th class="text-center">Год</th>
+        <th class="text-center">Экзамен</th>
+        <th class="text-center">Итог</th>
+      </tr>
+
+
+    </thead>
+
+    <tbody>
+      {% for subject in subjects %}
+
+      <tr>
+        <td class="text-center">{{ forloop.counter }}</td>
+        <td class="">{{ subject.subject_pk }}</td>
+        {% for periodf in periods %}
+        {% get_marks_itog subject=subject period=periodf as itog %}
+        <td class="period_th text-center">
+          {% if itog.not_certified %}
+          н/а
+          {% else %}
+          {{ itog.mark }}
+          {% endif %}
+        </td>
+        {% endfor %}
+        <td class="text-center">
+          {% get_marks_itog subject=subject type_period=4 as itog %}
+          {% if itog.not_certified %}
+          н/а
+          {% else %}
+          {{ itog.mark }}
+          {% endif %}
+        </td>
+        <td class="text-center">
+          {% get_marks_itog subject=subject type_period=1 as itog %}
+          {% if itog.not_certified %}
+          н/а
+          {% else %}
+          {{ itog.mark }}
+          {% endif %}
+        </td>
+        <td class="text-center">
+          {% get_marks_itog subject=subject type_period=2 as itog %}
+          {% if itog.not_certified %}
+          н/а
+          {% else %}
+          {{ itog.mark }}
+          {% endif %}
+        </td>
+        <td class="text-center">
+          {% get_marks_itog subject=subject type_period=3 as itog %}
+          {% if itog.not_certified %}
+          н/а
+          {% else %}
+          {{ itog.mark }}
+          {% endif %}
+        </td>
+
+
+      </tr>
+
+      {% endfor %}
+    </tbody>
+
+</table>
+
+
+<script>
+  
+$(document).ready(function(){
+  $('.select').change(function(){
+    window.location.href = $(this).val();
+  });
+});
+
+
+   var size=$('#periods option').length; 
+
+    if (size==2){
+      $('#periods option').append(' полугодие')
+    }
+    if (size==4){
+      $('#periods option').append(' четверть')
+    }
+    if (size==3){
+      $('#periods option').append(' триместр')
+    }
+  $('#periods').append('<option selected="selected"  value="?year=true">Год</option>')
+
+ 
+</script>
+{% endif %}
+<style>
+  .mon{
+    text-align:center ;
+  }
+</style>
+
+
+
+
+{% endblock %}

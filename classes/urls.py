@@ -22,6 +22,10 @@ urlpatterns=[
 	path('student/import/',ImportStudent.as_view() ,name="StudentImport"),
 	path('student/edit/<int:student_pk>',StudentEditView.as_view() ,name="StudentEdit"),
 	path('student/list/',StudentListView.as_view() ,name="StudentList"),
+	path('student/list/<str:delete_code>/',StudentListView.as_view() ,name="StudentList"),
+	path('student/cancel_import/<str:delete_code>/',CancelImport.as_view() ,name="CancelImport"),
+	path('student/export',ExportStudent.as_view() ,name="StudentExport"),
+
 	path('delete_student/',Deduction.as_view() ,name="DeleteStudent"),
 	path('get_students/<int:class_pk>/',ReturnStudents.as_view(), name="GetStudent"),
 

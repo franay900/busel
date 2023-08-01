@@ -1,21 +1,20 @@
  {% load user_tags %}
 {% load static %}
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="padding: 0">
-  <a class="navbar-brand" href="#">
-    <img  src="{% static 'img/busel2_0-logo_white.png' %}"  width="30" height="30" class="d-inline-block align-top" alt="">
-    Бусел
-  </a>
+<section class="">
 
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">Бусел</a>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent" >
-    <ul class="navbar-nav mr-auto" >
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="fa fa-bars"></span> Меню
+        </button>
+        <div class="collapse navbar-collapse" id="ftco-nav">
+             <ul class="navbar-nav mr-auto" >
      <li class="nav-item ">
 
-        <a class="nav-link "  href="{% url 'HomePageUserAccount' %}"><i class="bi bi-house-door"></i> Главная <span class="sr-only">(current)</span></a>
+        <a class="nav-link "  href="{% url 'HomePageUserAccount' %}"><i class="bi bi-building"></i> Главная <span class="sr-only">(current)</span></a>
       </li>
       {% if request.user.institution %}
       {% if perms.classes.view_сurriculum %} 
@@ -106,7 +105,7 @@
         </div>
       </li>
 
-      <li class="nac-item">
+      <li class="nav-item">
          <a class="nav-link " href="{% url 'ReportsView' %}"><i class="bi bi-file-earmark-check"></i> Отчеты</a>
       </li>
       {% endif %}
@@ -142,7 +141,7 @@
        {% endif %}
 
     {% if request.user|teacher %}
-  <li class="nac-item">
+  <li class="nav-item">
         <a class="nav-link " href="{% url 'TimetableTeacher' %}"><i class="bi bi-alarm"></i> Расписание</a>
       </li>
   
@@ -169,33 +168,41 @@
         </div>
       </li>
       {% endif %}
+
+      {% if request.user|student %}
+        <li class="nav-item">
+          <a class="nav-link " href="{% url 'HomeDiary' %}"><i class="bi bi-book"></i> Дневник</a>
+        </li>
+  
+         <li class="nav-item">
+          <a class="nav-link " href="{% url 'Grade' %}"><i class="bi bi-bar-chart-fill"></i> Табель успеваемости</a>
+        </li>
+  
+      {% endif %}
     </ul>
 
-  </div>
 
-      <div class="navbar-nav ml">
-
-      <div class="nav-item dropdown">
-        <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle user-action ">
-
-           
-
-           {% if request.user.avatar %}
-    
-     <img class="avatar" alt="Avatar" src="{{ request.user.avatar.url }}" alt="" height="36px">
-    {% else %}
-    <img class="avatar" alt="Avatar" src="{% static 'img/no-user-image-icon-27.jpg' %}" alt="" height="36px" >
-    {% endif %}
-            {{ request.user.last_name }} {{ request.user.first_name }} {{ request.user.middle_name }}
-          </a>
-        <div class="dropdown-menu">
-          
-      
-        
-          <a href="{% url 'logout' %}" class="dropdown-item "><i class="bi bi-box-arrow-left"></i> </i> Выход</a>
-
-
+          <ul class="navbar-nav m-auto">
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
+                <i class="bi bi-person-circle"></i> Профиль
+              </a>
+              <div class="dropdown-menu" aria-labelledby="dropdown04">
+                <a class="dropdown-item" href="{% url 'EditMyAccount' %}">Настройки</a>
+                <a class="dropdown-item" href="{% url 'logout' %}">Выход</a>
+              
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
-    </div>
-</nav>
+    </nav>
+    <!-- END nav -->
+
+  </section>
+
+  <style>
+    body{
+      font-size: 14px;
+    }
+  </style>

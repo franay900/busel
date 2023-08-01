@@ -11,17 +11,17 @@
 		{% endfor %}
 	</select>
 	
-	<table class="rtable mt-3">
-		<thead>
+	<table class="table table-sm table-bordered table-hover mt-3">
+		<thead class="bg-info  text-white">
 		<tr>
-			<th>№ недели</th>
-			<th >Интервал</th>
-			<th>Шаблон</td>
+			<th class="text-center">№ недели</th>
+			<th class="text-center">Интервал</th>
+			<th class="text-center">Шаблон</td>
 		</tr>
 		</thead>
 		{% for week in weeks %}
 		<tr>
-			<td>{{ forloop.counter }} неделя</td>
+			<td class="text-center">{{ forloop.counter }} неделя</td>
 			<td>{{ week.0}}-{{ week.1 }}</td>
 			<td>
 				{% check_weeks start=week.0 end=week.1 as check_week %}
@@ -39,6 +39,6 @@
 		</tr>
 		{% endfor %}
 	</table>
-<button type="submit" class="btn btn-success">Сохранить</button>
+<button type="submit" class="btn btn-info"><i class="bi bi-calculator"></i> Создать уроки</button>
 </form>
 {% endblock %}

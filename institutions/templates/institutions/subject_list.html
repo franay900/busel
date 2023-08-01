@@ -6,22 +6,22 @@
 
 
 {% block content %}
-	<table class="rtable mt-3">
-		<thead>
+	<table class="table table-bordered table-sm table-hover mt-3">
+		<thead class="bg-info text-white">
 			<tr>
-				<th>№</th>
-				<th>Наименование</th>
-				<th >Краткое наименование</th>
-				<th >Тип</th>
-				<th >Статус</th>
-				<th>Действие</th>
+				<th class="text-center">№</th>
+				<th class="text-center">Наименование</th>
+				<th class="text-center">Краткое наименование</th>
+				<th class="text-center">Тип</th>
+				<th class="text-center">Статус</th>
+				<th class="text-center">Действие</th>
 			</tr>
 		</thead>
 			{% for i in subjects %}
 			{% check_subject subject_id=i.pk as status %}
 			<tr>
-				<td>{{ forloop.counter }}</td>
-				<td>{{ i.title }}</td>
+				<td class="text-center">{{ forloop.counter }}</td>
+				<td >{{ i.title }}</td>
 				<td>{{ i.short_title }}</td>
 				<td>{% if i.institution %}Индивидуальный{%else%}Системный{% endif %}</td>
 				<td>{% if status %}Используется{% else %}Не используется{% endif %}</td>
@@ -31,17 +31,17 @@
 	</table>
 	
 	
-	<button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">
-	  <i class="bi bi-file-earmark-plus"></i> Добавить
+	<button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">
+	  <i class="bi bi-folder-plus"></i> Добавить
 	</button>
 
 	<!-- Modal -->
 	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
 	  <div class="modal-dialog" role="document">
 	    <div class="modal-content">
-	      <div class="modal-header ">
-	        <h5 class="modal-title" id="exampleModalLabel">Добавление учебного предмета</h5>
-	        <button type="button" class="close "  data-dismiss="modal" aria-label="Close">
+	      <div class="modal-header bg-info">
+	        <h5 class="modal-title text-white" id="exampleModalLabel"><i class="bi bi-folder-plus"></i> Добавление учебного предмета</h5>
+	        <button type="button" class="close text-white"  data-dismiss="modal" aria-label="Close">
 	          <span aria-hidden="true">&times;</span>
 	        </button>
 	      </div>
@@ -51,8 +51,8 @@
 	        {% csrf_token %}
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-	        <button type="submit" class="btn btn-success">Добавить</button>
+	
+	        <button type="submit" class="btn btn-info"><i class="bi bi-folder-plus"></i> Добавить</button>
 	      </div>
 	      </form>
 	    </div>

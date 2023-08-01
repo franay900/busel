@@ -6,20 +6,20 @@
 
 
 {% block content %}
-	<table class="rtable">
-		<thead >
+	<table class="table table-sm table-bordered table-hover">
+		<thead class="bg-info text-white" >
 		<tr class="">
-			<th>№</th>
-			<th >
+			<th class="text-center">№</th>
+			<th class="text-center">
 				Наименование
 			</th>
-			<th >
+			<th class="text-center">
 				Учебный год
 			</th>
-			<th>
+			<th class="text-center">
 				Статус
 			</th>
-			<th colspan="3" style="text-align: center;">
+			<th  style="text-align: center;">
 				Действие
 			</th>
 		</tr>
@@ -27,21 +27,23 @@
 		{% for curriculum in curriculums %}
 		{% check_curriculum curriculum_pk=curriculum.pk as status %}
 		<tr>
-			<td>{{ forloop.counter }}</td>
+			<td class="curriculum text-center">{{ forloop.counter }}</td>
 			<td>{{ curriculum.title }}</td>
 			<td>{{ curriculum.year }}</td>
 			<td>{% if status %}Используется{% else %}Не используется{% endif %}</td>
-			<td style="width:16.25%">
-				<a href="{{curriculum.curriculum_edit}}" style="width:16.25%">Редактировать</a>
+
+			<td>
+				
+				<a href="{{curriculum.curriculum_edit}}" title="Редактировать"><i class="bi bi-pen"></i></a>
+				{% if  not status %}<a href="" title="Удалить"><i class="bi bi-trash"></i></a>{% endif %}
 			</td>
-			<td style="width: 16.25%">
-				{% if  not status %}<a href="{{ curriculum.curriculum_delete }}">Удалить</a>{% endif %}
-			</td>
+
+		
 		</tr>
 		{% endfor %}
 
 	</table>
-	<a class="btn btn-success" href="{% url 'AddCurriculum' %}"><i class="bi bi-file-earmark-plus"></i> Добавить</a>
+	<a class="btn btn-info" href="{% url 'AddCurriculum' %}"><i class="bi bi-folder-plus"></i> Добавить</a>
 
    
 {% endblock %}

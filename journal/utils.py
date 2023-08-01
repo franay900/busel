@@ -66,7 +66,7 @@ class Journal():
 	        return Load.objects.filter(class_pk=self.get_class()).order_by('class_pk', 'subject_pk',
 	                                                                                 'subgroup')
 	    else:
-	        lessons=Lessons.objects.filter(teacher=self.request.user,class_pk__in=self.get_classes()).distinct('subject_pk').values_list('subject_pk')
+	        lessons=Lessons.objects.filter(teacher=self.request.user,class_pk__in=self.get_classes()).distinct().values_list('subject_pk')
 	        return Load.objects.filter(Q(pk__in=lessons) | Q(teacher=self.request.user)).order_by('class_pk', 'subject_pk', 'subgroup')
 
 	def get_load(self):

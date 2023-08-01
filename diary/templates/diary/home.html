@@ -1,0 +1,96 @@
+{% extends 'diary.html' %}
+{% load diary_tags %}
+{% block h2 %}
+<i class="bi bi-book-half"></i> Электронный дневник
+{% endblock %}
+
+
+{% block content %}
+
+
+
+
+<div class="alert alert-primary mt-3" role="alert">
+
+  <div class="row">
+    <div class="col">ФИО ученика:</div>
+    <div class="col">{{ student.user }}</div>
+  </div>
+  <div class="row">
+    <div class="col">Классный руководитель:</div>
+    <div class="col">{{ student.class_pk.class_teacher }}</div>
+  </div>
+  <div class="row">
+    <div class="col">Класс:</div>
+    <div class="col">{{ student.class_pk }}</div>
+  </div>
+  <div class="row">
+    <div class="col">Учебный год: </div>
+    <div class="col">{{ student.class_pk.year }}</div>
+  </div>
+  
+ <br>
+</div>
+
+<div class="row">
+  
+  <div class="col">
+    
+    <a  href="?day={{last|date:'Y-m-d'}}" class="btn btn-info btn-sm"><i class="bi bi-arrow-90deg-left"></i></a>
+  </div>
+  <div class="col text-center">Неделя {{ dates.0.0 }}-{{ dates.5.0 }}</div>
+  <div class="col">
+    <a href="?day={{future|date:'Y-m-d'}}" class="btn btn-info btn-sm float-right"><i class="bi bi-arrow-90deg-right"></i></a>
+  </div>
+</div>
+
+<div class="row mt-2">
+  {% for value in dates %}
+
+
+  <div class="col-6">
+    
+    <table class="table table-bordered table table-sm table-hover">
+
+      <thead class="thead-light">
+        <tr><th  class="mon" colspan="4" >{{ value.0 }} {{ value.1 }}</th></tr>
+        <tr>
+        <th class="text-center">№</th>
+        <th class="text-center">Предмет</th>
+        <th class="text-center">Домашнее задание</th>
+        <th class="text-center">Оценка</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% get_lessons date=value.0 as lessons %}
+        {% for lesson in lessons %}
+        <tr>
+        <td class="text-center">{{ lesson.0.number }}</td>
+        <td><a title="{% if lesson.0.topic %}{{ lesson.0.topic }}{% else %}Тема урока не введена{% endif %}">{{ lesson.0.subject_pk.subject_pk.subject.short_title }}</a></td>
+        <td>{{ lesson.1.homework }}</td>
+        {% get_marks lesson=lesson.0 as marks %}
+        <td>
+        {% for mark in marks %}
+        <a title="{{ mark.lesson_type }}">{% if mark.attendance %}н{% else %}{{ mark.mark }}{% if mark.mark2 %}/{{ mark.mark2 }}{% endif %}{% endif %}</a>
+       
+        
+        {% endfor %}
+      </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    
+  </div>
+  {% endfor %}
+</div>
+
+
+<style>
+  .mon{
+    text-align:center ;
+  }
+</style>
+
+{% endblock %}

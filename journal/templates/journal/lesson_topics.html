@@ -5,12 +5,19 @@
 
 
 {% block h2 %}
-<i class="bi bi-layout-text-sidebar"></i> {{ title }} ({{ load.class_pk }}/{{ load.subject_pk }})
+<i class="bi bi-layout-text-sidebar"></i> {{ title }} 
 {% endblock %}
 {% block content %}
 
-<div class="alert alert-info mt-3" role="alert">
-  <i class="bi bi-info-circle"></i> Не забудьте сохранить информацию!
+
+<div class="row">
+	<div class="col font-weight-bold">Класс</div>
+	<div class="col">{{ load.class_pk }}</div>
+</div>
+
+<div class="row">
+	<div class="col font-weight-bold">Предмет</div>
+	<div class="col">{{load.subject_pk}} </div>
 </div>
 
 <div class="row">
@@ -19,7 +26,7 @@
 		{% if ktp.0 %}
 		{{ ktp.0.name }}
 		{% else %}
-		<a class="text-danger font-weight-bold">Не выбрано</a>
+		<a class="text font-weight-bold ">Не используется</a>
 		{% endif %}
 	</div>
 </div>
@@ -92,7 +99,7 @@
 
 			{% for type_lesson in lesson.types.all %}
 			<select name="typesred{{ lesson.pk }}" id="t{{ lesson.pk }}" class="custom-select custom-select-sm mt-1">
-				<option value="{{ type_lesson.pk }}/0">-</option>
+				<option value="{{ type_lesson.pk }}/0" disabled>Выберите тип</option>
 				{% for type in types %}
 				<option {% if type.pk == type_lesson.pk %} selected="" {% endif %} value="{{ type_lesson.pk }}/{{ type.pk }}">{{ type.name }}</option>
 				{% endfor %}
@@ -111,11 +118,11 @@
 
 
 
-<button type="submit" class="btn btn-primary "><i class="bi bi-pencil-square"></i> Обновить</button>
+<button type="submit" class="btn btn-info "><i class="bi bi-pencil-square"></i> Обновить</button>
 
-<a class="btn btn-danger" href="{% url 'DeleteTopics' load=load.pk period=period.pk %}"><i class="bi bi-trash"></i> Очистить</a>
+<a class="btn btn-info" href="{% url 'DeleteTopics' load=load.pk period=period.pk %}"><i class="bi bi-trash"></i> Очистить</a>
 
-<button class="btn btn-success" type="submit" name="upload_ktp" value="1"><i class="bi bi-upload"></i> Импорт из КТП</button>
+<button class="btn btn-info" type="submit" name="upload_ktp" value="1"><i class="bi bi-upload"></i> Импорт из КТП</button>
 <input name="referer" value="{{ referer }}" style="display: none">
 </div>
 </form>

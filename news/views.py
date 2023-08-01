@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from .models import News,Category
-from .forms import NewsForm,UserRegisterForm,UserLoginForm
+from .forms import NewsForm,UserRegisterForm,UserLoginForm, MyPasswordResetForm
 from django.views.generic import ListView,DetailView,CreateView, View
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
@@ -10,6 +10,20 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .utils import *
 from user_account.models import UserNet
 from user_account.forms import RegisterForm
+from classes.models import Student
+import random
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from user_account.tokens import account_activation_token
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.messages.views import SuccessMessageMixin
+from django.urls import reverse_lazy
+from modules.users import confirm_email
+
+
 
 class HomeNews(View):
 
@@ -70,6 +84,8 @@ def register_user_info(request, code):
 				user.registration = True
 				user.code = None
 				user.save()
+				us = UserNet.objects.get(pk=user.pk)
+				confirm_email(us,request)
 				login(request, get_user)
 				messages.success(request,'Вы успешно зарегистрировались')
 				return redirect('HomePageUserAccount')
@@ -111,6 +127,33 @@ def user_login(request):
 def user_logout(request):
 	logout(request)
 	return redirect('login')
+
+
+def admin_panel(request):
+	templ = 'news/admin-panel.html'
+	return render(request,templ)
+
+def student_code(request):
+	
+	chars = 'abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+
+	students = Student.objects.all()
+	chars = 'abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+	
+
+	for i in students:
+		code = ''
+		for k in range(8):
+			code += random.choice(chars)
+			
+		i.user.code = code
+		i.user.save()
+	
+
+	return redirect('AdminPanel')
+
+
+
 '''
 def add_news(request):
 	if request.method=='POST':
@@ -124,3 +167,13 @@ def add_news(request):
 		form=NewsForm()
 	return render(request,'news/add_news.html',{"form":form},)
 '''
+
+
+class UserForgotPasswordForm(PasswordResetView):
+    """
+    Запрос на восстановление пароля
+    """
+    form_class = MyPasswordResetForm
+    template_name = 'news/password_reset.html'
+
+    

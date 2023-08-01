@@ -16,7 +16,7 @@ class UserEditForm(forms.ModelForm):
         )
   
         model = UserNet
-        fields=['last_name','first_name','middle_name','gender','birth_day','groups','position','avatar','email']
+        fields=['last_name','first_name','middle_name','gender','birth_day','groups','position','avatar']
         
    
         widgets={
@@ -74,7 +74,7 @@ class SetPassword(SetPasswordForm):
 class EditMyAccountForm(forms.ModelForm):
     class Meta:
         model = UserNet
-        fields=['last_name','first_name','middle_name','birth_day','email','gender','avatar']
+        fields=['last_name','first_name','middle_name','birth_day','gender','avatar']
 
 
         CHOICES =(
@@ -92,7 +92,6 @@ class EditMyAccountForm(forms.ModelForm):
             'middle_name':forms.TextInput(attrs={'class':'form-control'}),
             'birth_day':forms.DateInput(attrs={'class':'form-control','type':'date'},format='%Y-%m-%d'),
             'gender':forms.RadioSelect(choices=CHOICES),
-            'email':forms.EmailInput(attrs={'class':'form-control'}),
             'avatar':forms.FileInput(attrs={'class':'','id':'validatedInputGroupCustomFile'}),
             # 'position':forms.TextInput(attrs={'class':'form-control'}),
         }

@@ -6,18 +6,18 @@
 
 
 {% block content %}
-	<table class="rtable">
-		<thead  >
+	<table class="table table-bordered table-sm table-hover">
+		<thead  class="bg-info text-white">
 		<tr >
-			<th>№</th>
-			<th >
+			<th class="text-center">№</th>
+			<th class="text-center">
 				Наименование
 			</th>
-			<th >
+			<th class="text-center">
 				Учебный год
 			</th>
-			<th >Статус</td>
-			<th colspan="2" style="text-align: center" >
+			<th class="text-center">Статус</td>
+			<th class="text-center"   >
 				Действие
 			</th>
 		</tr>
@@ -25,17 +25,20 @@
 		{% for i in period_profile %}
 		{% check_status bell_profile_pk=i.pk as status %}
 		<tr>
-			<td>{{ forloop.counter }}</td>
-			<td>{{ i.title }}</td>
-			<td>{{ i.year }}</td>
-			<td>{% if status %}Используется{% else %}Не используется{% endif %}</td>
-			<td ><a href="{{ i.update_url }}" >Редактировать</a></td>
-			<td >{% if not status %}<a href="{{ i.delete_url }}" >Удалить </a>{% else %} <a  class=" btn-tooltip text-muted" data-toggle="tooltip" data-placement="bottom" title="Используется">Удалить</a> {% endif %}</td>
+			<td class="text-center">{{ forloop.counter }}</td>
+			<td class="text-center">{{ i.title }}</td>
+			<td class="text-center">{{ i.year }}</td>
+			<td class="text-center">{% if status %}Используется{% else %}Не используется{% endif %}</td>
+			<td class="text-center">
+				<a href="{{ i.update_url }}" title="Редактировать" ><i class="bi bi-pencil-square"></i></a>
+				{% if not status %}<a href="{{ i.delete_url }}"  title="Удалить"><i class="bi bi-trash-fill"></i></a>{% else %} <a  class=" btn-tooltip text-muted" data-toggle="tooltip" data-placement="bottom" title="Используется"><i class="bi bi-trash-fill"></i></a> {% endif %}
+			</td>
+		
 		</tr>
 		{% endfor %}
 	</table>
 	{{ period_p }}
-	<a class="btn btn-success" href="{% url 'AddPeriods' %}"><i class="bi bi-file-earmark-plus"></i> Добавить</a>
+	<a class="btn btn-info" href="{% url 'AddPeriods' %}"><i class="bi bi-folder-plus"></i> Добавить</a>
 
    
 {% endblock %}

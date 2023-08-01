@@ -46,10 +46,10 @@ class Institutions(models.Model):
     photo = models.ImageField(upload_to='photos/%Y/%m/%d/', null=True, verbose_name='Фото', blank=True)
     year = models.ForeignKey(Year, on_delete=models.PROTECT, verbose_name='Учебный год')
     typeInstitutions = models.ForeignKey(TypeInstitutions, on_delete=models.PROTECT, verbose_name='Тип', null=True)
-    kindInstitutions = models.ForeignKey(KindInstitutions, on_delete=models.PROTECT, verbose_name='Вид', null=True)
+    kindInstitutions = models.ForeignKey(KindInstitutions, on_delete=models.PROTECT, verbose_name='Вид', null=True, blank=True)
     last_edit = models.DateTimeField(verbose_name='Последнее редактирование',auto_now=True,null=True)
     system_mark=models.ForeignKey('SystemMarks',verbose_name='Система оценивания',on_delete=models.PROTECT,default=1)
-    departmental_organization = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, verbose_name='Ведомственная организация')
+    departmental_organization = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, verbose_name='Ведомственная организация',blank=True)
     is_active=models.BooleanField(default=True)
     lim = models.IntegerField(default = 0)
     class Meta:
@@ -58,7 +58,7 @@ class Institutions(models.Model):
         ordering = ['-pk']
 
     def __str__(self):
-        return self.title
+        return self.short_title
 
     def edit_url(self):
         return reverse('EditInstitution', kwargs={"pk":self.pk})

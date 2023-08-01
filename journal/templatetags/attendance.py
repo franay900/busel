@@ -9,7 +9,7 @@ register = template.Library()
 def get_attendance(context,student,day,year,month):
 	
 	date=datetime(int(year),int(month),int(day)).strftime('%Y-%m-%d')
-	attendance_count=Marks.objects.filter(lesson__date=date, student=student, attendance=1).distinct('lesson').count()
+	attendance_count=Marks.objects.filter(lesson__date=date, student=student, attendance=1).distinct().count()
 	if attendance_count>0:
 		return attendance_count
 	else:

@@ -67,6 +67,17 @@ margin-right: 15px;
 margin-bottom: 15px
 }
 
+.date{
+
+height: 32px;
+}
+
+
+.student{
+max-height:32px;
+}
+
+
 .view-account .side-bar .side-menu .nav>li:last-child {
 margin-right: 0
 }
@@ -650,119 +661,18 @@ color:#69707a;
 
 
 
-.navbar{
-  margin-bottom: 0;
-  min-height: 40px;
-  background:#1e1e3f url(https://pcvector.net/uploads/posts/2018-08/1533326959_low-poly-background-generator-min.png)
-}
-
-.navbar-nav{
-  padding: 0;
-
-}
-
-  .nav-link img {
-  border-radius: 50%;
- 
-  margin: -8px 0;
-  float: left;
-  margin-right: 10px;
-}
-
-.navbar-brand{
-    padding-bottom: 0;
-}
-
 
 li {
     list-style-type: none; /* Убираем маркеры */
    }
 
 
-.styled-table {
-border-collapse: collapse;
-margin: 25px 0;
-font-size: 0.9em;
-font-family: sans-serif;
-min-width: 100%;
-box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-}
-.styled-table thead tr {
-background-color: #009879;
-color: #ffffff;
-text-align: left;
-}
-.styled-table th,
-.styled-table td {
-padding: 12px 15px;
-}
-.styled-table tbody tr {
-border-bottom: 1px solid #dddddd;
-}
 
-.styled-table tbody tr:nth-of-type(even) {
-background-color: #f3f3f3;
-}
-
-.styled-table tbody tr:last-of-type {
-border-bottom: 2px solid #009879;
-}
-
-.styled-table tbody tr.active-row {
-font-weight: bold;
-color: #009879;
-}
-
-.table_link {
-font-weight: bold;
-color: #212529;
-}
-.table_link:hover {
-font-weight: bold;
-color: #009879;
-}
-
-.td{
-width: 33%;
-}
-
-
-  .myTable {
-border: none;
-
-border-collapse: collapse;
-border-spacing: 0;
-font: normal 13px Arial, sans-serif;
-}
-.myTable thead td {
-background-color: #EEE;
-border: none;
-color: grey;
-padding: 5px;
-text-align: left;
-text-shadow: 1px 1px 1px #fff;
-white-space: nowrap;
-}
-.myTable tbody td {
-color: #333;
-padding: 5px;
-height:32px;
-text-shadow: 1px 1px 1px #fff;
-white-space: nowrap;
-}
-.myTable tbody td, .myTable thead th {
-border: 1px solid #ccc;
-}
 .row-2{
 height:72px;
 }
 
 
-.date{
-max-width:42px;
-min-width:42px;
-height: 32px;
-}
 
 
 .student{
@@ -795,6 +705,8 @@ label.btn {
 .btn {
     cursor: pointer;
 }
+
+
 
 .text-light {
     color: #babbbc !important;
@@ -927,7 +839,13 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
   font-size: 12px;
   text-align: left;
   text-transform: uppercase;
-  background: #f2f0e6;
+  background: #1C6EA4;
+  background: -moz-linear-gradient(top, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
+  background: -webkit-linear-gradient(top, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
+  background: linear-gradient(to bottom, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
+  color: #fff;
+
+  border: 1px solid #FFF;
 }
 
 .rtable th,
