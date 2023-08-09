@@ -14,7 +14,7 @@ from .permissions import InstitutionsMixin
 from .utils import Study_Periods
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from journal.models import LessonType
-from classes.models import Classes, Student
+from classes.models import Classes, Student, Professions
 
 
 class InstitutionsHomeView(PermissionRequiredMixin,SuccessMessageMixin, View):
@@ -147,19 +147,11 @@ class Add_periods(AdminPermissionMixin, CreateView):
         return reverse('StudyPeriods')
 
 
-class DeleteProfilePeriods(InstitutionsMixin,AdminPermissionMixin, DeleteView):
-    template_name = 'institutions/study_periods.html'
-
-    def get_object(self, **kwargs):
-        id_ = self.kwargs.get("pk")
-        return get_object_or_404(PeriodProfile, id=id_)
-
-    def get_success_url(self):
-        return reverse('StudyPeriods')
-
-    def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
-
+class DeleteProfilePeriods(PermissionRequiredMixin, View):
+    permission_required = 'institutions.view_periodprofile'
+    def get(self, request, pk):
+        PeriodProfile.objects.get(pk=pk).delete()
+        return redirect('StudyPeriods')
 
 class StudyPeriodsUpdateView(View, Study_Periods):
     template_name = 'institutions/study_periods_edit.html'
@@ -224,30 +216,73 @@ class SubjectView(AdminPermissionMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.institution_id = self.request.user.institution.pk
+        if self.request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация':
+            t_get = TypeInstitutions.objects.get(title='Профессиональная образовательная организация')
+            form.instance.type_org = t_get
         return super().form_valid(form)
 
     def get_context_data(self):
         context = super().get_context_data()
-        context['title'] = 'Учебные предметы'
-        context['subjects'] = Subject.objects.filter(
+        
+        if self.request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация':
+            context['subjects'] = Subject.objects.filter(
+            Q(institution=self.request.user.institution.pk) | Q(institution=None),type_org__title='Профессиональная образовательная организация').order_by('title') 
+            context['title'] = 'Учебные дисциплины'
+        else:
+            context['subjects'] = Subject.objects.filter(
             Q(institution=self.request.user.institution.pk) | Q(institution=None)).order_by('title')
+            context['title'] = 'Учебные предметы'
         context['institution']=self.request.user.institution
         return context
 
     def get_success_url(self):
         return reverse('Subject_list')
-
-
 class DeleteSubject(InstitutionsMixin, DeleteView):
     def get_object(self, **kwargs):
         id_ = self.kwargs.get("pk")
         return get_object_or_404(Subject, id=id_)
 
-    def get_success_url(self):
-        return reverse('Subject_list')
 
-    def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
+    def get(self, request, pk):
+        Subject.objects.get(pk=pk).delete()
+        return redirect('Subject_list')
+
+class ProfessionsView(AdminPermissionMixin, CreateView):
+    form_class = ProfessionsForm
+    template_name = 'institutions/professions.html'
+
+    def form_valid(self, form):
+        form.instance.institution_id = self.request.user.institution.pk
+        
+        return super().form_valid(form)
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        
+        
+        context['subjects'] = Professions.objects.filter(
+            Q(institution=self.request.user.institution.pk) | Q(institution=None)).order_by('name') 
+        context['title'] = 'Профессии/специальности'
+
+        context['institution']=self.request.user.institution
+        return context
+
+    def get_success_url(self):
+        return reverse('ProfessionList')
+
+
+class DeleteProfession(InstitutionsMixin, DeleteView):
+    def get_object(self, **kwargs):
+        id_ = self.kwargs.get("pk")
+        return get_object_or_404(Professions, id=id_)
+
+
+    def get(self, request, pk):
+        Professions.objects.get(pk=pk).delete()
+        return redirect('ProfessionList')
+
+
+
 
 #Админка ###############################################################################
 class InstitutionCreate(PermissionRequiredMixin, SuccessMessageMixin, CreateView):

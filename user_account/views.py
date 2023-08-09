@@ -19,7 +19,8 @@ from classes.models import Load,Classes
 from news.models import AdsInstitution
 from .tokens import account_activation_token
 from django.utils.timezone import now
-
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 
 
@@ -49,7 +50,7 @@ class UsersView(PermissionRequiredMixin,UserMixin, ListView):
 def user_edit_view(request,user_id):
     user=UserNet.objects.get(pk=user_id)
     if (user.institution !=  None and (user.institution== request.user.institution \
-    and UserNet.objects.get(pk=request.user.pk,groups__name__in=["Администратор ОО", 'Секретарь', 'Администратор УО']))) or request.user.is_staff:
+    and UserNet.objects.get(pk=request.user.pk,groups__name__in=["Администратор ОО", 'Секретарь', 'Администратор УО', 'Администратор ПОО']))) or request.user.is_staff:
         password_form=SetPassword(user=user)
         form=UserEditForm(instance=user,user=user.institution.typeInstitutions)
         load=Load.objects.filter(class_pk__year=user.institution.year, teacher=user)
@@ -134,6 +135,7 @@ class AddUser(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
     def get_context_data(self):
         context = super().get_context_data()
         context['title'] = 'Добавление пользователя'
+        context['stop'] = '1'
         return context
 
     def get_success_url(self):
@@ -243,8 +245,8 @@ def activate(request, uidb64, token):
         user = User.objects.get(pk=uid)
     except:
         user = None
-
-    if user is not None and account_activation_token.check_token(user, token) and user == request.user:
+    
+    if user is not None and account_activation_token.check_token(user, token):
         user.mail_conf = True
         user.save()
 

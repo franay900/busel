@@ -2,6 +2,10 @@
 {% load timetable %}
 
 
+{% block h2 %}
+<i class="bi bi-table"></i> {{ title }}
+{% endblock %}
+
 {% block content %}
 <form action="" method="POST">
 	{% csrf_token %}
@@ -39,6 +43,14 @@
 		</tr>
 		{% endfor %}
 	</table>
-<button type="submit" class="btn btn-info"><i class="bi bi-calculator"></i> Создать уроки</button>
+
+
+{% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
+			<button type="submit" class="btn btn-info"><i class="bi bi-calculator"></i> Создать занятия</button>
+			{% else %}
+			<button type="submit" class="btn btn-info"><i class="bi bi-calculator"></i> Создать уроки</button>
+			{% endif %}
+
+
 </form>
 {% endblock %}

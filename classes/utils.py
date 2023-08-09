@@ -82,9 +82,15 @@ class CurruculumMixin:
     def get_curriculum_context(self,**kwargs):
         context=kwargs
         context = super().get_context_data()
-        context['class'] = [10, 11]
-        context['subjects'] = Subject.objects.filter(
+        if self.request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация':
+            context['class'] = [6, 7, 8, 9, 10]
+            context['subjects'] = Subject.objects.filter(
+            Q(institution=self.request.user.institution.pk) | Q(institution=None), type_org__title='Профессиональная образовательная организация').order_by('title')
+        else:
+            context['class'] = [10, 11]
+            context['subjects'] = Subject.objects.filter(
             Q(institution=self.request.user.institution.pk) | Q(institution=None)).order_by('title')
+        
         context['profile']=self.object
         return context
     def form_save(self):

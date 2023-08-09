@@ -19,8 +19,9 @@ class Classes(models.Model):
         (11, 11),
 
     )
+    
 
-    class_number = models.IntegerField(verbose_name='Номер', choices=CHOICES)
+    class_number = models.IntegerField(verbose_name='Номер', choices=CHOICES,blank=True)
     letter = models.CharField(max_length=10, verbose_name='Литер', blank=True)
     institution = models.ForeignKey(Institutions, on_delete=models.PROTECT, verbose_name='Организация')
     year = models.ForeignKey(Year, on_delete=models.PROTECT, verbose_name='Учебный год')
@@ -31,7 +32,8 @@ class Classes(models.Model):
     class_teacher=models.ForeignKey(UserNet, on_delete=models.SET_NULL, verbose_name="Классный руководитель",
                                        null=True)
 
-
+    name_group = models.CharField(max_length=10,verbose_name='Наименование группы', blank=True)
+    profession_key = models.ForeignKey('Professions',verbose_name='Профессия', blank=True, null=True, on_delete=models.SET_NULL)
     CHANGE_CHOICES = (
     (1, ("Первая смена")),
     (2, ("Вторая смена")),
@@ -54,7 +56,10 @@ class Classes(models.Model):
         verbose_name_plural="Классы"
 
     def __str__(self):
-        return str(self.class_number)+str(self.letter)
+        if self.name_group:
+            return str(self.name_group)
+        else:
+            return str(self.class_number)+str(self.letter)
 class Subgroups(models.Model):
     class_pk = models.ForeignKey(Classes, on_delete=models.CASCADE,null=True)
     subject_pk = models.ForeignKey('СurriculumSubject', on_delete=models.CASCADE,null=True, verbose_name='Предмет')
@@ -112,7 +117,16 @@ class SubjectTemplate(models.Model):
     subject_pk = models.ForeignKey('Load', on_delete=models.CASCADE,null=True, verbose_name='Предмет')
 
 
-    
+class Professions(models.Model):
+    name = models.CharField(max_length=150, verbose_name='Наименование профессии',null=True)
+    training_period = models.CharField(verbose_name='Срок обучения',max_length=30)
+    institution = models.ForeignKey(Institutions, on_delete=models.PROTECT, verbose_name='Организация')
+
+    def delete_url(self):
+        return reverse('DeleteProfession', kwargs={"pk": self.pk})
+    def __str__(self):
+        return f'{self.name} ({self.training_period})'
+
 #Ученики
 class Student(models.Model):
     user=models.ForeignKey(UserNet, on_delete=models.SET_NULL, verbose_name="Пользователь",

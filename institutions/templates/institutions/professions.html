@@ -1,0 +1,71 @@
+{% extends 'user_index.html' %}
+{% load subject_tags %}
+{% load crispy_forms_tags %}
+
+{% block h2 %}
+<i class="bi bi-journal-text"></i> {{ title }}
+{% endblock %}
+
+
+{% block content %}
+	<table class="table table-bordered table-sm table-hover mt-3">
+		<thead class="bg-info text-white">
+			<tr>
+				<th class="text-center">№</th>
+				<th class="text-center">Профессия (специальность)</th>
+				<th class="text-center">Срок обучения</th>
+				<th>Тип</th>
+
+				<th class="text-center">Действие</th>
+			</tr>
+		</thead>
+			{% for i in subjects %}
+			{% check_profession profession_pk=i.pk as status %}
+
+			<tr>
+				<td class="text-center">{{ forloop.counter }}</td>
+				<td >{{ i.name }}</td>
+				<td>{{ i.training_period }}</td>
+				<td>{% if i.institution %}Индивидуальный{%else%}Системный{% endif %}</td>
+		
+				<td>{% if i.institution and  not status %}<a href="{{ i.delete_url }}">Удалить</a>{% else %}  <a  class=" btn-tooltip text-muted" data-toggle="tooltip" data-placement="bottom" title="Используется">Удалить</a> {% endif %}</td>
+			</tr>
+			{% endfor %}
+	</table>
+	
+	
+	<button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">
+	  <i class="bi bi-folder-plus"></i> Добавить
+	</button>
+
+	<!-- Modal -->
+	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header bg-info">
+	      	<h5 class="modal-title text-white" id="exampleModalLabel"><i class="bi bi-folder-plus"></i> Добавление профессии (специальности)</h5>
+	        <button type="button" class="close text-white"  data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <form action="" method="POST">
+	      <div class="modal-body">
+	        {{ form|crispy }}
+	        {% csrf_token %}
+	      </div>
+	      <div class="modal-footer">
+	
+	        <button type="submit" class="btn btn-info"><i class="bi bi-folder-plus"></i> Добавить</button>
+	      </div>
+	      </form>
+	    </div>
+	  </div>
+	</div>
+   
+<style>
+	.modal {
+    border:none;
+}
+</style>
+
+{% endblock %}

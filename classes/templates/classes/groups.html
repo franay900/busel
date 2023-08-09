@@ -1,0 +1,125 @@
+{% extends 'user_index.html' %}
+{% block h2 %}
+<i class="bi bi-mortarboard"></i> Список групп на {{ request.user.institution.year }}
+{% endblock %}
+
+
+{% block content %}
+	
+
+
+
+<table class="table table-sm table-bordered  table-hover mt-3">
+  <thead class="bg-info text-white">
+
+    <tr>
+      <th class="text-center">Ниаменование</th>
+      <th class="text-center">Курс</th>
+      <th class="text-center">Профессия (специальность)</th>
+      <th class="text-center">Учебный план</td>
+      <th class="text-center">Профиль периодов</th>
+      <th class="text-center">Куратор</th>
+      <th class="text-center" >Действие</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for class in classes %}
+				<tr>
+					<td class="text-center">{{ class.name_group }}</td>
+          <td class="text-center">{{ class.class_number }}</td>
+					<td>{{ class.profession_key }}</td>
+          <td>{{ class.period_profile }}</td>
+					<td>{{ class.change }} смена</td>
+					<td>{{ class.class_teacher }}</td>
+					<td class="action text-center"> 
+              <a href="{{ class.get_absolute_url  }}" title="Редактировать"><i class="bi bi-pencil-square"></i></a>
+              <a class="deleteClass text-info" name="{{ class.name_group }}" pk="{{ class.pk }}" title="Удалить"><i class="bi bi-trash-fill"></i></a>
+          </td>
+				</tr>
+				{% endfor %}
+
+  </tbody>
+</table>
+
+
+
+
+		<!-- Button trigger modal -->
+		<button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">
+  			<i class="bi bi-folder-plus"></i> Добавить
+		</button>
+
+
+
+		<form method="POST">
+		<div class="modal fade bd-example-modal-xl" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+  			<div class="modal-dialog" role="document">
+    			<div class="modal-content ">
+      				<div class="modal-header bg-info">
+        			<h5 class="modal-title text-white"><i class="bi bi-folder-plus"></i> Добавление группы</h5>
+        			<button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          				<span aria-hidden="true">&times;</span>
+        			</button>
+      				</div>
+      	<div class="modal-body">
+        	{% csrf_token %}
+        	{{ form }}
+      	</div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-info"><i class="bi bi-folder-plus"></i> Добавить в журнал</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+	
+	
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-danger ">
+        <h5 class="modal-title text-white" id="exampleModalLabel"><i class="bi bi-exclamation-circle"></i> Удаление класса</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="{% url 'ClassDelete' %}" method="POST">
+        {% csrf_token %}
+      <div class="modal-body">
+        <strong>Внимание!</strong> Вы действительно хотите удалить <a class="class" href=""></a> группу? Данные будут безвозвратно уничтожены.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="submit" class="btn btn-danger">Да, удалить</button>
+        <input  id="pk" name="pk" style="display: none;" type="text">
+
+      </div>
+    </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  .action{
+    width: 10%;
+  }
+</style>
+
+
+<script type="text/javascript">
+	  $('.deleteClass').on('click',function(event){
+    const modal = new bootstrap.Modal(document.querySelector('#staticBackdrop'));
+    modal.show();
+    var name=$(this).attr('name')
+    var pk=$(this).attr('pk')
+    $(".class").text(name)
+    $("#pk").attr('value',pk)
+
+  })
+
+</script>
+
+   
+{% endblock %}

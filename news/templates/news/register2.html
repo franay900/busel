@@ -1,6 +1,6 @@
 {% extends 'auth_reg.html' %}
 {% load static %}
-
+{% load crispy_forms_tags %}
 
 {% block title %}
   Регистрация
@@ -40,18 +40,7 @@
 							<h4 class="card-title">Регистрация</h4>
 							<form method="POST" class="my-login-validation" novalidate="">
 								{% csrf_token %}
-								{% for i in form %}
-								<div class="form-group ">
-									<label for="email">{{ i.label }} </label>
-									{{ i }}
-									<div class="">
-										{{ i.errors }}
-									</div>
-									<div class="form-text text-muted">
-										
-									</div>
-								</div>
-								{% endfor %}
+								{{ form|crispy }}
 								<div class="form-group m-0">
 									<button type="submit" class="btn btn-info btn-block">
 										Регистрация
@@ -61,7 +50,7 @@
 						</div>
 					</div>
 					<div class="footer">
-						Copyright &copy; 2020-2022 &mdash; ПК "Бусел"
+						Copyright &copy; 2020-2023 &mdash; ПК "Бусел"
 					</div>
 				</div>
 			</div>

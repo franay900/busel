@@ -1,6 +1,6 @@
 {% extends 'user_index.html' %}
 {% block h2 %}
-Расписание
+<i class="bi bi-table"></i> Расписание
 {% endblock %}
 
 
@@ -8,18 +8,31 @@
 	<table class="rtable">
 		<thead>
 		<tr>
-			<th >Класс</th>
+			{% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
+			<th class="text-center">Группа</th>
+			{% else %}
+			<th class="text-center">Класс</th>
+			{% endif %}
 			<th >Учебный план</th>
 			<th colspan="3" class="text-center">Действие</th>
 		</tr>
 		</thead>
 		{% for i in classes %}
 		<tr>
-			<td>{{ i.class_number }}{{ i.letter }}</td>
+			<td class="text-center">{{ i }}</td>
 			<td >{{ i.сurriculum }}</td>
 			<td ><a href="{{ i.timetable_templates }}">Шаблоны</a></td>
+			
+
+			{% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
+			<td ><a href="{{ i.timetable_weeks }}">Распределение занятий</a></td>
+			<td ><a href="{% url 'EditLesson' class_pk=i.pk %}">Редактирование занятий</a></td>
+			{% else %}
 			<td ><a href="{{ i.timetable_weeks }}">Распределение уроков</a></td>
 			<td ><a href="{% url 'EditLesson' class_pk=i.pk %}">Редактирование уроков</a></td>
+			{% endif %}
+
+			
 		</tr>
 		{% endfor %}
 	</table>

@@ -91,10 +91,10 @@ class BellTimetable(models.Model):
 
 # Уч.Предметы
 class Subject(models.Model):
-    title = models.CharField(max_length=150, verbose_name='Наименование предмета')
-    short_title = models.CharField(max_length=150, verbose_name='Краткое наименование предмета', null=True)
+    title = models.CharField(max_length=150, verbose_name='Наименование')
+    short_title = models.CharField(max_length=150, verbose_name='Краткое наименование', null=True)
     institution = models.ForeignKey(Institutions, null=True, blank=True, on_delete=models.CASCADE)
-
+    type_org = models.ForeignKey(TypeInstitutions,blank=True,on_delete=models.SET_NULL,null=True)
     def delete_url(self):
         return reverse('Delete_subject', kwargs={"pk": self.pk})
 

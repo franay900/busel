@@ -16,7 +16,7 @@ class UserEditForm(forms.ModelForm):
         )
   
         model = UserNet
-        fields=['last_name','first_name','middle_name','gender','birth_day','groups','position','avatar']
+        fields=['last_name','first_name','middle_name','gender','birth_day','groups','position','avatar','email']
         
    
         widgets={

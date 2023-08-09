@@ -11,15 +11,22 @@
 
 
 
-
+{% if classes %}
 
 
 <div class="row">
 	<div class="col">
+
+		{% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
+			Группа:
+		{% else %}
 		Класс:
+
+		{% endif %}
 		  <select onchange="top.location=this.value" class="custom-select custom-select-sm" style="width:auto" name="" id="">
+		
     {% for classes in classes %}
-    <option  {% if class.pk == classes.pk %} selected="" {% endif %} value="{% url 'SubgroupViewPk' pk=classes.pk %}">{{ classes.class_number }}{{ classes.letter }}</option>
+    <option  {% if class.pk == classes.pk %} selected="" {% endif %} value="{% url 'SubgroupViewPk' pk=classes.pk %}">{{ classes }}</option>
     {% endfor %}
     </select>
 	</div>
@@ -70,21 +77,39 @@
  </form>
 {% endif %}
 
+
+
+
 {% if not subgroups %}
+{% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
 
-<div class="alert alert-warning mt-3" role="alert">
-  Для данного класса не обнаружено подгрупп!
-</div>
+	<div class="alert alert-danger mt-3">
+		<i class="bi bi-info-circle"></i> В выбранной группе не найдены учебные подгруппы, либо не найдены студенты.
+	</div>
+{% else %}
+		
+		<div class="alert alert-danger mt-3">
+		<i class="bi bi-info-circle"></i> В выбранном классе не найдены учебных подгруппы, либо не найдены ученики.
+	</div>
+{% endif %}
+{% endif %}
+
+
+{% else %}
 
 
 
+{% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
 
-{% elif not students %}
-
-<div class="alert alert-warning mt-3" role="alert">
-  В данном классе отсутсвуют ученики!
-</div>
-
+	<div class="alert alert-danger mt-3">
+		<i class="bi bi-info-circle"></i> В выбранной организации не найдены группы.
+	</div>
+{% else %}
+		
+		<div class="alert alert-danger mt-3">
+		<i class="bi bi-info-circle"></i> В выбранной организации не найдены классы.
+	</div>
+{% endif %}
 
 
 {% endif %}

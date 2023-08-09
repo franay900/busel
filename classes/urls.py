@@ -40,7 +40,7 @@ urlpatterns=[
 	path('edit_lesson/<int:class_pk>/',EditLessons.as_view() ,name="EditLesson"),
 	path('delete_lessons/<int:class_pk>/',DeleteLessons.as_view() ,name="DeleteLessons"),
 
-
+	path('group_view/',GroupView.as_view() ,name="Groups"),
 	
 ]
 

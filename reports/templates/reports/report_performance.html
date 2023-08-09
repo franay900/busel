@@ -27,12 +27,12 @@
        </select>
     </div>
     <div class="col">
-      <button type="submit" class=" btn btn-sm btn-secondary">Показать</button>
+      <button type="submit" class=" btn btn-sm btn-info">Показать</button>
     </div>
   </div>
 </form>
 
-<table class="rtable  mt-3">
+<table class="rtable myTable table-hover mt-3">
 	<thead>
 		<tr>
 		<th >№</th>
@@ -47,8 +47,8 @@
 	<tbody>
 		{% for student in students %}
 		<tr>
-			<td>{{ forloop.counter }}</td>
-			<td>{{ student.user.last_name }} {{ student.user.first_name }}</td>
+			<td class="text-center">{{ forloop.counter }}</td>
+			<td >{{ student.user.last_name }} {{ student.user.first_name }}</td>
 			{% for subject in subjects %}
 
       {% if period == 'year' %}
@@ -59,7 +59,7 @@
       {% endif %}
 
 
-			<td>{% if itog.first %}{{ itog.first.mark }}{% endif %}</td>
+			<td class="text-center">{% if itog.first %}{{ itog.first.mark }}{% endif %}</td>
 			{% endfor %}
 
 		</tr>
@@ -155,5 +155,7 @@ th.vertical{
   padding: 2px 12px;
 
 }
+
+
 </style>
 {% endblock %}

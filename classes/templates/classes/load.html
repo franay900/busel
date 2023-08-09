@@ -31,7 +31,7 @@
 
 	<select onchange="top.location=this.value" class="custom-select custom-select-sm" style="width:auto" name="" id="">
 		{% for classes in classes %}
-		<option  {% if class.pk == classes.pk %} selected="" {% endif %} value="{{ classes.class_load }}">{{ classes.class_number }}{{ classes.letter }}</option>
+		<option  {% if class.pk == classes.pk %} selected="" {% endif %} value="{{ classes.class_load }}">{{ classes }}</option>
 		{% endfor %}
 	</select>
 

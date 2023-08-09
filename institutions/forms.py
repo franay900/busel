@@ -3,6 +3,8 @@ from .models import *
 from user_account.models import *
 from journal.models import LessonType, TypeExams
 from news.models import AdsInstitution
+from classes.models import Professions
+
 
 class InstitutionsInfoForm(forms.ModelForm):
 	error_css_class = 'is-invalid'
@@ -74,6 +76,19 @@ class SubjectForm(forms.ModelForm):
 		super().__init__(*args,**kwargs)
 		for field in self.fields:
 			self.fields[field].widget.attrs['class']='form-control'
+
+class ProfessionsForm(forms.ModelForm):
+	class Meta:
+		model=Professions
+		fields=['name','training_period']
+		widgets = {
+            'training_period': forms.TextInput(attrs={'placeholder': '4 года'}),
+
+        }
+	def __init__(self,*args,**kwargs):
+		super().__init__(*args,**kwargs)
+
+
 
 class InstitutionForm(forms.ModelForm):
 	class Meta:

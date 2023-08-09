@@ -57,7 +57,7 @@
     <div class="col-1">
        <select class="custom-select custom-select-sm "  name="load" id="classes_list" style="width:auto">
            {% for class in classes %}
-            <option  {% if load_pk.class_pk.pk == class.pk %} selected="" {% endif %}  value="{{ class.pk }}" value="" url="{% url 'GetLoad' class_pk=class.pk %}">{{ class.class_number }}{{ class.letter }}</option>
+            <option  {% if load_pk.class_pk.pk == class.pk %} selected="" {% endif %}  value="{{ class.pk }}" value="" url="{% url 'GetLoad' class_pk=class.pk %}">{{ class }}</option>
           {% endfor %}
        </select>
     </div>
@@ -87,7 +87,7 @@
        </select>
     </div>
     <div class="col">
-      <button class=" btn btn-sm btn-primary">Показать</button>
+      <button class=" btn btn-sm btn-info"><i class="bi bi-box-arrow-down"></i> Загруить</button>
     </div>
   </div>
 </form>
@@ -97,18 +97,45 @@
 
 
 <div class="row mt-3">
-  <div class="col">
-    <a href="{% url 'LessonTopics' load=load_pk.pk period=period.pk %}" class="btn btn-primary btn-sm" target="_blank">Темы уроков и дз</a>
-    <a  href="{% url 'ItogView' load=load_pk.pk period=period.pk %}" class="btn btn-primary mr-3 btn-sm">Итоговая ведомость</a>
+
+ 
+
+    {% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
+       <div class="col">
+    <a href="{% url 'LessonTopics' load=load_pk.pk period=period.pk %}" class="btn btn-info btn-sm" target="_blank">
+    <i class="bi bi-card-checklist"></i> Темы занятий и дз
+  </a>
+      {% else %}
+       <div class="col">
+    <a href="{% url 'LessonTopics' load=load_pk.pk period=period.pk %}" class="btn btn-info btn-sm" target="_blank">
+    <i class="bi bi-card-checklist"></i> Темы уроков и дз
+  </a>
+      {% endif %}
+
+    <a  href="{% url 'ItogView' load=load_pk.pk period=period.pk %}" class="btn btn-info mr-3 btn-sm">
+   <i class="bi bi-table"></i> Итоговая ведомость
+  </a>
   </div>
 
 </div>
 
-<div class="alert alert-secondary mt-3" role="alert">
+
+
+
+{% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
+      <div class="alert alert-secondary mt-3" role="alert">
+  <strong>Куратор: </strong>{{ load_pk.class_pk.class_teacher }}<br>
+  <strong>Преподаватель: </strong>{{ load_pk.teacher }} 
+  
+</div>
+      {% else %}
+      <div class="alert alert-secondary mt-3" role="alert">
   <strong>Классный руководитель: </strong>{{ load_pk.class_pk.class_teacher }}<br>
   <strong>Учитель: </strong>{{ load_pk.teacher }} 
   
 </div>
+{% endif %}
+
 
 <div class="row mt-3 myrow" id="tables" >
 

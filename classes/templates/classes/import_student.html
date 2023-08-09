@@ -9,7 +9,7 @@
 
   <div class="alert alert-info" role="alert">
   <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Внимание!</h4>
-  <p> На данной странице производится импорт учащихся. Поддерживаемые форматы: <strong>xlsx</strong>. Половую принадлежность необходимо ввести с маленькой буквы, полностью, без сокращений. Формат записи даты: день.месяц.год. Например: 01.01.2000. Иные форматы записи даты не допускаются. Во избежании ошибочно введенных данных файл перед загрузкой на сервер необходимо проверить. </p>
+  <p> На данной странице производится импорт {% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}студентов{% else %}учащихся{% endif %}. Поддерживаемые форматы: <strong>xlsx</strong>. Половую принадлежность необходимо ввести с маленькой буквы, полностью, без сокращений. Формат записи даты: день.месяц.год. Например: 01.01.2000. Иные форматы записи даты не допускаются. Во избежании ошибочно введенных данных файл перед загрузкой на сервер необходимо проверить. </p>
   <hr>
   <p class="mb-0">Шаблон: <a href="{{ file.file.url }}" class="alert-link" download>{{ file.name }}</a></p>
 </div>
@@ -35,7 +35,12 @@
   </div>
 
   <div class="form-group">
+
+    {% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
+    <label for="exampleFormControlSelect1" >Группа зачисления:</label>
+    {% else %}
     <label for="exampleFormControlSelect1" >Класс зачисления:</label>
+    {% endif %}
     <select name="class_pk" id="" class="custom-select custom-select-sm">
       {% for class in classes %}
         <option value="{{class.pk}}">{{ class }}</option>

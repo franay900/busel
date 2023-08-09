@@ -10,7 +10,43 @@
 {% block content %}
 
 
+{% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
+<div class="alert alert-info mt-3" role="alert">
 
+  <div class="row">
+    <div class="col">ФИО студента:</div>
+    <div class="col">{{ student.user }}</div>
+  </div>
+  <div class="row">
+    <div class="col">Куратор:</div>
+    <div class="col">{{ student.class_pk.class_teacher }}</div>
+  </div>
+  <div class="row">
+    <div class="col">Группа:</div>
+    <div class="col">{{ student.class_pk }}</div>
+  </div>
+  <div class="row">
+    <div class="col">Учебный год:</div>
+    <div class="col">{{ student.class_pk.year }}</div>
+  </div>
+
+  
+  <div class="row">
+  <div class="col"><strong>Период: </strong></div>
+  <div class="col">
+  <select id="periods1" class="select custom-select custom-select-sm" >
+  {% for periodf in periods%}
+  <option {% if period == periodf %} selected {% endif %}  {% if forloop.counter == 1 %}selected{% endif %} value="?period={{ periodf.pk }}">{{ forloop.counter }}</option>
+
+  {% endfor %}
+</select>
+</div>
+</div>
+ <br>
+</div>
+
+
+{% else %}
 <div class="alert alert-info mt-3" role="alert">
 
   <div class="row">
@@ -34,7 +70,7 @@
   <div class="row">
   <div class="col"><strong>Период: </strong></div>
   <div class="col">
-  <select id="periods" class="select custom-select custom-select-sm" >
+  <select id="periods1" class="select custom-select custom-select-sm" >
   {% for periodf in periods%}
   <option {% if period == periodf %} selected {% endif %}  {% if forloop.counter == 1 %}selected{% endif %} value="?period={{ periodf.pk }}">{{ forloop.counter }}</option>
 
@@ -44,7 +80,7 @@
 </div>
  <br>
 </div>
-
+{% endif %}
 {% if not year %}
   
 
@@ -95,18 +131,18 @@ $(document).ready(function(){
 });
 
 
-   var size=$('#periods option').length; 
+   var size=$('#periods1 option').length; 
 
     if (size==2){
-      $('#periods option').append(' полугодие')
+      $('#periods1 option').append(' полугодие')
     }
     if (size==4){
-      $('#periods option').append(' четверть')
+      $('#periods1 option').append(' четверть')
     }
     if (size==3){
-      $('#periods option').append(' триместр')
+      $('#periods1 option').append(' триместр')
     }
-  $('#periods').append('<option  value="?year=true">Год</option>')
+  $('#periods1').append('<option  value="?year=true">Год</option>')
 
  
 </script>

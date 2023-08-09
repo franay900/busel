@@ -1,0 +1,94 @@
+
+
+
+
+{% if perms.classes.change_classes %}
+     <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle "  href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="bi bi-building"></i> Организация
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          {% if perms.institutions.view_institutions %} 
+          <a class="dropdown-item" href="{% url 'institutionsHome' %}">Настройки</a>
+
+          <a class="dropdown-item" href="{% url 'create_ad' %}">Объявления</a>
+
+          
+          {% endif %}
+          
+          
+    
+
+          
+        </div>
+          
+        </li>
+
+
+
+
+             <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle "  href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="bi bi-easel2"></i> Образование
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+
+          <a class="dropdown-item" href="{% url 'ProfessionList' %}">Профессии</a>
+          <a class="dropdown-item" href="{% url 'Subject_list' %}">Дисциплины</a>
+          <a class="dropdown-item" href="{% url 'Curriculum' %}">Учебные планы</a>
+          <a class="dropdown-item" href="{% url 'StudyPeriods' %}">Учебные периоды</a>
+          <a class="dropdown-item" href="{% url 'Bell_profile_list' %}">Расписание звонков</a>
+          
+          
+        </div>
+          
+        </li>
+
+
+        <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle " href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="bi bi-person-lines-fill"></i> Пользователи
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          {% if perms.user_account %}
+          <a class="dropdown-item" href="{% url 'users' %}">Сотрудники</a>
+          {% endif %}
+
+
+          <a class="dropdown-item" href="{% url 'StudentList' %}">Студенты</a>
+     
+        </div>
+      </li>
+
+
+       <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle " href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="bi bi-people"></i> Группы 
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{% url 'Groups' %}">Группы</a>
+          <a class="dropdown-item" href="{% url 'SubgroupView' %}">Подгруппы</a>
+          <a class="dropdown-item" href="{% url 'Load' %}">Учебная нагрузка</a>
+          <a class="dropdown-item" href="{% url 'TimetableClasses' %}">Расписание</a>
+          
+        </div>
+      </li>
+      {% endif %}
+{% if perms.journal %}
+         <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle " href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="bi bi-book-half"></i> Журналы
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          {% if perms.journal.change_lessons %}
+          <a class="dropdown-item" href="{% url 'JournalView' %}">Журнал СПО</a>
+          {% endif %}
+
+          <a class="dropdown-item" href="{% url 'MyJournal' %}">Мой журнал</a>
+
+        
+          
+       
+        </div>
+      </li>
+      {% endif %}

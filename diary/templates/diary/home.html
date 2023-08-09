@@ -9,6 +9,31 @@
 
 
 
+{% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
+
+<div class="alert alert-primary mt-3" role="alert">
+
+  <div class="row">
+    <div class="col">ФИО студента:</div>
+    <div class="col">{{ student.user }}</div>
+  </div>
+  <div class="row">
+    <div class="col">Куратор:</div>
+    <div class="col">{{ student.class_pk.class_teacher }}</div>
+  </div>
+  <div class="row">
+    <div class="col">Группа:</div>
+    <div class="col">{{ student.class_pk }}</div>
+  </div>
+  <div class="row">
+    <div class="col">Учебный год: </div>
+    <div class="col">{{ student.class_pk.year }}</div>
+  </div>
+  
+ <br>
+</div>
+
+{% else %}
 
 <div class="alert alert-primary mt-3" role="alert">
 
@@ -31,6 +56,8 @@
   
  <br>
 </div>
+{% endif %}
+
 
 <div class="row">
   

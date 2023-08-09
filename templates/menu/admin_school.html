@@ -1,0 +1,95 @@
+      {% if request.user.institution %}
+      {% if perms.classes.view_сurriculum %} 
+     <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle "  href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="bi bi-building"></i> Организация
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          {% if perms.institutions.view_institutions %} 
+          <a class="dropdown-item" href="{% url 'institutionsHome' %}">Настройки</a>
+
+          <a class="dropdown-item" href="{% url 'create_ad' %}">Объявления</a>
+
+          <a class="dropdown-item" href="{% url 'StudyPeriods' %}">Учебные периоды</a>
+          <a class="dropdown-item" href="{% url 'Subject_list' %}">Учебные предметы</a>
+          <a class="dropdown-item" href="{% url 'Bell_profile_list' %}">Расписание звонков</a>
+          
+          {% endif %}
+          
+          
+          <a class="dropdown-item" href="{% url 'Curriculum' %}">Учебные планы</a>
+          
+
+          
+        </div>
+          
+        </li>
+          
+          {% endif %}
+
+
+           {% if perms.classes.change_student or perms.user_account  %}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle " href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="bi bi-person-square"></i> Пользователи
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          {% if perms.user_account %}
+          <a class="dropdown-item" href="{% url 'users' %}">Сотрудники</a>
+          {% endif %}
+
+          {% if perms.classes.change_student %}
+          <a class="dropdown-item" href="{% url 'StudentList' %}">Обучающиеся</a>
+          {% endif %}
+        </div>
+      </li>
+
+      {% endif %}
+
+      {% if perms.classes.view_load %}
+        <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle " href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="bi bi-easel"></i> Классы 
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{% url 'Class' %}">Список классов</a>
+          <a class="dropdown-item" href="{% url 'SubgroupView' %}">Подгруппы</a>
+          <a class="dropdown-item" href="{% url 'Load' %}">Учебная нагрузка</a>
+          <a class="dropdown-item" href="{% url 'TimetableClasses' %}">Расписание</a>
+          
+        </div>
+      </li>
+      {% endif  %}
+
+
+      {% if perms.journal %}
+      
+      
+
+
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle " href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="bi bi-book-half"></i> Журналы
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          {% if perms.journal.change_lessons %}
+          <a class="dropdown-item" href="{% url 'JournalView' %}">Журнал организации</a>
+          {% endif %}
+
+          <a class="dropdown-item" href="{% url 'MyJournal' %}">Мой журнал</a>
+
+        
+          
+          <a class="dropdown-item" href="{% url 'KTPList' %}">КТП</a>
+        </div>
+      </li>
+
+      <li class="nav-item">
+         <a class="nav-link " href="{% url 'ReportsView' %}"><i class="bi bi-file-earmark-check"></i> Отчеты</a>
+      </li>
+      {% endif %}
+
+      
+       {% endif %}
+
+ 

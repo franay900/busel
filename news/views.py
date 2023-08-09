@@ -77,7 +77,6 @@ def register_user_info(request, code):
 	context['title'] = 'Регистрация'
 	if get_user:
 		if request.method=="POST":
-			print(1)
 			form=UserRegisterForm(request.POST, instance=get_user)
 			if form.is_valid():
 				user=form.save(commit=False)

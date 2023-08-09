@@ -12,37 +12,52 @@
 
 {% if classes %}
 <div class="card mt-">
+
+  {% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
+    <h6 class="card-header"><i class="bi bi-search"></i> Поиск студентов</h6>
+  {% else %}
   <h6 class="card-header"><i class="bi bi-search"></i> Поиск учащихся</h6>
+
+  {% endif %}
   <div class="card-body">
    <form class="needs-validation" novalidate method="get">
   <div class="form-row">
     <div class="col-md-4 mb-3">
       <label for="validationCustom01">Фамилия</label>
       <input type="text" class="form-control" id="validationCustom01" placeholder="" value="{% if surname %}{{ surname }}{%endif%}" required name="surname">
-      <div class="valid-feedback">
-        Looks good!
-      </div>
+
     </div>
     <div class="col-md-4 mb-3">
       <label for="validationCustom02">Имя</label>
       <input type="text" class="form-control" id="validationCustom02" placeholder="" value="{% if name %}{{ name }}{%endif%}" required name="name">
-      <div class="valid-feedback">
-        Looks good!
-      </div>
+     
     </div>
     <div class="col-md-4 mb-3">
       <label for="validationCustomUsername">Отчество</label>
       <div class="input-group">
 
         <input type="text" class="form-control" id="validationCustomUsername" placeholder="" aria-describedby="inputGroupPrepend" required value="{% if middle_name %}{{ middle_name }}{%endif%}" name="middle_name">
-        <div class="invalid-feedback">
-          Please choose a username.
-        </div>
+
       </div>
     </div>
   </div>
   <div class="form-row">
-    <div class="col-md-1 mb-3">
+
+
+      {% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
+           <div class="col-md-1 mb-3">
+      <label for="validationCustom03">Группа</label>
+
+      <select id="inputState" class="form-control" name="class_pk">
+        <option value="None">...</option>
+        {% for class in classes %}
+        <option  {% if class.pk == class_pk %} selected {%endif%} value="{{ class.pk }}" >{{ class.name_group }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+      {% else %}
+         <div class="col-md-1 mb-3">
       <label for="validationCustom03">Класс</label>
 
       <select id="inputState" class="form-control" name="class_pk">
@@ -53,6 +68,10 @@
       </select>
     </div>
 
+
+      {% endif %}
+
+ 
   </div>
 
   <button class="btn btn-info" type="submit"><i class="fa fa-search"></i> Поиск</button>
@@ -73,7 +92,7 @@
 
   {% if delete_code %}
 
-    <div class="alert alert-info mt-3"><i class="bi bi-check-lg"></i> Учащиеся успешно были импортированы! Если вы сделали это ошибочно, вы можете <a href="{% url 'CancelImport' delete_code=delete_code %}" class="alert-link">отменить действие</a>.</div>
+    <div class="alert alert-info mt-3"> <i class="bi bi-check-lg"></i> Учащиеся успешно были импортированы! Если вы сделали это ошибочно, вы можете <a href="{% url 'CancelImport' delete_code=delete_code %}" class="alert-link">отменить действие</a>.</div>
 
   {% endif %}
    <table class="table table-sm table-bordered table-hover mt-3">
@@ -84,11 +103,19 @@
        <th class="text-center">Пол</th>
        <th class="text-center">Дата рождения</th>
        <th class="text-center">Дата зачисления</th>
-       <th class="text-center">Класс</th>
+       
+
+      {% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
+          <th class="text-center">Группа</th>
+        {% else %}
+        <th class="text-center">Класс</th>
+
+        {% endif %}
        <th class="text-center">Код</th>
-       <th class="text-center" {% if perms.classes.delete_student %} colspan="2" {% endif %}>Действие</th>       
+       <th class="text-center" >Действие</th>    
      </tr>
      </thead>
+
      	{% for i in object_list  %}
       {% if i.user %}
      	<tr>
@@ -100,16 +127,28 @@
         <td>{{ i.user.birth_day }}</td>
         <td>{{ i.date_of_enrollment }}</td>
 
-        <td>{{ i.class_pk }}</td>
+        
+
+        <td class="text-center">{{ i.class_pk }}</td>
         <td>{% if i.user.code %}{{ i.user.code }}{% endif %}</td>
-     		<td><a href="{{ i.edit }}">Личное дело</a></td>
-        {% if perms.classes.delete_student %}
-     		<td>
+     
+
+
+        <td class="text-center">
           
-          <a class="delete_student" href="#" pk="{{ i.pk }}" name="{{ i.user.last_name  }} {{ i.user.first_name }}">Отчислить</a>
-          
+          <a href="{{ i.edit }}" title="Личное Дело">
+            <i class="bi bi-pen"></i>
+          </a>
+          {% if perms.classes.delete_student %}  
+          <a class="delete_student" href="#" pk="{{ i.pk }}" name="{{ i.user.last_name  }} {{ i.user.first_name }}" title="Отчислить">
+            
+            <i class="bi bi-trash"></i>
+          </a>
+
+          {% endif %}
         </td>
-        {% endif %}
+
+        
      	</tr>
       {% endif %}
      	{% endfor %}

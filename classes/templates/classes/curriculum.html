@@ -32,7 +32,7 @@
 			<td>{{ curriculum.year }}</td>
 			<td>{% if status %}Используется{% else %}Не используется{% endif %}</td>
 
-			<td>
+			<td class="text-center">
 				
 				<a href="{{curriculum.curriculum_edit}}" title="Редактировать"><i class="bi bi-pen"></i></a>
 				{% if  not status %}<a href="" title="Удалить"><i class="bi bi-trash"></i></a>{% endif %}

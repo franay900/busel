@@ -30,7 +30,42 @@ class ClassForm(forms.ModelForm):
 			self.fields[field].widget.attrs['class']='form-control'
 		if self.edit==False:
 			self.fields['class_number'].disabled=True
+
+
+class GroupForm(forms.ModelForm):
+	error_css_class = 'is-invalid'
 	
+
+	class Meta:
+		model=Classes
+		fields=['name_group', 'class_number','profession_key','сurriculum','bell_profile','change','period_profile','class_teacher']
+		labels = {
+        "class_number":  "Курс",
+        "class_teacher": "Куратор",
+    	}
+
+	def __init__(self,*args,**kwargs):
+		if 'edit' in kwargs:
+			self.edit=kwargs.pop('edit')
+		else:
+			self.edit=False
+		self.teacher=kwargs.pop('teacher')
+		super().__init__(*args,**kwargs)
+		self.fields['class_teacher'].queryset = UserNet.objects.filter(institution=self.teacher.pk,groups__name='Преподаватель',is_active=True).distinct()
+		self.fields['сurriculum'].queryset = Сurriculum.objects.filter(institution=self.teacher.pk,year=self.teacher.year.pk)
+		self.fields['bell_profile'].queryset = BellProfile.objects.filter(institution=self.teacher.pk)
+		self.fields['period_profile'].queryset = PeriodProfile.objects.filter(institution=self.teacher.pk,year=self.teacher.year.pk)
+		self.fields['profession_key'].queryset = Professions.objects.filter(institution=self.teacher.pk)
+		for field in self.fields:
+			self.fields[field].widget.attrs['class']='form-control'
+		if self.edit==False:
+			self.fields['class_number'].disabled=True
+		self.fields['class_number'].choices = [
+		  ('1','1'), 
+		  ('2', '2'), 
+		  ('3', '3'),
+		  ('4', '4'),
+		  ]
 class SubgroupsForm(forms.ModelForm):
 	class Meta:
 		model=Subgroups
@@ -124,6 +159,10 @@ class OldStudentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
         super(OldStudentForm, self).__init__(*args, **kwargs)
-        self.fields['class']=forms.ModelChoiceField(label='Класс',queryset=Classes.objects.filter(institution=user.institution,year=user.institution.year.pk))
-        self.fields['class'].widget.attrs['class']='form-control'
+        
+        if user.institution.typeInstitutions.title == 'Профессиональная образовательная организация':
+        	self.fields['class']=forms.ModelChoiceField(label='Группа',queryset=Classes.objects.filter(institution=user.institution,year=user.institution.year.pk))
+        else:
+        	self.fields['class']=forms.ModelChoiceField(label='Класс',queryset=Classes.objects.filter(institution=user.institution,year=user.institution.year.pk))
+        	self.fields['class'].widget.attrs['class']='form-control'
 

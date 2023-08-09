@@ -1,7 +1,7 @@
 {% extends 'user_index.html' %}
 {% load subject_tags %}
 {% block h2 %}
-<i class="bi bi-journal-text"></i> Учебные предметы
+<i class="bi bi-journal-text"></i> {{ title }}
 {% endblock %}
 
 
@@ -40,7 +40,11 @@
 	  <div class="modal-dialog" role="document">
 	    <div class="modal-content">
 	      <div class="modal-header bg-info">
+	      	{% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
+	      	<h5 class="modal-title text-white" id="exampleModalLabel"><i class="bi bi-folder-plus"></i> Добавление учебной дисциплины</h5>
+	      	{% else %}
 	        <h5 class="modal-title text-white" id="exampleModalLabel"><i class="bi bi-folder-plus"></i> Добавление учебного предмета</h5>
+	        {% endif %}
 	        <button type="button" class="close text-white"  data-dismiss="modal" aria-label="Close">
 	          <span aria-hidden="true">&times;</span>
 	        </button>

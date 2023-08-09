@@ -836,16 +836,14 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
 }
 
 .rtable th {
-  font-size: 12px;
-  text-align: left;
-  text-transform: uppercase;
-  background: #1C6EA4;
-  background: -moz-linear-gradient(top, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
-  background: -webkit-linear-gradient(top, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
-  background: linear-gradient(to bottom, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
-  color: #fff;
-
-  border: 1px solid #FFF;
+ background-color: #EEEEEE;
+border: none;
+color: grey;
+padding: 4px;
+height: 32px;
+text-align: left;
+text-shadow: 1px 1px 1px #fff;
+white-space: nowrap;
 }
 
 .rtable th,
