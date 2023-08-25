@@ -10,5 +10,8 @@ urlpatterns=[
 	path('performance/<int:class_pk>',ReportPerformance.as_view() ,name="ReportPerformancePk"),
 
 	path('get_periods/<int:class_pk>',get_period ,name="GetPeriods"),
+
+	path('report_auth',ReportAuth.as_view() ,name="ReportAuth"),
+	path('report_data', ReportDataTeacher.as_view(), name='ReportData')
 ]
 

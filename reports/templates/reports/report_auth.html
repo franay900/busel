@@ -1,0 +1,43 @@
+{% extends 'user_index.html' %}
+{% load user_tags %}
+
+
+{% block h2 %}
+<i class="bi bi-door-open"></i> {{ title }}
+{% endblock %}
+{% block content %}
+
+
+<table class="table table-bordered table-sm table-hover">
+  <thead class="bg-info text-white">
+    <tr>
+      <th class="text-center">№</th>
+      <th class="text-center">Пользователь</th>
+      <th class="text-center">Время</th>
+      <th class="text-center">IP</th>
+      <th class="text-center">Действие</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for auth in auths %}
+    <tr>
+      <td class="text-center">{{ forloop.counter }}</td>
+      {% get_user username=auth.username as user %}
+      <td>{{ user }}</td>
+      <td>{{ auth.time }}</td>
+      <td>{{ auth.ip }}</td>
+      <td>
+        {% if auth.action == 'user_logged_in' %}
+        Вход
+        {% elif auth.action == 'user_logged_out' %}
+        Выход
+        {% elif auth.action == 'user_login_failed' %}
+        Неверный пароль
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

@@ -36,7 +36,7 @@
 			</tr>
 			</thead>
 			<tbody>
-			{% for i in '12345678' %}
+			{% for i in numbers %}
 			<tr>
 				<td class="text-center">{{ i }}</td>
 				<td><input id="b{{ forloop.parentloop.counter }}{{ forloop.counter }}" name="b{{ forloop.parentloop.counter }}{{ forloop.counter }}" type="text" class="form-control form-control-sm" placeholder="00:00"></td>
@@ -58,7 +58,7 @@
 
 			while (i < 6) { // выводит 0, затем 1, затем 2
 			i++;
-			for (let b = 1; b <= 8; b++) {
+			for (let b = 1; b <= {{ number }}; b++) {
 
 			  document.getElementById('b'+i+b).value=document.getElementById('b'+1+b).value;
 			  document.getElementById('e'+i+b).value=document.getElementById('e'+1+b).value;

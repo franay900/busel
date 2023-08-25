@@ -2,6 +2,10 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from user_account.models import UserNet
 from django.shortcuts import redirect
+from django.contrib.auth import logout
+
+
+
 class AdminPermissionMixin:
 	def has_permissions(self):
 		user_pk=self.request.user.pk
@@ -23,9 +27,11 @@ class AdminPermissionMixin:
 
 class RegisterMixin():
 	def has_permissions(self):
-		if self.request.user.registration==True:
+		if self.request.user.is_superuser or self.request.user.institution.is_active==True:
+			
 			return True
 	def dispatch(self,request,*args,**kwargs):
-		if not self.has_permissions() and not self.request.user.is_superuser:
-			return redirect('Registration')
+		if not self.has_permissions():
+			logout(request)
+			return redirect('login')
 		return super().dispatch(request,*args,**kwargs)

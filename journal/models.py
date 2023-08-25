@@ -94,7 +94,7 @@ class KTP(models.Model):
     author = models.ForeignKey(UserNet, verbose_name='Автор', on_delete=models.SET_NULL, null=True)
     institution = models.ForeignKey(Institutions, verbose_name='Организация', on_delete=models.SET_NULL, null=True)
     loads = models.ManyToManyField(Load)
-    year = models.ForeignKey(Year, on_delete=models.PROTECT, verbose_name='Учебный год', null=True)
+    year = models.ForeignKey(Year, on_delete=models.CASCADE, verbose_name='Учебный год', null=True)
     def view_ktp(self):
         return reverse('KTP_pk', kwargs={'pk':self.pk})
 

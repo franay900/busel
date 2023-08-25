@@ -5,6 +5,8 @@
 <i class="bi bi-table"></i> {{ title }}
 {% endblock %}
 
+
+{{ numbers }}
 {% block content %}
 	<form action="{% if not template %}{% url 'CreateTimetableTemplate' %}{% endif %}" method="POST">
 	{% csrf_token %}
@@ -32,7 +34,7 @@
 
 		</thead>
 		<tbody>
-		{% for num in '12345678' %}
+		{% for num in numbers %}
 		{% get_lesson day=forloop.parentloop.counter num=num as lesson %}
 		{% if lesson %}
 		{% get_subject day=forloop.parentloop.counter num=num as subjects %}

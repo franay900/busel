@@ -22,6 +22,7 @@ from django.contrib.auth.views import PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from modules.users import confirm_email
+from django.contrib.auth.views import LoginView
 
 
 
@@ -97,31 +98,17 @@ def register_user_info(request, code):
 
 
 
-def user_login(request):
-	context={}
-	if request.method=='POST':
-		form=UserLoginForm(data=request.POST)
 
-		if form.is_valid():
-			
-			user=form.get_user()
-			if user.is_superuser:
-				login(request, user)
-				return redirect('HomePageUserAccount')
-			elif user.institution.is_active:
-				login(request, user)
-				return redirect('HomePageUserAccount')
-			else:
-				messages.warning(request, "Ваша организация заблокирована!")
-				
-		else:
-			messages.warning(request, "Неверный логин или пароль!")
-			context['login'] = form.cleaned_data.get("username")
-			context['error']=True
-	else:
-		form=UserLoginForm()
-	context['form']=form
-	return render(request,'news/login.html',context)
+class MyLoginView(LoginView):
+    redirect_authenticated_user = True
+    template_name = 'news/login.html'
+    def get_success_url(self):
+        return reverse_lazy('HomePageUserAccount') 
+    
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
+
+
 
 def user_logout(request):
 	logout(request)

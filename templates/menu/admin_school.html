@@ -1,5 +1,7 @@
       {% if request.user.institution %}
       {% if perms.classes.view_сurriculum %} 
+
+      {% load user_tags %}
      <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle "  href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="bi bi-building"></i> Организация
@@ -84,9 +86,20 @@
         </div>
       </li>
 
-      <li class="nav-item">
+      
+
+         {% if request.user|teacher %}
+
+ <li class="nav-item">
+         <a class="nav-link " href="{% url 'TimetableTeacher' %}"><i class="bi bi-alarm"></i> Расписание</a>
+      </li>
+  {% else %}
+
+  <li class="nav-item">
          <a class="nav-link " href="{% url 'ReportsView' %}"><i class="bi bi-file-earmark-check"></i> Отчеты</a>
       </li>
+ {% endif %}
+
       {% endif %}
 
       

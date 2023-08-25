@@ -10,7 +10,7 @@
 
 
 
-<table class="rtable">
+<table class="rtable table-hover">
   <thead>
     <th>Смена</th>
     <th>№ урока</th>
@@ -22,7 +22,7 @@
     <th>Суббота</th>
   </thead>
   <tbody>
-    {% for i in '0123456' %}
+    {% for i in numbers %}
     <tr>
     <td>1</td>
     <td>{{ forloop.counter }}</td>
@@ -37,8 +37,8 @@
     </tr>
     {% endfor %}
     
-
-    {% for i in '0123456' %}
+    {% if request.user.institution.second_shift %}
+    {% for i in numbers %}
     <tr>
     <td>2</td>
     <td>{{ forloop.counter }}</td>
@@ -52,6 +52,7 @@
         {% endfor %}
     </tr>
     {% endfor %}
+    {% endif %}
   </tbody>
 
 

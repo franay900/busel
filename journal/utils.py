@@ -24,20 +24,28 @@ class Journal():
 			date_end=self.get_period().end
 			context['scores']=self.count_average_score()
 			context['type_journal']=self.type_journal
+			if self.request.GET.get('ajax'):
+				 context['ajax'] = True
 		return context
 
 
 
 	def get_classes(self):
-	    return Classes.objects.filter(institution=self.request.user.institution, year=self.request.user.institution.year.pk).order_by('class_number','letter')
-
+		if self.request.user.is_superuser:
+			year = self.request.GET.get('year')
+		else:
+			year = year=self.request.user.institution.year.pk
+		return Classes.objects.filter(institution=self.request.user.institution, year=year).order_by('class_number','letter')
 	def get_class(self):
 
-		if 'load' in self.request.POST or 'load' in self.kwargs:
+		if 'load' in self.request.POST or 'load' in self.kwargs or 'load' in self.request.GET:
 	    	
 			if 'load' in self.request.POST:
 
 				load = self.request.POST.get("load")
+			if 'load' in self.request.GET:
+
+				load = self.request.GET.get("load")
 			if 'load' in self.kwargs:
 				load = self.kwargs["load"]
 			get_load = Load.objects.get(pk=load)
@@ -51,7 +59,6 @@ class Journal():
 
 
 	def get_student(self):
-
 		if not self.get_load().subgroup:
 
 			return Student.objects.filter(class_pk=self.get_class(),user__isnull=False,user__is_active=True).order_by('user')
@@ -75,18 +82,24 @@ class Journal():
 	    if 'load' in self.request.POST:
 	        load = self.request.POST.get("load")
 	        return Load.objects.get(pk=load)
-	        
-
+	    elif 'load' in self.request.GET:
+	    	load = self.request.GET.get("load")
+	    	return Load.objects.get(pk=load)   
 	    else:
 	        if self.type_journal=='school':
 	            return Load.objects.filter(class_pk=self.get_class()).first()
 
 	        else:
 	            return self.get_loads().first()
+
 	def get_period(self):
 
 	    if 'period' in self.request.POST:
 	        period = self.request.POST.get("period")
+	        periods = Periods.objects.get(pk=period)
+	        return periods
+	    elif 'period' in self.request.GET:
+	        period = self.request.GET.get("period")
 	        periods = Periods.objects.get(pk=period)
 	        return periods
 	    else:

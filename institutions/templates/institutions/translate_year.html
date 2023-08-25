@@ -141,7 +141,7 @@
         				</select>
         			</td>
         			<td class="class_td">
-        				<select class="custom-select custom-select-sm class_select" name="" id="" style="display: none;">
+        				<select class="custom-select custom-select-sm class_select" name="" id="" >
         					<option selected disabled value="0">Не выбран</option>
         					{% for class in new_classes %}
         					<option value="{{ class.pk }}">{{ class }}</option>
@@ -249,9 +249,7 @@
 	 
 </script>
 <style>
-	.tbe {
-		display: none;
-	}
+	
 </style>
 
 {% else %}

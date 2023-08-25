@@ -1,6 +1,6 @@
 {% extends 'auth_reg.html' %}
 {% load static %}
-
+{% load crispy_forms_tags %}
 
 {% block title %}
   Авторизация
@@ -27,35 +27,8 @@
               <h4 class="card-title">Авторизация</h4>
               <form class="form-signin" method="post">
           {% csrf_token %}
-                <div class="form-group">
-                  <label for="email">Логин</label>
-                  <input id="email" value="{{ login }}" type="" class="form-control {% if error %}is-invalid{% endif %}" name="username" value="" required autofocus name="username" > 
-                  <div class="invalid-feedback">
-                    Введите правильный логин
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="password">Пароль
-                    <!--
-                    <a href="forgot.html" class="float-right">
-                      Забыли пароль?
-                    </a>
-                  -->
-                  </label>
-                  <input id="password" type="password" class="form-control {% if error %}is-invalid{% endif %}" name="password" required data-eye name="password">
-                    <div class="invalid-feedback">
-                      Пароль неверный
-                    </div>
-                </div>
-
-                <div class="form-group">
-                  <div class="custom-checkbox custom-control">
-                    <input type="checkbox" name="remember" id="remember" class="custom-control-input">
-                    <label for="remember" class="custom-control-label">Запомнить меня</label>
-                  </div>
-                </div>
-
+                
+                {{ form|crispy }}
                 <div class="form-group m-0">
                   <button type="submit" class="btn btn-primary btn-block">
                     Войти

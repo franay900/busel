@@ -74,7 +74,7 @@ class SetPassword(SetPasswordForm):
 class EditMyAccountForm(forms.ModelForm):
     class Meta:
         model = UserNet
-        fields=['last_name','first_name','middle_name','birth_day','gender','avatar']
+        fields=['last_name','first_name','middle_name','birth_day','gender','avatar', 'email']
 
 
         CHOICES =(
@@ -101,7 +101,13 @@ class EditMyAccountForm(forms.ModelForm):
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
 
+        if 'instance' in kwargs:
+            user = kwargs.pop('instance')
+        else:
+            user = False
 
-        self.fields['last_name'].disabled=True
-        self.fields['first_name'].disabled=True
-        self.fields['middle_name'].disabled=True
+        if not user.is_superuser and not UserNet.objects.get(pk=user.pk,groups__name__in=['Администратор ОО','Завуч','Администратор ПОО']):
+
+            self.fields['last_name'].disabled=True
+            self.fields['first_name'].disabled=True
+            self.fields['middle_name'].disabled=True

@@ -20,6 +20,7 @@ urlpatterns=[
 	path('create_institution/',InstitutionCreate.as_view() ,name="InstitutionCreate"),
 	path('block_institution/<int:institution>',BlockInstitution.as_view() ,name="BlockInstitution"),
 	path('unblock_institution/<int:institution>',UnblockInstitution.as_view() ,name="UnBlockInstitution"),
+	path('delete_institution/<int:institution>',DeleteInstitutionForever.as_view() ,name="DeleteInstitution"),
 	path('edit_institution/<int:pk>', EditInstitutuonView.as_view(), name="EditInstitution"),
 	#
 

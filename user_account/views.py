@@ -21,6 +21,8 @@ from .tokens import account_activation_token
 from django.utils.timezone import now
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from institutions.models import Institutions
+
 
 
 
@@ -45,6 +47,37 @@ class UsersView(PermissionRequiredMixin,UserMixin, ListView):
         context = super().get_context_data()
         c_def = self.getUserByInstitutions(title='Сотрудники')
         return dict(list(context.items()) + list(c_def.items()))
+
+
+class UsersUoView(PermissionRequiredMixin,View):
+    permission_required = 'user_account.view_usernet'
+    def get(self,request):
+        context = {}
+        if request.user.institution and request.user.institution.typeInstitutions.title == 'Орган управления':
+            institutions = Institutions.objects.filter(departmental_organization=self.request.user.institution, is_active=True)
+            if request.GET.get('institution'):
+                institution = Institutions.objects.get(pk=request.GET.get('institution'))
+            else:
+                institution = institutions.first()
+        elif request.user.is_superuser:
+            institutions = Institutions.objects.filter(is_active=True)
+            if request.GET.get('institution'):
+                institution = Institutions.objects.get(pk=request.GET.get('institution'))
+            else:
+                institution = institutions.first()
+
+        type_inst=institution.typeInstitutions.pk
+        groups=TypeInstitutions.objects.filter(pk=type_inst).values('group')
+        groupsUser=[]
+        for i in groups:
+            groupsUser.append(i['group'])
+        users = UserNet.objects.filter(institution=institution, is_active=True, groups__pk__in=groupsUser).distinct()
+        context['institutions'] = institutions
+        context['institution'] = institution
+        context['title'] = "Сотрудники подведомственных организаций"
+        context['users'] = users
+        return render(request,'user_account/users.html',context)
+
 
 
 def user_edit_view(request,user_id):
@@ -132,7 +165,7 @@ class AddUser(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
 
-    def get_context_data(self):
+    def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context['title'] = 'Добавление пользователя'
         context['stop'] = '1'
@@ -217,13 +250,13 @@ class EditMyAccount(SuccessMessageMixin,View):
     def post(self,request, **kwargs):
 
 
-        if 'email' in request.POST:
+        if 'last_name' in request.POST:
             
             form=self.form_class(request.POST,request.FILES or None,instance=request.user)
        
             form.save()
     
-            return redirect(request.META.get('HTTP_REFERER'))
+            return redirect('EditMyAccount')
 
         if 'new_password1' in request.POST:
             save_password=SetPassword(data=request.POST,user=request.user)
@@ -232,7 +265,7 @@ class EditMyAccount(SuccessMessageMixin,View):
                 messages.success(request,"Пароль успешно обновлен! Введите измененные данные.")
                 
                 return redirect('Registration')
-
+ 
 
 def send_again(request):
     confirm_email(request.user,request)
@@ -258,3 +291,13 @@ def activate(request, uidb64, token):
     return redirect('HomePageUserAccount')
 
 
+class PasswordResetView(View):
+
+    def get(self,request,**kwargs):
+
+        user = UserNet.objects.get(pk=kwargs['pk'])
+        password = generate_login()[0]
+        user.set_password(password)
+        user.save()
+        messages.success(request, f'Обновленный пароль: {password}')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

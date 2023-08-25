@@ -10,21 +10,23 @@ class InstitutionsInfoForm(forms.ModelForm):
 	error_css_class = 'is-invalid'
 	class Meta:
 		model=Institutions
-		fields=['title','short_title','system_mark','year','typeInstitutions','kindInstitutions','departmental_organization', 'photo']
+		fields=['title','short_title','system_mark','year','typeInstitutions','kindInstitutions','departmental_organization', 'photo', 'number_of_lessons', 'second_shift']
 	def __init__(self,*args,**kwargs):
 		if 'is_admin' in kwargs:
 			is_admin = kwargs.pop('is_admin')
 		else:
 			is_admin = False
 		super().__init__(*args,**kwargs)
-		if not is_admin:
+		if is_admin != False and  not is_admin.is_superuser and is_admin.institution.typeInstitutions != 'Орган управления':
 			self.fields['departmental_organization'].disabled = True
 			self.fields['typeInstitutions'].disabled = True
-		for field in self.fields:
-			if field != 'system_mark' and field != 'typeInstitutions' and field != 'kindInstitutions' and field != 'year' and field != 'departmental_organization':
-				self.fields[field].widget.attrs['class']='form-control'
-			else:
-				self.fields[field].widget.attrs['class']='custom-select'
+		elif is_admin != False and is_admin.institution and is_admin.institution.typeInstitutions == 'Орган управления':
+			self.fields['departmental_organization'].queryset=Institutions.objects.get(pk=is_admin.institution)
+		else:
+
+			self.fields['departmental_organization'].queryset=Institutions.objects.filter(typeInstitutions__title='Орган управления', is_active=True)
+
+		self.fields['second_shift'].widget.attrs['class'] = 'custom-control-input'
 
 
 class TypeLessonForm(forms.ModelForm):
@@ -93,14 +95,14 @@ class ProfessionsForm(forms.ModelForm):
 class InstitutionForm(forms.ModelForm):
 	class Meta:
 		model=Institutions
-		fields=['title','short_title','year','typeInstitutions']
+		fields=['title','short_title','year','typeInstitutions', 'departmental_organization']
 	def __init__(self,*args,**kwargs):
 		types=kwargs.pop('types')
 		super().__init__(*args,**kwargs)
 		self.fields['typeInstitutions'].queryset=TypeInstitutions.objects.filter(pk__in=types)
 		for field in self.fields:
 			self.fields[field].widget.attrs['class']='form-control'
-
+		self.fields['departmental_organization'].queryset = Institutions.objects.filter(typeInstitutions__title='Орган управления',is_active=True)
 
 
 class AdsForm(forms.ModelForm):

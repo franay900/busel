@@ -27,6 +27,9 @@ urlpatterns=[
 	path('journal/attendance/save_reason',save_reason,name="SaveReason"),
 
 	path('ktp/', List_KTP.as_view(), name='KTPList'), 
-	path('ktp/<int:pk>/', KTPView.as_view(), name='KTP_pk')
+	path('ktp/<int:pk>/', KTPView.as_view(), name='KTP_pk'), 
+	path('uo/pou', JournalPOU.as_view(), name="JournalPou"),
+
+	path('get_classes', GetClasses.as_view(), name='GetClasses')
 ]
 

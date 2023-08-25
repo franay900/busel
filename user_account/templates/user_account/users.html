@@ -6,11 +6,15 @@
 {% endblock %}
 
 {% block content %}
-   {% if request.user.is_superuser %}
+   {% if request.user.institution.typeInstitutions.title == 'Орган управления' or request.user.is_superuser %}
    <div class="row mt-3">
          <div class="col"><strong>Организация:</strong></div>
          <div class="col">
-            <select class="custom-select custom-select-sm" name="" id=""></select>
+            <select class="custom-select custom-select-sm" name="" id="" onchange="top.location=this.value">
+               {% for i in institutions %}
+               <option {% if i.pk == institution.pk %} selected {% endif %}  value="?institution={{ i.pk }}" >{{ i }}</option>
+               {% endfor %}
+            </select>
          </div>
       </div>
    {% endif %}
@@ -21,8 +25,8 @@
         <th class="text-center" >ФИО</th>
         <th class="text-center">Должность</th>
         <th class="text-center">Дата рождения</th>
-        <th class="text-center">Логин</th>
-        <th class="text-center">Пригласительный код</th>
+        <th class="text-center">Логин/код</th>
+
         <th style="text-align: center;"  >Действие</th>       
      </tr>
      </thead>
@@ -33,16 +37,22 @@
          <td>{% if i.position %}{{ i.position|truncatechars:20 }}{% endif %}</td>
          <td>{% if i.birth_day %}{{ i.birth_day }} {% else %} <a class="text-danger">Не указана</a> {% endif %}</td>
 
-         <td>{% if not i.code %} {{i.username}} {% endif %}</td>
+         <td class="{% if i.code %} text-muted {% endif %} text-center" title="{% if i.code %} не зарегистрирован{% endif %}">{% if not i.code %} {{i.username}}{% else %} {{ i.code }} {% endif %}</td>
 
-         <td>{% if i.code %} {{i.code}} {% endif %}</td>
-         <td>
-            <a href="{{ i.get_absolute_url }}" title="Редактировать"><i class="bi bi-pencil-square"></i></a>
+         <td class="text-center">
+            {% if request.user.institution == i.institution  %}
+            <a href="{{ i.get_absolute_url }}" title="Редактировать"><i class="bi bi-pen"></i></a>
+
                {%if i != request.user%}
                <a href="{{ i.ban }}" title="Заблокировать"> <i class="bi bi-trash-fill"></i></a>
                {% else %}
                <a  class=" btn-tooltip text-muted" data-toggle="tooltip" data-placement="bottom" title="Невозможно"><i class="bi bi-trash-fill"></i></a>
 
+
+               {% endif %}
+               {% endif %}
+               {% if not i.code %}
+               <a href="{% url 'PasswordReset' pk=i.pk %}" title="Сбросить пароль"><i class="bi bi-unlock-fill"></i></a>
                {% endif %}
          </td>
 
@@ -52,8 +62,11 @@
    </table>
    <div>
     
+
+    {% if not institution %}
    <a style="text-decoration: none;" class="btn btn-info " href="{% url 'AddUser' %}"><i class="bi bi-person-plus"></i> Добавить</a> 
    <a style="text-decoration: none;" class="btn btn-info " href="{% url 'ImportUser' %}"><i class="bi bi-file-earmark-arrow-up"></i> Импорт</a>
+   {% endif %}
    </div>
 
 {% endblock %}

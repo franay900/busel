@@ -28,12 +28,15 @@
        {% endif  %}
 
 
-             {% if perms.institutions.delete_institutions %}
+        {% if perms.institutions.delete_institutions %}
+ {% if not request.user.is_superuser and  request.user.institution.typeInstitutions.title == 'Орган управления' %}
+      <li class="nav-item ">
 
-
-            <li class="nav-item dropdown">
-
-
+        <a class="nav-link "  href="{% url 'institutionsHome' %}"><i class="bi bi-wrench"></i> Организация </a>
+      </li>
+      
+{% endif %}
+    <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle " href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="bi bi-building"></i> Подведомственные организации
         </a>
@@ -43,22 +46,28 @@
           <a class="dropdown-item" href="{% url 'InstitutionCreate' %}">Реестр организаций</a>
           {% endif %}
 
-        
+          <a class="dropdown-item" href="{% url 'UsersUo' %}">Пользователи ПОУ</a>
         </div>
-      </li>
-       {% endif %}
-    {% if request.user|teacher %}
-  <li class="nav-item">
-        <a class="nav-link " href="{% url 'TimetableTeacher' %}"><i class="bi bi-alarm"></i> Расписание</a>
-      </li>
-  
- {% endif %}
 
-    {% if request.user.institution.typeInstitutions.title == 'Образовательная организация' and not request.user.institution.year.is_active %}
-    <li class="nac-item">
-      <a class="nav-link"  href="{% url 'translate_year' %}"><i class="bi bi-arrow-clockwise"></i> Перевод года</a>
-    </li>
-    {% endif %}
+
+      </li>
+
+    
+
+
+       
+
+     
+      <li class="nav-item ">
+
+        <a class="nav-link "  href="{% url 'JournalPou' %}"><i class="bi bi-journal-bookmark"></i> Журналы ПОУ </a>
+      </li>
+
+
+ 
+       {% endif %}
+      
+  
 
     {% if not perms.classes.change_classes and  request.user|class_manager %}
 

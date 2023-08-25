@@ -33,7 +33,19 @@
         </div>
 
 
-        {% if not stop %}
+        {% if stop %}
+        <div class="form-group col-md-4 mb-0">
+        {{ form.position|as_crispy_field }}
+        </div>
+
+        <div class="form-group col-md-4 mb-0">
+        {{ form.email|as_crispy_field }}
+        </div>
+
+        <div class="form-group col-md-4 mb-0">
+        {{ form.groups|as_crispy_field }}
+        </div>
+        {% else %}
         <div class="form-group col-md-4 mb-0">
         {{ form.class|as_crispy_field }}
         </div>

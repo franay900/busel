@@ -41,6 +41,6 @@ urlpatterns=[
 	path('delete_lessons/<int:class_pk>/',DeleteLessons.as_view() ,name="DeleteLessons"),
 
 	path('group_view/',GroupView.as_view() ,name="Groups"),
-	
+
 ]
 

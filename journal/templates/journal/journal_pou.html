@@ -1,0 +1,215 @@
+{% extends 'user_index.html' %}
+{% load curriculum %}
+
+
+{% block h2 %}
+
+<i class="bi bi-journal-bookmark"></i> {{ title }}
+
+
+{% endblock %}
+
+
+{% block content %}
+
+
+
+
+<div class="card ">
+  <div class="card-header">
+    Выбор журнала
+  </div>
+  <div class="card-body">
+    
+  	<div class="row">
+  		<div class="col">Организация</div>
+  		<div class="col">
+  			<select class="custom-select custom-select-sm"  name="" id="institution">
+  				<option value=""></option>
+  				{% for i in institution %}
+  				<option value="{{ i.pk }}">
+  					{{ i }}
+  				</option>
+
+  				{% endfor %}
+  			</select>
+  		</div>
+  	</div>
+
+  	<div class="row">
+  		<div class="col">Класс/группа</div>
+  		<div class="col">
+  			<select class="custom-select custom-select-sm"  name="" id="class_list">
+  				
+  			</select>
+  		</div>
+  	</div>
+
+  	<div class="row">
+  		<div class="col">Предмет/дисциплина</div>
+  		<div class="col">
+  			<select class="custom-select custom-select-sm"  name="" id="loads">
+  				
+  			</select>
+  		</div>
+  	</div>
+
+
+  	<div class="row">
+  		<div class="col">Учебный период</div>
+  		<div class="col">
+  			<select class="custom-select custom-select-sm"  name="" id="periods">
+  				
+  			</select>
+  		</div>
+  	</div>
+
+  </div>
+  <div class="card-footer bg-white">
+    <button class="btn btn-info" id="load_btn"><i class="bi bi-box-arrow-in-down"></i> Загрузить</button>
+
+  </div> 
+</div>
+
+
+<div id="progressBar" style="display:none">
+<div class="progress progress-striped active mt-3">
+        <div class="progress-bar progress-bar-success progress-bar-striped progress-bar-animated"
+            style="width: 0%">
+        </div>
+    </div>
+  
+    <div class="text-muted">
+    	Подождите... Идет загрузка журнала
+    </div>
+
+</div>
+
+
+<div id="journal">
+	
+</div>
+
+<script>
+	$('#institution').change(function(){
+		$('#class_list option').remove()
+		$('#loads option').remove()
+		$.ajax({
+			url: '{% url 'GetClasses' %}',
+			data : {
+				pk : this.value
+			},
+			success : function(result) {
+			
+				load_subject(result.classes[0].id)
+				for (var i=1;i<=result.classes.length;i++){
+					if (result.classes[i-1].letter){
+					$('#class_list').append('<option value="' + result.classes[i-1].id + '">' + result.classes[i-1].class_number +  result.classes[i-1].letter +'</option>') 
+				} else {
+					$('#class_list').append('<option value="' + result.classes[i-1].id + '">' + result.classes[i-1].name_group +'</option>');
+				} 
+				
+				
+
+			}
+			}
+		});
+
+
+	});
+
+
+
+function load_subject(value){
+	$.ajax({
+			url: '../get_load/'+value,
+	
+			success : function(result) {
+			
+
+				
+				for (var i = 1; i <= result.loads.length; i++) {
+
+				 $('#loads').append('<option url="'+ result.url[i-1] + '"' + 'value="' + result.pk_array[i-1]  + '">' + result.names[i-1] +'</option>');
+				}
+				select(result.url[0])
+			}
+		});
+}
+
+	$('#class_list').change(function(){
+		$('#loads option').remove()
+		load_subject(this.value)
+	});
+
+function select(url){
+
+  
+
+  $.ajax({
+  type: "GET",
+  url: url,
+  success: function (result) {  
+  $('#periods option').remove();
+  name_period=''
+
+  if (result.period.length==2){
+  name_period=' полугодие'
+  }
+  if (result.period.length==4){
+  name_period=' четверть'
+  }
+  if (result.period.length==3){
+  name_period=' триместр'
+  }
+  for(var i = 1; i<=result.period.length; i++){ //data[1] contains no of sem
+    var period=$('#periods').append('<option value="' + result.period[i-1] + '">' + i+name_period +'</option>');
+
+
+  if(result.period[i-1]==result.now_period){
+    $(period).children('option').eq(i-1).attr('selected',true)
+  }
+
+  }
+  
+  }
+
+
+  });
+
+}
+
+
+$('#load_btn').click(function(){
+	var load_id = $('#loads').find('option:selected').val()
+	var period_id = $('#periods').find('option:selected').val()
+	$('#progressBar').css('display','block')
+ 	$(".progress-bar").animate({
+                width: "95%",
+        }, 2500);
+
+ 	$('#journal').css('display','none')
+	$.ajax({
+  type: "GET",
+  data : {
+				load : load_id,
+				period : period_id,
+				ajax: 1,
+				year: '{{ year.pk }}'
+				
+			},
+  url: '../journal/school',
+  success: function (html) { 
+  	$('#progressBar').css('display','none') 
+  	$('.progress-bar').css('width','0%') 
+  	$('#journal').css('display','block')
+  	$('#journal').html(html)
+  
+  }
+
+
+  });	})
+
+</script>
+
+{% endblock %}

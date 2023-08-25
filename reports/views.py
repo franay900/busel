@@ -1,10 +1,12 @@
 from django.shortcuts import render
 from django.views.generic import View
-from user_account.models import UserNet
+from user_account.models import UserNet, AuditEntry
 from classes.models import Load,Classes, Periods, СurriculumSubject
 from journal.models import Lessons,Marks, MarksItog,Student
 from journal.utils import Journal
 from django.http import JsonResponse
+from institutions.models import Institutions
+
 
 class ReportsView(View):
 	def get(self,request):
@@ -117,3 +119,28 @@ def get_period(self, class_pk):
     }
 
     return JsonResponse(response)
+
+
+
+class ReportAuth(View):
+
+
+	def get(self, request):
+		context = {}
+		context ['auths'] = AuditEntry.objects.filter(username__in=self.get_usernames())
+		context['title'] = 'Отчет о входах в систему'
+		return render(request,'reports/report_auth.html', context)
+
+
+	def get_usernames(self):
+
+		return UserNet.objects.filter(institution=self.request.user.institution).values_list('username')
+
+
+class ReportDataTeacher(View):
+
+	def get(self,request):
+
+		context = {}
+		context['title'] = 'Отчет о наполнении данными'
+		return render(request,'reports/report_data_teacher.html',context)

@@ -5,6 +5,7 @@ from .views import*
 urlpatterns= [
 	path('',HomePageAccountView.as_view(),name='HomePageUserAccount'),
 	path('users',UsersView.as_view(),name='users'),
+	path('uo/users',UsersUoView.as_view(),name='UsersUo'),
 
 	path('edit_my_account',EditMyAccount.as_view(),name='EditMyAccount'),
 
@@ -15,4 +16,5 @@ urlpatterns= [
 	path('user_ban/<int:user_id>/',BanUser.as_view(),name='BanUser'),
 	path('import/',ImportUsers.as_view(),name='ImportUser'),
 	path('activate/<uidb64>/<token>', activate, name='activate'),
+	path('reset_password/<int:pk>',PasswordResetView.as_view(), name='PasswordReset')
 ]

@@ -52,6 +52,8 @@ class Institutions(models.Model):
     departmental_organization = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, verbose_name='Ведомственная организация',blank=True)
     is_active=models.BooleanField(default=True)
     lim = models.IntegerField(default = 0)
+    number_of_lessons = models.IntegerField(default = 8, verbose_name='Количество уроков (занятий) в расписании')
+    second_shift = models.BooleanField(default=False)
     class Meta:
         verbose_name = 'Организацию'
         verbose_name_plural = 'Организации'

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, reverse
 from django.views.generic import View, ListView, CreateView
 from user_account.permissions import AdminPermissionMixin
 from classes.models import Load, Classes, Student,StudentSubgroup, СurriculumSubject
-from institutions.models import Periods, BellProfile, Subject
+from institutions.models import Periods, BellProfile, Subject, Institutions
 from django.http import HttpResponseForbidden, HttpResponse
 from .models import *
 from .utils import Journal, TimetableSettigns
@@ -23,10 +23,16 @@ from user_account.models import FileTemplates
 
 
 class SchoolJournalView(View, Journal):
-    template_name = 'journal/journal.html'
+    
+
     type_journal='school'
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name, self.get_context())
+
+        if self.request.GET.get('ajax'):
+            template =  'journal/only_journal.html'
+        else:
+            template = 'journal/journal.html'
+        return render(request, template, self.get_context())
 
     def post(self, request, *args, **kwargs):
         
@@ -64,7 +70,7 @@ def check_period(self, load):
     num=0
     for period in filter_periods:
         periods.append(period.pk)
-        if period.pk==Periods.objects.filter(profile=get_class.period_profile,end__gte=datetime.today()).first().pk:
+        if period==Periods.objects.filter(profile=get_class.period_profile,end__gte=datetime.today()).first():
             num=period.pk
     response = {
         'period': periods,
@@ -364,6 +370,8 @@ class TeacherTimeatable(View):
             
         
         context['lessons']=changes
+        context['numbers'] = list(range(1,self.request.user.institution.number_of_lessons+1))
+        context['number'] = self.request.user.institution.number_of_lessons
         return render(request,self.template_name,context)
 
 
@@ -665,3 +673,39 @@ class KTPView(View):
                     TopiCktp.objects.create(name=topic, hour=hour,section=section, homework=homework)
                 section_old = row['Разделы']
         return redirect(request.META.get('HTTP_REFERER'))
+
+
+
+
+class ManagementInfo:
+
+    def get_institution(self):
+        if self.request.user.is_superuser:
+            return Institutions.objects.filter((~Q(typeInstitutions__title='Орган управления')), is_active=True)
+        else:
+            my_inst = self.request.user.institution
+            return Institutions.objects.filter(departmental_organization=my_inst,is_active=True)
+class JournalPOU(View, ManagementInfo):
+
+    def get(self,request):
+        context = {}
+        context['title'] = 'Журналы организаций'
+        context['institution'] = self.get_institution()
+        if self.request.user.is_superuser == True: year=self.get_institution().first().year
+        else: year= self.request.user.institution.year
+        context['year'] = year
+        return render(request,'journal/journal_pou.html',context)
+
+
+
+class GetClasses(View):
+    def get(self,request):
+        institution_pk = self.request.GET.get('pk')
+        institution = Institutions.objects.get(pk=institution_pk)
+        if self.request.user.is_superuser == True: year=institution.year
+        else: year= self.request.user.institution.year
+        classes = list(Classes.objects.filter(institution=institution_pk, year=year).values('pk').values())
+        response ={
+            'classes' : classes
+        }
+        return JsonResponse(response)

@@ -15,7 +15,7 @@ urlpatterns = [
 	path('register/step1',register,name='register'),
 	path('register/step2/<str:code>',register_user_info,name='register2'),
 
-	path('user_login',user_login,name='login'),
+	path('user_login',MyLoginView.as_view(),name='login'),
 	path('user_logout',user_logout,name='logout'),
 	path('admin-panel', admin_panel, name='AdminPanel'),
 	path('student-codes/create', student_code,name='CreateStudentsCode'),

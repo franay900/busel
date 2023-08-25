@@ -1,0 +1,65 @@
+{% extends 'user_index.html' %}
+{% load data_tags %}
+
+
+{% block h2 %}
+<i class="bi bi-pie-chart"></i> {{ title }}
+{% endblock %}
+{% block content %}
+
+
+<table class="table table-bordered table-sm table-hover">
+
+  {% check_data institution=request.user.institution.pk as data %}
+  <thead class="bg-info text-white">
+    <tr>
+      <th class="text-center" colspan="2">{{ request.user.institution }}</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    
+
+
+    <tr>
+      <td style="width:50%">Тип организации</td>
+      <td>{{ request.user.institution.typeInstitutions }}</td>
+    </tr>
+
+    <tr>
+      <td>Учебный год</td>
+      <td>{{ request.user.institution.year }}</td>
+    </tr>
+    <tr>
+      <td>Кол-во сотрудников</td>
+      <td>{{ data.1 }}</td>
+    </tr>
+    
+
+
+    <tr>
+      <td>Процент зарегистрированных сотрудников</td>
+      <td>{{ data.2 }}%</td>
+    </tr>
+    <tr>
+      <td>Количество классов</td>
+      <td>{{ data.0 }}</td>
+    </tr>
+    <tr>
+      <td>Количество учеников</td>
+      <td>{{ data.3 }}</td>
+    </tr>
+
+    <tr>
+      <td>Процент зарегистрированных ученик</td>
+      <td>{{ data.4 }}%</td>
+    </tr>
+
+    
+  </tbody>
+
+
+</table>
+
+
+{% endblock %}

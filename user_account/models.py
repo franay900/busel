@@ -4,6 +4,10 @@ from django.db import models
 from django.urls import reverse
 from institutions.models import Institutions
 from simple_history.models import HistoricalRecords
+from django.dispatch import receiver
+from django.contrib.auth.signals import user_logged_in, user_logged_out, user_login_failed
+
+
 
 class UserNet(AbstractUser):
 
@@ -37,3 +41,39 @@ UserNet._meta.get_field('last_name').blank = False
 class FileTemplates(models.Model):
     name=models.CharField(max_length=150,verbose_name='Имя шаблона',null=True)
     file = models.FileField(upload_to='templates/', blank=True)
+
+
+
+class AuditEntry(models.Model):
+    action = models.CharField(max_length=64)
+    ip = models.GenericIPAddressField(null=True)
+    username = models.CharField(max_length=256, null=True)
+    time = models.DateTimeField(verbose_name='Последнее редактирование',auto_now=True,null=True)
+
+    def __unicode__(self):
+        return '{0} - {1} - {2}'.format(self.action, self.username, self.ip)
+
+    def __str__(self):
+        return '{0} - {1} - {2}'.format(self.action, self.username, self.ip)
+
+
+@receiver(user_logged_in)
+def user_logged_in_callback(sender, request, user, **kwargs):  
+    ip = request.META.get('REMOTE_ADDR')
+    AuditEntry.objects.create(action='user_logged_in', ip=ip, username=user.username)
+
+
+@receiver(user_logged_out)
+def user_logged_out_callback(sender, request, user, **kwargs):  
+    ip = request.META.get('REMOTE_ADDR')
+    AuditEntry.objects.create(action='user_logged_out', ip=ip, username=user.username)
+
+
+@receiver(user_login_failed)
+def user_login_failed_callback(sender, request, credentials, **kwargs):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    AuditEntry.objects.create(action='user_login_failed', ip=ip, username=credentials.get('username', None))

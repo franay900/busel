@@ -425,6 +425,8 @@ class AddTimetableTemplate(PermissionRequiredMixin, TimetableSettigns, View):
         context['title'] = 'Добавление шаблона расписания'
         context['loads']=Load.objects.filter(class_pk=self.request.POST.get("class"))
         context['class_pk']=self.request.POST.get("class")
+        context['numbers'] = list(range(1,self.request.user.institution.number_of_lessons+1))
+        context['number'] = self.request.user.institution.number_of_lessons
         return render(request, self.template_name,context)
 
 class CreateTimetableTemplate(PermissionRequiredMixin,View):
@@ -459,7 +461,8 @@ class UpdateTimetableTemplate(PermissionRequiredMixin,View):
         context['loads']=Load.objects.filter(class_pk=self.get_template().class_pk.pk)
         context['days'] = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
         context['title'] = 'Редактирование'+'"'+self.get_template().name+'"'
-
+        context['numbers'] = list(range(1,self.request.user.institution.number_of_lessons+1))
+        context['number'] = self.request.user.institution.number_of_lessons
         return render(request, self.template_name,context)
     def post(self,request,*args, **kwargs):
         class_pk=request.POST.get("class_pk")
@@ -649,7 +652,7 @@ class ExportStudent(View):
         data = tablib.Dataset(*data, headers=headers)
         students = Student.objects.filter(user__institution=self.request.user.institution,user__is_active=True)
         for student in students:
-            data.append((student.class_pk.class_number,student.user.first_name,student.user.last_name, student.user.middle_name, student.user.birth_day, student.user.gender  ))
+            data.append((student.class_pk,student.user.first_name,student.user.last_name, student.user.middle_name, student.user.birth_day, student.user.gender  ))
         response = HttpResponse(data.xlsx, content_type='application/vnd.ms-excel;charset=utf-8')
         response['Content-Disposition'] = "attachment; filename=export.xlsx"
 
@@ -675,6 +678,7 @@ class AddStudent(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
         user = form.save(commit=False)        
 
         user.code=self.login
+        user.username=self.login
         user.institution_id = self.request.user.institution.pk
 
         user.save()
@@ -694,7 +698,7 @@ class AddStudent(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
     def get_success_url(self):
         return reverse('StudentList')
     def get_success_message(self, cleaned_data):
-        ms = f'Пригласительный код: {{ self.login }}'
+        ms = f'Пригласительный код: { self.login }'
         success_message = ms
         return success_message % cleaned_data
 
@@ -811,4 +815,5 @@ class ReturnStudents(View):
             'pk': students_pk  
         }
         return JsonResponse(response)
+
 

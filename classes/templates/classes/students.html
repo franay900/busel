@@ -111,7 +111,7 @@
         <th class="text-center">Класс</th>
 
         {% endif %}
-       <th class="text-center">Код</th>
+       <th class="text-center">Код/логин</th>
        <th class="text-center" >Действие</th>    
      </tr>
      </thead>
@@ -130,8 +130,8 @@
         
 
         <td class="text-center">{{ i.class_pk }}</td>
-        <td>{% if i.user.code %}{{ i.user.code }}{% endif %}</td>
-     
+        <td class="{% if i.user.code %} text-muted {% endif %} text-center" title="{% if i.user.code %} не зарегистрирован{% endif %}">{% if i.user.code %}{{ i.user.code }}{% else %}{{ i.user.username }}{% endif %}</td>
+        
 
 
         <td class="text-center">
@@ -145,6 +145,11 @@
             <i class="bi bi-trash"></i>
           </a>
 
+          {% endif %}
+
+          {% if not i.user.code %}
+
+          <a href="{% url 'PasswordReset' pk=i.user.pk %}" title="Сбросить пароль"><i class="bi bi-unlock-fill"></i></a>
           {% endif %}
         </td>
 

@@ -1,0 +1,640 @@
+{% if loads %}
+{% load mark_tags %}
+{% load user_tags %}
+{% load attendance %}
+
+
+<div class="position-fixed bottom-0 right-0 p-3" style="z-index: 5; right: 0; bottom: 0;">
+  <div  id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+    <div class="toast-header bg-danger text-white">
+       <i class="bi bi-exclamation-circle"></i> 
+      <strong class="mr-auto"> Внимание!</strong>
+      
+      <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="toast-body">
+      Данная отметка не поддерживается в системе!
+    </div>
+  </div>
+</div>
+
+<div class="position-fixed bottom-0 right-0 p-3" style="z-index: 5; right: 0; bottom: 0;">
+  <div  id="liveToast2" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+    <div class="toast-header bg-info text-white">
+       <i class="bi bi-exclamation-circle"></i> 
+      <strong class="mr-auto"> Внимание!</strong>
+      
+      <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="toast-body">
+      Для данного урока необходимо внести тип!
+    </div>
+  </div>
+</div>
+
+
+{% if not ajax %}
+<form method="POST">
+  {% csrf_token %}
+
+  <div class="row mt-3">
+      {% if type_journal == 'school' %}
+
+    <div class="col-1">
+       <select class="custom-select custom-select-sm "  name="load" id="classes_list" style="width:auto">
+           {% for class in classes %}
+            <option  {% if load_pk.class_pk.pk == class.pk %} selected="" {% endif %}  value="{{ class.pk }}" value="" url="{% url 'GetLoad' class_pk=class.pk %}">{{ class }}</option>
+          {% endfor %}
+       </select>
+    </div>
+  {% endif %}
+
+    <div class="col">
+        <select class="custom-select custom-select-sm "  name="load" id="loads">
+          {% if type_journal == 'school' %}
+           {% for load in loads %}
+           
+
+            <option  {% if load_pk.pk == load.pk %} selected="" {% endif %}   url="{% url 'CheckPeriod' load=load.pk %}" value="{{ load.pk }}" value="">{{ load.subject_pk }} {% if load.subgroup %} ({{ load.subgroup.name }}) {% endif %}</option>
+          {% endfor %}
+          {% else %}
+          {% for load in loads %}
+           
+            <option {% if load_pk.pk == load.pk %} selected="" {% endif %}   url="{% url 'CheckPeriod' load=load.pk %}" value="{{ load.pk }}" value="">{{ load.class_pk }}/{{ load.subject_pk }} {% if load.subgroup %} ({{ load.subgroup.name }}) {% endif %}</option>
+          {% endfor %}
+          {% endif %}
+       </select>
+    </div>
+    <div class="col">
+        <select class="custom-select custom-select-sm "  name="period" id="periods">
+          {% for periods in periods %}
+          <option {% if period.pk == periods.pk %} selected="" {% endif %} value="{{periods.pk}}">{{ forloop.counter }}</option>
+          {% endfor %}
+       </select>
+    </div>
+    <div class="col">
+      <button class=" btn btn-sm btn-info"><i class="bi bi-box-arrow-down"></i> Загрузить</button>
+    </div>
+  </div>
+</form>
+{% endif %}
+
+
+
+
+<div class="row mt-3">
+
+ 
+
+    {% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
+       <div class="col">
+    <a href="{% url 'LessonTopics' load=load_pk.pk period=period.pk %}" class="btn btn-info btn-sm" target="_blank">
+    <i class="bi bi-card-checklist"></i> Темы занятий и дз
+  </a>
+      {% else %}
+       <div class="col">
+    <a href="{% url 'LessonTopics' load=load_pk.pk period=period.pk %}" class="btn btn-info btn-sm" target="_blank">
+    <i class="bi bi-card-checklist"></i> Темы уроков и дз
+  </a>
+      {% endif %}
+
+    <a  href="{% url 'ItogView' load=load_pk.pk period=period.pk %}" class="btn btn-info mr-3 btn-sm">
+   <i class="bi bi-table"></i> Итоговая ведомость
+  </a>
+  </div>
+
+</div>
+
+
+
+
+{% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
+      <div class="alert alert-secondary mt-3" role="alert">
+  <strong>Куратор: </strong>{{ load_pk.class_pk.class_teacher }}<br>
+  <strong>Преподаватель: </strong>{{ load_pk.teacher }} 
+  
+</div>
+      {% else %}
+      <div class="alert alert-secondary mt-3" role="alert">
+  <strong>Классный руководитель: </strong>{{ load_pk.class_pk.class_teacher }}<br>
+  <strong>Учитель: </strong>{{ load_pk.teacher }} 
+  
+</div>
+{% endif %}
+
+
+<div class="row mt-3 myrow" id="tables" >
+
+  <div style="" class="col-3 mycol2 no-margin"  style=""> 
+
+    
+    <table class="myTable " >
+      <thead>
+      <tr>
+        <th class="text-center" id="start"  id="row-2" style="width: 15%;" >№</th>
+        <th   id="row-2" style="text-align:center;">Фамилия, имя</th>
+      </tr>
+     
+      </thead>
+      <tbody>
+        {% for student in students %}
+          <tr >
+            <td   class="student text-center">{{ forloop.counter }}</td>
+            <td   class="student">{{ student.user.last_name }} {{ student.user.first_name }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+ 
+
+</div>
+<div id="scroll" class="col-7 mycol sc3" style="overflow-x: scroll;">
+
+     
+    <table style="" id="table2"  class="myTable  ">
+      <thead>
+        
+      
+      <tr>
+        <th class="month" colspan="0" id="sep" >Сентябрь</th>
+        <th class="month" colspan="0" id="oct" >Октябрь</th>
+        <th class="month" colspan="0" id="nov" >Ноябрь</th>
+        <th class="month" colspan="0" id="dec" >Декабрь</th>
+        
+
+        <th class="month" colspan="0" id="jan" >Январь</th>
+        <th class="month" colspan="0" id="feb" >Февраль</th>
+        <th class="month" colspan="0" id="march" >Март</th>
+
+
+        <th class="month" colspan="0" id="april" >Апрель</th>
+        <th class="month" colspan="0" id="may" >Май</th>
+      </tr>
+      
+      <tr>
+        {% for lesson in lessons %}
+        <th id=""  colspan="{{ lesson.types.all.count }}" class="date">
+
+          <a  class="date_l" data-toggle="popover" title="Тема: {% if lesson.ktp %}{{ lesson.ktp.name }}{% else %}{% if lesson.topic %}{{ lesson.topic }}{% endif %}{% endif %}" data-content="Дз на следующий урок: {{ lesson.homework }}">{{ lesson.date|date:'d' }}</a>
+
+
+        </th>
+  
+        {% endfor %}
+      </tr>
+      <tr>
+        {% for lesson in lessons %}
+        {% if lesson.types.all %}
+        {% for lesson_type in lesson.types.all %}
+        <th id="day" class="date day{{ lesson.date|date:'m' }}">
+        <a class="btn-tooltip date_l" data-toggle="tooltip" data-placement="bottom" title="{{ lesson_type.name }}">
+          {{ lesson_type.short_name }}
+        </a>
+        </th>
+
+        {% endfor %}
+        {% else %}
+        <th id="" class="date day{{ lesson.date|date:'m' }}">-</th>
+        {% endif %}
+        {% endfor %}
+      </tr>
+      </thead>
+
+      <tbody>
+        {% for student in students %}
+        <tr class="mark_tr">
+        {% for lesson in lessons %}
+        {% if lesson.types.all %}
+        {% for lesson_type in lesson.types.all %}
+        {% if lesson.date >= student.date_of_enrollment %}
+        {% get_marks lesosn=lesson.pk type_l=lesson_type.pk student=student.pk as mark %}
+
+      
+
+          {%  get_attendance_reason student=student day=lesson.date.day month=lesson.date.month year=lesson.date.year as reason   %}
+
+          {% if mark.attendance and reason  == 3  %}
+            <td class="bg-success text-white text-center" style="text-shadow: none;">н</td>
+ 
+
+          {% elif mark.attendance and reason == 2  %}
+            <td class="bg-danger text-white text-center" style="text-shadow: none;" >н</td>
+          {% elif mark.attendance and reason == 1  %}
+            <td class="bg-info text-white text-center" style="text-shadow: none;">н</td>
+
+         
+
+
+
+          {% elif mark.attendance and not reason %}
+          <td student="{{ student.pk }}" type="{{lesson_type.pk}}" lesson="{{lesson.pk}}" id="{{ lesson_type.pk }}{{ lesson.pk }}{{ student.pk }}" class="day {{ student.pk }}" markpk="{{mark.pk}}" ><a >н </a><input  style="display: none;width: 100%;height: 100%" class="mark"></td>
+
+          {% else %}
+            <td student="{{ student.pk }}" type="{{lesson_type.pk}}" lesson="{{lesson.pk}}" id="{{ lesson_type.pk }}{{ lesson.pk }}{{ student.pk }}" class="day {{ student.pk }}" markpk="{{mark.pk}}" ><a >{% if mark.mark %}{{ mark.mark }}{% endif %}{% if mark.mark2 %}/{{ mark.mark2 }}{% endif %} </a><input  style="display: none;width: 100%;height: 100%" class="mark"></td>
+
+        {% endif %}
+        
+        {% else %}
+        <td student="{{ student.pk }}" class="bg-light" ><a href=""></a></td>
+        {% endif %}
+        {% endfor %}
+        {% else %}
+        <td class="disabled_date" ></td>
+        {% endif %}
+        {% endfor %}
+          </tr>
+        {% endfor %}
+
+
+      </tbody>
+    </table>
+
+
+
+</div>
+  <div  class="col-2 mycol no-margin"> 
+    <table class="myTable" style=>
+      <thead>
+      <tr>
+        <th class="" rowspan="2" id="nrow-2" style="">Средний балл</thd>
+        <th style="width: 77px" class=""  id="nrow-2 " style="">Итоговая</th>
+      </tr>
+     
+      </thead>
+      <tbody>
+        {% for student in students %}
+          <tr>
+
+           
+            <td id="ball{{ student.pk }}">
+              
+            
+            </td>
+            {% get_marks_itog period=period.pk student=student.pk load=load_pk.pk as mark_itog %}
+            <td style="text-align: center" period="{{ period.pk }}" id="i{{ student.pk }}" class="itog" student="{{ student.pk }}" load="{{ load_pk.pk }}" markpk="{{mark_itog.pk}}" ><a style="text-align: center">{% if mark_itog.mark %}{{ mark_itog.mark }}{% endif %}{% if mark_itog.not_certified == 1 %}н/а{% endif %}</a><input  style="display: none;width: 100%;height: 100%" class="mark"></td>
+          </tr>
+        {% endfor %}
+
+      </tbody>
+    </table>
+</div>
+
+</div>
+
+
+<div id="mark_div">
+  
+</div>
+
+
+<style>
+
+.month{
+  display: none;
+}
+.mycol {padding-left: 0; padding-right:0;}
+.mycol2 { padding-right:0;}
+tbody td{
+height: 32px;
+}
+thead th{
+background-color: #EEEEEE;
+border: none;
+color: grey;
+padding: 4px;
+height: 32px;
+text-align: left;
+text-shadow: 1px 1px 1px #fff;
+white-space: nowrap;
+}
+thead{
+width:200px;
+}
+tbody td{
+height: 32px;
+
+}
+.date{
+  min-width: 39.2px;
+}
+table{
+width:100%;
+float:left;
+
+}
+.day,.month,.date{
+text-align: center;
+}
+table td input{
+
+    
+    border: 1px!important;
+    display: block;
+    font-size: inherit;
+    font-weight: 400;
+    height: 100%;
+    line-height: 14px;
+    margin: 0!important;
+    outline: none!important;
+    padding: 0!important;
+    position: static;
+    text-align: center;
+    text-transform: uppercase;
+  
+    z-index: 2!important;
+}
+
+.sc3::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.sc3::-webkit-scrollbar-track {
+  background-color: transparent;
+  border-radius: 10px;
+}
+.sc3::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 10px;
+}
+td{
+  margin:0px;
+  padding:0px;
+}
+
+.date_l{
+  color: grey;
+}
+
+
+.mark{
+  max-width: 100%;
+  overflow: hidden;
+
+}
+
+.day{
+  overflow: hidden;
+  max-width: 32px;
+}
+</style>
+<script type="text/javascript">
+var month=$('.month').css('height')
+var month=parseInt(month)*3
+$('#row-2').css('height',month)
+$('#nrow-2').css('height',month)
+var count_sep=$('table').find('.day09').length;
+    if (count_sep){
+      $(sep).attr('colspan',count_sep).show()
+  }
+    var count_oct=$('table').find('.day10').length;
+    if (count_oct){
+    $(oct).attr('colspan',count_oct).show()
+  }
+    var count_nov=$('table').find('.day11').length;
+    if (count_nov){
+      $(nov).attr('colspan',count_nov).show()
+    }
+    var count_dec=$('table').find('.day12').length;
+    if (count_dec){
+    $(dec).attr('colspan',count_dec).show()
+    }
+
+
+
+
+    var count_jan=$('table').find('.day01').length;
+
+    if (count_jan){
+    $(jan).attr('colspan',count_jan).show()
+    }
+
+
+    var count_feb=$('table').find('.day02').length;
+    if (count_feb){
+    $(feb).attr('colspan',count_feb).show()
+    }
+
+    var count_mar=$('table').find('.day03').length;
+    if (count_mar){
+    $(march).attr('colspan',count_mar).show()
+    }
+
+
+    var count_ap=$('table').find('.day04').length;
+    if (count_ap){
+    $('#april').attr('colspan',count_ap).show()
+    }
+
+    var count_may=$('table').find('.day05').length;
+    if (count_may){
+    $('#may').attr('colspan',count_may).show()
+    }
+
+
+$('.itog').on('click',function(event){
+    
+    click_mark(this)
+})
+
+$('.day').on('click',function(event){
+    
+    click_mark(this)
+})
+
+function select(url){
+
+  
+
+  $.ajax({
+  type: "GET",
+  url: url,
+  success: function (result) {  
+  $('#periods option').remove();
+  name_period=''
+
+  if (result.period.length==2){
+  name_period=' полугодие'
+  }
+  if (result.period.length==4){
+  name_period=' четверть'
+  }
+  if (result.period.length==3){
+  name_period=' триместр'
+  }
+  for(var i = 1; i<=result.period.length; i++){ //data[1] contains no of sem
+    var period=$('#periods').append('<option value="' + result.period[i-1] + '">' + i+name_period +'</option>');
+
+
+  if(result.period[i-1]==result.now_period){
+    $(period).children('option').eq(i-1).attr('selected',true)
+  }
+
+  }
+  
+  }
+
+
+  });
+
+}
+
+$(document).on('change', 'select#loads', function () {
+  var url = $("select#loads option:selected").attr("url")
+
+
+  select(url)
+});
+
+
+$(document).on('change', 'select#classes_list', function () {
+
+var url = $(this.options[this.selectedIndex]).attr("url"); 
+$.ajax({
+type: "GET",
+url: url,
+success: function (result) {
+
+$('#loads option').remove();
+
+for (var i = 1; i <= result.loads.length; i++) {
+
+ $('#loads').append('<option url="'+ result.url[i-1] + '"' + 'value="' + result.pk_array[i-1]  + '">' + result.names[i-1] +'</option>');
+}
+var load_first=$("#loads option:first").attr("url")
+select(load_first)
+
+}
+
+});
+
+});
+    
+
+
+
+$('.add-row').click(function () {
+        var $row = $('#mytable').find('tr.hidden').clone(true).removeClass('hidden');
+        $('#mytable').find('table').append($row);
+    });
+
+
+   $('.mark').on('keypress',function(e) {
+    code = (window.event) ? window.event.keyCode : e.which;
+
+    if(code == 13) {
+        $(this).blur()
+    }
+});
+
+  $('.mark').on('focusout',function(){
+    var mark_input=$(this)
+    
+    var min_mark=parseInt('{{ request.user.institution.system_mark.min_mark }}')
+    var max_mark=parseInt('{{ request.user.institution.system_mark.max_mark }}')
+    var url='{% url 'Mark' %}'
+    var tocken='{{ csrf_token }}'
+    var mark=$(mark_input).val()
+    
+    
+        
+    save_mark(this,url,tocken,min_mark,max_mark)
+  })
+
+ 
+
+
+
+
+  var count_nov=$('table').find('.day11').length;
+
+
+  $('.mark_tr').each(function(){
+
+           var mark_sum=0
+           var mark_lenght=0
+           var mark=$(this).children('td').text()
+           var student=$(this).children('td').attr('student')
+           for (i = 0; i < mark.length; i +=1 ) {
+              if(parseInt(mark[i])>0){
+              mark_sum=mark_sum+parseInt(mark[i])
+              mark_lenght+=1
+            }
+          }
+           var ball=mark_sum/mark_lenght
+           
+           ball=ball.toFixed(2)
+           
+           if(ball>0){
+              $('#ball'+student).text(ball)
+         }
+         
+  });
+
+  
+    $('.disabled_date').on('click',function(event){
+      $('#liveToast2').toast('show');
+  })
+
+
+jQuery(document).ready(function(){
+
+$('.btn-tooltip').tooltip();
+$("[data-toggle=popover]").popover();   
+
+$('td').keydown(function(evt){
+    if(evt.keyCode == 39){
+        event.preventDefault();
+        var cellindex = $(this).index()+1
+        var rowindex = $(this).parents('tr').index() 
+
+        var a= $(this).parents('table tbody').find('tr:eq('+rowindex+') td:eq('+cellindex+')')
+        $(this).children('input').focusout()
+        click_mark(a)
+    }
+
+    if(evt.keyCode == 38){
+        event.preventDefault();
+        var cellindex = $(this).index()
+        var rowindex = $(this).parents('tr').index()-1
+        var a= $(this).parents('table tbody').find('tr:eq('+rowindex+') td:eq('+cellindex+')')
+        $(this).children('input').focusout()
+        click_mark(a)
+    }
+    if(evt.keyCode == 37){
+        event.preventDefault();
+        var cellindex = $(this).index()-1
+        var rowindex = $(this).parents('tr').index()
+        var a= $(this).parents('table tbody').find('tr:eq('+rowindex+') td:eq('+cellindex+')')
+        $(this).children('input').focusout()
+        click_mark(a)
+    }
+    if(evt.keyCode == 40){
+        event.preventDefault();
+        var cellindex = $(this).index()
+        var rowindex = $(this).parents('tr').index()+1
+        var a= $(this).parents('table tbody').find('tr:eq('+rowindex+') td:eq('+cellindex+')')
+        $(this).children('input').focusout()
+        click_mark(a)
+    }
+    
+
+
+})
+});
+
+
+
+</script>
+
+
+{% else %}
+
+<div class="alert alert-warning" role="alert">
+  Уроки не найдены.
+</div>
+
+{% endif %}

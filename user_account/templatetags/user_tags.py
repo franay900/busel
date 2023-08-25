@@ -1,7 +1,7 @@
 from django import template
 from django.contrib.auth.models import Group 
 from classes.models import Classes 
-
+from user_account.models import UserNet
 
 register = template.Library() 
 
@@ -30,3 +30,8 @@ def class_manager(user):
 	class_select=Classes.objects.filter(class_teacher=user)
 	if class_select:
 		return class_select.exists()
+
+@register.simple_tag(name='get_user')
+def get_user(username):
+
+	return UserNet.objects.get(username=username)
