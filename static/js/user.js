@@ -38,10 +38,7 @@ $('#two').click(function(){
 
  $(document).ready(function(event){   
 
-    $('select').each(function(){
-       $(this).removeClass('form-control')
-       $(this).addClass('custom-select')
-    });
+   
 
     $('#classes').removeClass('custom-select')
     

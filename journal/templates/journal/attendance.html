@@ -3,149 +3,316 @@
 
 
 {% block h2 %}
-<i class="bi bi-layout-text-sidebar"></i> {{ title }} <code>Alpha</code>
+<i class="bi bi-layout-text-sidebar"></i> {{ title }}
 {% endblock %}
 
 
-
-
 {% block content %}
+<div class="position-fixed bottom-0 right-0 p-3" style="z-index: 5; right: 0; bottom: 0;">
+<div  id="liveToast2" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+    <div class="toast-header bg-danger text-white">
 
+        <strong class="mr-auto"><i class="bi bi-exclamation-circle"></i> Внимание!</strong>
 
+        <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="toast-body" id="warningText">
 
-
-<div class="row">
-	<div class="col">
-		<select onchange="top.location=this.value" class="custom-select custom-select-sm" style="width:auto" name="" id="">
-		{% for classes in classes %}
-		<option  {% if class.pk == classes.pk %} selected="" {% endif %} value="{% url 'AttendanceJournalPk' pk=classes.pk %}">{{ classes.class_number }}{{ classes.letter }}</option>
-		{% endfor %}
-		</select>	
-	</div>
-	<div class="col">
-		<SELECT>
-<OPTION value=1>Январь</OPTION>
-<OPTION value=2>Февраль</OPTION>
-<OPTION value=3>Март</OPTION>
-<OPTION value=4>Апрель</OPTION>
-<OPTION value=5>Май</OPTION>
-<OPTION value=6>Июнь</OPTION>
-<OPTION value=7>Июль</OPTION>
-<OPTION value=8>Август</OPTION>
-<OPTION value=9>Сентябрь</OPTION>
-<OPTION value=10>Октябрь</OPTION>
-<OPTION value=11>Ноябрь</OPTION>
-<OPTION value=12>Декабрь</OPTION>
-</SELECT>
-
-	</div>
-	<div class="col">
-		<select name="" id="">
-			<option value="">21.08.2023 - 27.08.2023</option>
-
-		</select>
-	</div>
+    </div>
 </div>
+</div>
+<div class="row">
+    <div class="col-1">
+        <select onchange="top.location=this.value" class="custom-select custom-select-sm" style="width:auto" name=""
+                id="">
+            {% for classes in classes %}
+            <option {% if class.pk == classes.pk %} selected="" {% endif %}
+                    value="{% url 'AttendanceJournalPk' pk=classes.pk %}">{{ classes.class_number }}{{ classes.letter }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col">
+        <select class="custom-select custom-select-sm" name="month" id=""
+                onchange="window.location.href = this.options[this.selectedIndex].value">
+            {% for i, j in months.items %}
+            <option {% if now_month == i %} selected {% endif %} value="?month={{ i }}">{{ j }}</option>
+            {% endfor %}
+        </select>
 
-  
+    </div>
+
+    <div class="col">
+        <select class="custom-select custom-select-sm" name="week" id=""
+                onchange="window.location.href = this.options[this.selectedIndex].value">
+            {% for i in weeks %}
+
+            <option {% if forloop.counter0 == num_weeks %} selected {% endif %} value="?week={{ forloop.counter0 }}&month={{ now_month }}">
+                {{ i }}
+            </option>
+            {% endfor %}
+
+        </select>
+    </div>
+</div>
 
 
 <table class="table table-bordered table-sm table-hover mt-3">
-	<thead class="bg-info text-white">
-		<tr>
-			<th class="text-center" >№</th>
-			<th class="text-center" >Ученик</th>
-			<th class="text-center" >21.08</th>
-			<th class="text-center" >22.08</th>
-			<th class="text-center" >23.08</th>
-			<th class="text-center" >24.08</th>
-			<th class="text-center" >25.08</th>
-			<th class="text-center" >26.08</th>
-			<th class="text-center">Итого</th>
-			<th class="text-center">По болезни</th>
-		</tr>
-	</thead>
+    <thead class="bg-info text-white">
+    <tr>
+        <th class="text-center">№</th>
+        <th class="text-center">Ученик</th>
 
-	<tbody>
-		{%  for student in students %}
-		<tr>
-			<td class="text-center">{{ forloop.counter }}</td>
-			<td>{{ student }}</td>
-			<td class="click_date"></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-		</tr>
-		{% endfor %}
-	</tbody>
+        {% for i in dates %}
+        {% if i|date:'w' != '0' %}
+        <th class="text-center">{{ i|date:'d.m' }}</th>
+        {% endif %}
+        {% endfor %}
+
+
+        <th class="text-center">Итого</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for student in students %}
+    <tr class="attTr" student="{{ student.pk }}">
+        <td class="text-center">{{ forloop.counter }}</td>
+        <td>{{ student }}</td>
+        {% for i in dates %}
+        {% if i|date:'w' != '0' %}
+        {% get_attendance student=student day=i|date:'d' month=i|date:'m' year=i|date:'Y' as attendance %}
+        {%  get_attendance_reason student=student day=i|date:'d' month=i|date:'m' year=i|date:'Y' as reason   %}
+        <td id="{{ student.pk }}{{ i|date:'Y-m-d' }}" class="click_date text-center {% if reason %}text-white{% endif %} {% if reason == 3 %} bg-success{% endif %} {% if reason == 2 %} bg-danger{% endif %} {% if reason == 1 %} bg-info{% endif %} " date="{{ i|date:'Y-m-d' }} " month="{{ i|date:'m' }}" day="{{ i|date:'d' }}"
+            year="{{ i|date:'Y' }}" student="{{ student.pk }}" class_pk="{{ student.class_pk.pk }}" fio="{{ student }}">{{ attendance }}</td>
+        {% endif %}
+        {% endfor %}
+        <td id="i{{ student.pk }}" class="text-center"></td>
+
+    </tr>
+    {% endfor %}
+    </tbody>
 </table>
-
 
 
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-info ">
-        <h5 class="modal-title text-white" id="exampleModalLabel"><i class="bi bi-calendar2-date"></i> Пропуски за 21.08</h5>
-        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-      	<div class="form-check">
-				  <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" >
-				  <label class="form-check-label" for="defaultCheck1">
-				    Все
-				  </label>
-				</div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info ">
+                <h5 class="modal-title text-white" id="exampleModalLabel"><i class="bi bi-calendar2-date"></i>  <a id="modaltext"></a></h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="">
+                        <i class="bi bi-person"></i>
+                        <strong class="" id="fio_text"></strong>
+                </div>
+                <div class="form-check">
+                    <div class="lesson">
+                        <input class="form-check-input" type="checkbox" checked="false" id="all">
+                        <label class="form-check-label" for="all">
+                            Все
+                        </label>
+                    </div>
+                    <div id="lessons">
 
-				<div class="form-check">
-				  <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-				  <label class="form-check-label" for="defaultCheck1">
-				    Биология
-				  </label>
-				</div>
 
-				<div class="form-check">
-				  <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-				  <label class="form-check-label" for="defaultCheck1">
-				    Физ-ры
-				  </label>
-				</div>
+                    </div>
+                </div>
 
-				<div class="form-check">
-				  <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-				  <label class="form-check-label" for="defaultCheck1">
-				    Русский язык
-				  </label>
-				</div>
 
-				<div class="btn-group" role="group" aria-label="Basic example">
-				  <button type="button" class="btn btn-info"><i class="bi bi-emoji-neutral"></i> По болезни</button>
-				  <button type="button" class="btn btn-info"><i class="bi bi-emoji-smile"></i> Уважительная</button>
-				  <button type="button" class="btn btn-info"><i class="bi bi-emoji-neutral"></i> Неуважительная</button>
-				</div>
-				<a class="text-muted">Выбрано: По белезни</a>
-      </div>
-      <div class="modal-footer">
-        
-        <button type="button" class="btn btn-info"><i class="bi bi-calendar-plus"></i> Поставить пропуски</button>
-      </div>
+                <div class="btn-group mt-1" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-info cause" cause="1"><i class="bi bi-emoji-neutral"></i> По болезни</button>
+                    <button type="button" class="btn btn-info cause" cause="2"><i class="bi bi-emoji-smile"></i> Уважительная</button>
+                    <button type="button" class="btn btn-info cause" cause="3"><i class="bi bi-emoji-frown"></i> Неуважительная</button>
+                </div>
+                <a class="text-muted" id="reaseonText">Выбрано: по белезни</a>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-info" id="exit" cause="3"><i class="bi bi-calendar-plus"></i> Поставить пропуски
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
+
+
+
+
 </div>
 
 <script>
 
-$('.click_date').click(function(){
-	 $('#myModal').modal('show')
-})
-	
+    $('.click_date').click(function(){
+
+         let date = $(this).attr('date');
+         let day = $(this).attr('day');
+         let dayC = day;
+         let month = $(this).attr('month');
+         let year = $(this).attr('year');
+         let student = $(this).attr('student')
+         let class_pk = $(this).attr('class_pk')
+         let fio = $(this).attr('fio')
+         $('#exit').attr('student',student)
+         $('#all').prop('checked',false)
+         $('#exit').attr('eid', student + date)
+        $.ajax({
+          url: '{% url 'AttendanceGetLessons' %}',         /* Куда пойдет запрос */
+          method: 'get',             /* Метод передачи (post или get) */
+          dataType: 'json',          /* Тип данных в ответе (xml, json, script, html). */
+          data: {day: day, month:month, year:year, class:class_pk, student: student},     /* Параметры передаваемые в запросе. */
+          success: function(data){   /* функция которая будет выполнена после успешного запроса.  */
+
+              if (parseInt(data.lessons.length)>0){
+
+              $('#modaltext').html(`Пропуски за ${dayC}.${month}.${year}`)
+              $('#fio_text').html(`Ученик: ${fio}`)
+              $('#myModal').modal('show');
+              $('#lessons').empty()
+              let pks = data.pks
+              let checked_lesson = data.marks
+              let cause = data.reason
+              if (cause==3){
+                $('#reaseonText').html(`Выбрано: по болезни`)
+                $('#exit').attr('cause',3)
+              }
+              if (cause==1){
+                $('#reaseonText').html(`Выбрано: по уважительной`)
+                $('#exit').attr('cause',1)
+              }
+              if (cause==2){
+                $('#reaseonText').html(`Выбрано: по неуважительной`)
+                $('#exit').attr('cause',2)
+              }
+              for (i = 0; i<data.lessons.length;i+=1){
+
+                if (checked_lesson.includes(pks[i])){
+                let day=$('#lessons').append(`<div class="lesson"><input class="form-check-input lessonInput" type="checkbox" id="${pks[i]}" checked="True"><label class="form-check-label" for="defaultCheck1">${data.lessons[i]}</label></div>`)
+                } else{
+                    let day=$('#lessons').append(`<div class="lesson"><input class="form-check-input lessonInput" type="checkbox" id="${pks[i]}"><label class="form-check-label" for="defaultCheck1">${data.lessons[i]}</label></div>`)
+                }
+              }
+              } else{
+              $('#liveToast2').toast('show');
+              $('#warningText').html(`Уроки на ${dayC}.${month}.${year} не найдены`);
+              }
+
+
+          }
+        });
+
+    })
+    $('.cause').click(function(){
+        let cause = parseInt($(this).attr('cause'))
+        if (cause==1){
+            $('#reaseonText').html(`Выбрано: по болезни`)
+            $('#exit').attr('cause',3)
+        }
+        if (cause==2){
+            $('#reaseonText').html(`Выбрано: по уважительной`)
+            $('#exit').attr('cause',1)
+        }
+        if (cause==3){
+            $('#reaseonText').html(`Выбрано: по неуважительной`)
+            $('#exit').attr('cause',2)
+        }
+
+    })
+
+    $('#all').change(function(){
+
+        if($(this).is(':checked')){
+
+            $('.lessonInput').prop('checked',true)
+
+
+        } else{
+            $('.lessonInput').prop('checked',false)
+        }
+
+
+
+    })
+
+    $('#exit').click(function(){
+
+      let checkedLesson = []
+      let deleteLessons = []
+      let student = $(this).attr('student')
+      let eid = $(this).attr('eid')
+      $('input[type=checkbox]:checked').each(function(){
+	    if($(this).attr('id')!='all'){
+		checkedLesson.push($(this).attr('id'))
+	    }
+	})
+
+	$('input[type=checkbox]:not(:checked)').each(function(){
+	    if($(this).attr('id')!='all'){
+		deleteLessons.push($(this).attr('id'))
+	    }
+	})
+	  let cause = $(this).attr('cause')
+      $.ajax({
+	  url: '{% url 'AttendanceAddLessons' %}',         /* Куда пойдет запрос */
+	  method: 'POST',             /* Метод передачи (post или get) */
+	  dataType: 'json',          /* Тип данных в ответе (xml, json, script, html). */
+	  data: {
+	  lessons: JSON.stringify(checkedLesson),
+	  delete:JSON.stringify(deleteLessons),
+	  student: $(this).attr('student'),
+	  reason: cause,
+	  csrfmiddlewaretoken: '{{ csrf_token }}',
+
+
+	},     /* Параметры передаваемые в запросе. */
+	  success: function(data){   /* функция которая будет выполнена после успешного запроса.  */
+
+           $('#myModal').modal('hide');
+           $('#all').prop('checked',false)
+
+           $('#i' + student).text(parseInt($('#i' + student).text()) - $('#'+ eid).text() + checkedLesson.length)
+           $('#'+ eid).text(checkedLesson.length)
+           $('#'+ eid).removeClass()
+           $('#'+ eid).addClass('text-center')
+           if (cause == 3){
+                $('#'+ eid).addClass('bg-success').addClass('text-white')
+           }
+           if (cause == 2){
+                $('#'+ eid).addClass('bg-danger').addClass('text-white')
+           }
+           if (cause == 1) {
+                $('#'+ eid).addClass('bg-info').addClass('text-white')
+           }
+
+	  }
+	});
+
+
+    })
+
+    function countLesson(ob){
+        $(ob).each(function(){
+
+
+            var marks=$(this).children('.click_date').text()
+            var mark_sum=0
+            var sum_id=$(this).attr('student')
+            for (mark=0;mark<marks.length; mark+=1){
+
+                mark_sum=mark_sum+parseInt(marks[mark])
+            }
+
+            $('#'+'i'+sum_id).text(mark_sum)
+            $('#'+'i'+sum_id).attr('num',mark_sum)
+        })
+    }
+    countLesson(ob =  '.attTr')
 </script>
 
 

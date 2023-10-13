@@ -7,14 +7,14 @@ register = template.Library()
 
 @register.filter(name='is_group') 
 def is_group(user):
-    groups=user.groups.filter(pk__in=[1])
+    groups=user.groups.filter(name__in=['Администратор ОО'])
 
     return groups.exists()
 
 @register.filter(name='teacher') 
 def teacher(user):
 	groups=user.groups.filter(name='Учитель')
-	if groups:
+	if groups and not user.groups.filter(name='Администратор ОО'):
 		return groups.exists()
 
 @register.filter(name='student') 

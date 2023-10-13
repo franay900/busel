@@ -26,7 +26,6 @@ class UserNet(AbstractUser):
         ordering=['last_name','first_name']
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-        unique_together = [['email']]
     def get_absolute_url(self):
     	return reverse('user_edit',kwargs={'user_id':self.pk})
     def ban(self):

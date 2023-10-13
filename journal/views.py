@@ -17,7 +17,8 @@ from .forms import KTPForm, SectionsKTPForm
 import csv
 import codecs
 from user_account.models import FileTemplates
-
+from modules.weeks import get_all_weeks, get_dates
+import calendar
 
 
 
@@ -37,7 +38,7 @@ class SchoolJournalView(View, Journal):
     def post(self, request, *args, **kwargs):
         
         
-        return render(request, self.template_name, self.get_context())
+        return render(request, 'journal/journal.html', self.get_context())
         
 
 class ClassesJournalView(View, Journal):
@@ -395,9 +396,9 @@ class AttendanceJournal(View, Journal):
 
     def get_classes(self):
         if self.request.user.has_perm('journal.change_marks'):
-            return Classes.objects.filter(institution=self.request.user.institution).order_by('class_number','letter')
+            return Classes.objects.filter(institution=self.request.user.institution, year=self.request.user.institution.year).order_by('class_number','letter')
         else:
-            return Classes.objects.filter(class_teacher=self.request.user)
+            return Classes.objects.filter(class_teacher=self.request.user, year=self.request.user.institution.year)
     def get_class(self):
 
 
@@ -415,19 +416,8 @@ class AttendanceJournal(View, Journal):
 
     def get_student(self):
 
-
-
         return Student.objects.filter(class_pk=self.get_class(),user__isnull=False,user__is_active=True).order_by('user')
 
-    def days_cur_month(self):
-        m = datetime.now().month
-        y = datetime.now().year
-        ndays = (date(y, m, 1) - date(y, m-1, 1)).days
-        d1 = date(y, m, 1)
-        d2 = date(y, m, ndays)
-        delta = d2 - d1
-
-        return [(d1 + timedelta(days=i)).strftime('%d') for i in range(delta.days + 1)],m,y
 
     def get_context(self):
         context={}
@@ -436,27 +426,82 @@ class AttendanceJournal(View, Journal):
         context['classes']=self.get_classes()
         context['class']=self.get_class()
         context['students']=self.get_student()
-        context['dates']=self.days_cur_month()[0]
-        context['month']=self.days_cur_month()[1]
-        context['year']=self.days_cur_month()[2]
+        arr = []
+        if self.get_weeks():
+            for i in self.get_weeks():
+                arr.append(f'{i[0]}-{i[1]}')
 
+            if self.request.GET.get('week'):
+                num_weeks = int(self.request.GET.get('week'))
+                now_weeks = arr[num_weeks]
+            else:
+                num_weeks = 0
+                now_weeks = arr[0]
+            context['now_weeks'] = now_weeks
+            context['num_weeks'] = num_weeks
+            context['dates'] = get_dates(*now_weeks.split('-'))
+        context['weeks'] = arr
+        
+        context['now_month'] = self.now_month()[0]
+        
+        context['months'] = {
+            9: 'Сентябрь',
+            10: 'Октябрь',
+            11: 'Ноябрь',
+            12: 'Декабрь',
+            1: 'Январь',
+            2: 'Февраль',
+            3: 'Март',
+            4: 'Апрель',
+            5: 'Май'
+
+        }
         return context
-    def get(self,request, *args,**kwargs):
+    def now_month(self, **kwargs): 
+        
+        if self.request.GET.get('month'):
+            if 9<=int(self.request.GET.get('month'))<=12:
+                return int(self.request.GET.get('month')), self.get_period().start.year
+            else:
+                return int(self.request.GET.get('month')), self.get_period().start.year+1
+        elif datetime.now().month in [6,7,8]:
+            return self.get_period().start.month, self.get_period().start.year
 
+        else:
+            return datetime.now().month, datetime.now().year
+
+
+    def get_period(self):
+        period = Year.objects.get(pk=self.request.user.institution.year.pk)
+        return period
+    def get_weeks(self):
+        now_month = self.now_month()[0]
+        now_year = self.now_month()[1]
+        d_start = str(f'{now_year}-{now_month}-1')
+        d_end = str(f'{now_year}-{now_month}-{calendar.monthrange(now_year,now_month)[1]}')
+        weeks = [*get_all_weeks(d_start, d_end)]
+        key = None
+        for i in range(len(weeks)-1):
+            if weeks[i+1][1].split('.')[1] > weeks[i][1].split('.')[1]: 
+                weeks.pop(i+1)
+
+        
+        return weeks
+    def get(self,request, *args,**kwargs):
         return render(request,self.template_name,self.get_context())
 
 
 def get_lessons_attendance(request):
 
     month=int(request.GET.get('month'))
-    day=int(request.GET.get('date'))
+    day=int(request.GET.get('day'))
     year=int(request.GET.get('year'))
     student=int(request.GET.get('student'))
-    subroups=list(StudentSubgroup.objects.filter(student_id=student).values_list('subgroup',flat=True))
+    subgroups = list(StudentSubgroup.objects.filter(student_id=student).values_list('subgroup',flat=True))
     
     class_pk=(request.GET.get('class'))
     date_lessons=datetime(year,month,day).strftime('%Y-%m-%d')
-    lessons=Lessons.objects.filter( Q(subject_pk__subgroup__in=subroups) | Q(subject_pk__subgroup=None),class_pk=class_pk, date=date_lessons )
+    lessons=Lessons.objects.filter( Q(subject_pk__subgroup__in=subgroups) | Q(subject_pk__subgroup=None),class_pk=class_pk, date=date_lessons )
     lesson_array=[]
     pk_array=[]
     mark_array=[]
@@ -468,12 +513,15 @@ def get_lessons_attendance(request):
 
 
         mark_array.append(mark.lesson.pk)
-        
-
+    try:
+        reason = ReasonSkipping.objects.get(student=student, day=date_lessons).reason
+    except ReasonSkipping.DoesNotExist:
+        reason = 0
     response={
         'lessons':lesson_array,
         'pks':pk_array,
         'marks':mark_array,
+        'reason':reason
     }
 
    
@@ -492,11 +540,10 @@ def save_lessons_attendance(request):
     delete=request.POST.get('delete')
     delete=json.loads(delete)
 
-
-    
-
-
-
+    reason = request.POST.get('reason')
+    date = Lessons.objects.get(pk=lessons[0]).date
+    ReasonSkipping.objects.filter(student=get_student, day=date).delete()
+    ReasonSkipping.objects.create(reason=reason, student=get_student, day=date)
     for lesson in lessons:
         get_lesson=Lessons.objects.get(pk=lesson)
         types=get_lesson.types.all()

@@ -228,13 +228,13 @@
           {%  get_attendance_reason student=student day=lesson.date.day month=lesson.date.month year=lesson.date.year as reason   %}
 
           {% if mark.attendance and reason  == 3  %}
-            <td class="bg-success text-white text-center" style="text-shadow: none;">н</td>
+            <td class=" text-success text-center" style="text-shadow: none;">н</td>
  
 
           {% elif mark.attendance and reason == 2  %}
-            <td class="bg-danger text-white text-center" style="text-shadow: none;" >н</td>
+            <td class=" text-danger text-center" style="text-shadow: none;" >н</td>
           {% elif mark.attendance and reason == 1  %}
-            <td class="bg-info text-white text-center" style="text-shadow: none;">н</td>
+            <td class="text-info text-center" style="text-shadow: none;">н</td>
 
          
 
