@@ -109,10 +109,22 @@
       </div>
     </div>
 
-    
+
+<script>
+    $(function() {
+
+  $('.list-group-item').on('shown.bs.tab', function (e) {
+    localStorage.setItem('lastTabClasses', $(this).attr('href'));
+  });
+  var lastTabClasses = localStorage.getItem('lastTabClasses');
 
 
-    
+  if (lastTabClasses) {
+    $('[href="' + lastTabClasses + '"]').tab('show');
+  }
+
+});
+</script>
     
 
 {% endblock %}

@@ -20,6 +20,8 @@ urlpatterns = [
 	path('admin-panel', admin_panel, name='AdminPanel'),
 	path('student-codes/create', student_code,name='CreateStudentsCode'),
 
+	path('connection/', Connection.as_view(),name='Connection'),
+
 	#Смена пароля
 	path('password-reset/', UserForgotPasswordForm.as_view(),name='password-reset'),
 	path('password-reset/done/', PasswordResetDoneView.as_view(template_name='news/password_reset_done.html'),name='password_reset_done'),

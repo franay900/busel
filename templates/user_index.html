@@ -54,11 +54,17 @@
        <div class="col-md-12">
          {% if messages %}
          {% for message in messages %}
-
+           {% if message.tags == 'error' %}
+           <div class="alert alert-danger" role="alert">
+               <i class="bi bi-folder-x"></i> {{ message }}
+           </div>
+            {% endif %}
+           {% if message.tags == 'success' %}
           <div class="alert alert-info" role="alert">
-          {{ message }}
+          <i class="bi bi-folder-check"></i> {{ message }}
         </div>
-       
+           {% endif %}
+
 
             
           {% endfor %}
@@ -73,7 +79,7 @@
 
 <footer class="py-3 my-4">
     <hr>
-    <p class="text-center text-muted">© 2020-2023 ПК "Бусел"</p>
+    <p class="text-center text-muted">© 2020-2024 ПК "Бусел"</p>
   </footer>
 
 

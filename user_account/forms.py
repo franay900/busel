@@ -106,7 +106,7 @@ class EditMyAccountForm(forms.ModelForm):
         else:
             user = False
 
-        if not user.is_superuser and not UserNet.objects.get(pk=user.pk,groups__name__in=['Администратор ОО','Завуч','Администратор ПОО']):
+        if not user.is_superuser:
 
             self.fields['last_name'].disabled=True
             self.fields['first_name'].disabled=True

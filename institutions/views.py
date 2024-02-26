@@ -493,6 +493,45 @@ class DeleteInstitutionForever(PermissionRequiredMixin, View):
         messages.success(request,f'Организация {title} удалена навсегда')
         return redirect(request.META.get("HTTP_REFERER"))
 
+
+class ConnectionRequests(PermissionRequiredMixin, View):
+    permission_required = "institutions.change_institutions"
+
+    def get(self, request):
+        context = {}
+        context['title'] = 'Заявки на подключение'
+        if request.user.is_superuser:
+            context['requests'] = ConnectInstituions.objects.all()
+        else:
+            context['requests'] = ConnectInstituions.objects.filter(institution=request.user.institution)
+        return render(request, 'institutions/request.html',context)
+
+class DeleteConnection(PermissionRequiredMixin, View):
+    permission_required = "institutions.delete_institutions"
+    def get(self, request,pk):
+        ConnectInstituions.objects.get(pk=pk).delete()
+        messages.error(request,'Заявка успешно отклонена!')
+        return redirect('ConnectionRequests')
+
+class ApprovalConnection(PermissionRequiredMixin, View):
+    permission_required = "institutions.change_institutions"
+    def get(self, request,pk):
+        connection = ConnectInstituions.objects.get(pk=pk)
+        login = ''
+        chars = "abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+        for i in range(8):
+            login += random.choice(chars)
+        institutions_create = Institutions.objects.create(title=connection.title, short_title=connection.short_title,year=Year.objects.all().last(),typeInstitutions=connection.typeInstitutions,kindInstitutions=connection.kindInstitutions, departmental_organization=connection.institution)
+
+
+        group = connection.typeInstitutions.group.all()[0]
+        user = UserNet.objects.create_user(first_name=connection.name, last_name=connection.surname, middle_name=connection.middle_name,
+            username=login, code=login, institution=institutions_create
+        )
+        user.groups.set([group])
+        ConnectInstituions.objects.get(pk=pk).delete()
+        messages.success(request,f'Заявка успешно одобрена! Пригласительный код:{login}')
+        return redirect('ConnectionRequests')
 class EditInstitutuonView(UpdateView):
     template_name = "institutions/institutions.html"
     form_class = InstitutionsInfoForm

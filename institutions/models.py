@@ -64,6 +64,21 @@ class Institutions(models.Model):
 
     def edit_url(self):
         return reverse('EditInstitution', kwargs={"pk":self.pk})
+class ConnectInstituions(models.Model):
+    institution = models.ForeignKey(Institutions, on_delete=models.PROTECT, verbose_name='Управляющая организация')
+    title = models.CharField(max_length=500, verbose_name='Наименование организации')
+    short_title = models.CharField(max_length=350, verbose_name='Краткое наименование')
+    typeInstitutions = models.ForeignKey(TypeInstitutions, on_delete=models.PROTECT, verbose_name='Тип', null=True)
+    kindInstitutions = models.ForeignKey(KindInstitutions, on_delete=models.PROTECT, verbose_name='Вид', null=True,
+                                         blank=True)
+    city = models.CharField(max_length=150, verbose_name='Город')
+    email = models.CharField(max_length=150, verbose_name='Почта')
+    phone = models.CharField(max_length=150, verbose_name='Телефон')
+    name = models.CharField(max_length=150, verbose_name='Имя')
+    surname = models.CharField(max_length=150, verbose_name='Фамилия')
+    middle_name = models.CharField(max_length=150, verbose_name='Отчество', null=True)
+    birthday = models.CharField(max_length=150, verbose_name='Дата рождения', null=True)
+    comment = models.CharField(max_length=10000, verbose_name='Комментарий', null=True, blank=True)
 
 # Расписание звонков
 class BellProfile(models.Model):

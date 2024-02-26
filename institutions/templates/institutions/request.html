@@ -1,0 +1,139 @@
+{% extends 'user_index.html' %}
+{% load study_tags %}
+{% block h2 %}
+<i class="bi bi-card-checklist"></i> {{ title }}
+{% endblock %}
+
+
+{% block content %}
+
+{% for message in messages %}
+
+
+
+{% endfor %}
+
+<table class="table table-bordered table-sm table-hover " >
+    <thead class="bg-info text-white">
+        <tr>
+            <th class="text-center">№</th>
+            <th class="text-center">Краткое наименование</th>
+            <th>ФИО руководителя</th>
+            <th>Email</th>
+            <th class="text-center">Номер телефона</th>
+            <th>Действие</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for request in requests %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ request.short_title }}</td>
+            <td>{{ request.surname }} {{ request.name }} {{ request.middle_name }}</td>
+            <td>{{ request.email }}</td>
+            <td>{{ request.phone }}</td>
+            <td class="text-center">
+                <a class="request-info text-info"  title="Посмотреть подробнее" inst_title="{{ request.title }}" stitle="{{ request.short_title }}"  phone="{{request.phone}}" email="{{ request.email }}" fio="{{ request.surname }} {{ request.name }} {{ request.middle_name }}" city="{{ request.city }}" type="{{ request.typeInstitutions }}" kind="{{ request.kindInstitutions }}" dep="{{ request.institution }}" comment="{{ request.comment }}">
+                    <i class="bi bi-info-circle"></i>
+                </a>
+
+                <a href="{% url 'ApprovalConnection' pk=request.pk %}" title="Одобрить"><i class="bi bi-check-circle"></i></a>
+
+                <a href="{% url 'ConnectionRequestsDelete' pk=request.pk %}" title="Отклонить"><i class="bi bi-trash"></i></a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+
+
+<div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Информация о заявке</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-bordered table-sm table-hover " >
+            <thead class="bg-info text-white">
+                <tr>
+                    <th class="text-center" colspan="2">Подробная информация о заявке</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="width:50%">Полное наименование ОО</td>
+                    <td id="title"></td>
+                </tr>
+                <tr>
+                    <td>Краткое наименование ОО</td>
+                    <td id="stitle"></td>
+                </tr>
+                <tr>
+                    <td>Город</td>
+                    <td id="city"></td>
+                </tr>
+                <tr>
+                    <td>Номер телефон</td>
+                    <td id="phone"></td>
+                </tr>
+
+                <tr>
+                    <td>Электронная почта</td>
+                    <td id="email"></td>
+                </tr>
+
+                <tr>
+                    <td>ФИО директора (заявителя)</td>
+                    <td id="fio"></td>
+                </tr>
+
+                <tr>
+                    <td>Тип организации</td>
+                    <td id="type"></td>
+                </tr>
+
+                <tr>
+                    <td>Вид организации</td>
+                    <td id="kind"></td>
+                </tr>
+
+                <tr>
+                    <td>Управляющая организация</td>
+                    <td id="dep"></td>
+                </tr>
+                <tr>
+                    <td>Комментарий к заявке</td>
+                    <td id="comment"></td>
+                </tr>
+            </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+    $('.request-info').on('click',function(){
+        const modal = new bootstrap.Modal(document.querySelector('#staticBackdrop'));
+        modal.show();
+        $('#title').text($(this).attr('inst_title'))
+        $('#stitle').text($(this).attr('stitle'))
+        $('#phone').text($(this).attr('phone'))
+        $('#email').text($(this).attr('email'))
+        $('#fio').text($(this).attr('fio'))
+        $('#city').text($(this).attr('city'))
+        $('#type').text($(this).attr('type'))
+        $('#kind').text($(this).attr('kind'))
+        $('#dep').text($(this).attr('dep'))
+        $('#comment').text($(this).attr('comment'))
+    })
+
+</script>
+{% endblock %}

@@ -311,12 +311,20 @@ class LoadView(PermissionRequiredMixin, TimetableSettigns,SuccessMessageMixin, V
         return reverse('Load')
 
     def get(self, request, *args, **kwargs):
+        teacher = UserNet.objects.filter(institution=self.request.user.institution.pk,groups__name__in=['Учитель','Преподаватель'],is_active=True).distinct()
         context = {}
         context['subjects'] = self.get_info()
-        context['teachers']=UserNet.objects.filter(institution=self.request.user.institution.pk,groups__name__in=['Учитель','Преподаватель'],is_active=True).distinct()
+        context['teachers'] = teacher
         context['classes']=Classes.objects.filter(institution=self.request.user.institution.pk, year=self.request.user.institution.year.pk)
         context['class']=self.get_class()
         context['title'] = 'Учебная нагрузка'
+        if request.GET.get('teacher'):
+            load = Load.objects.filter(teacher__pk=request.GET.get('teacher'))
+            context['teacher_pk'] = int(request.GET.get('teacher'))
+        else:
+            load = Load.objects.filter(teacher__pk=teacher.first().pk)
+            context['teacher_pk'] = teacher.first().pk
+        context['load_teacher'] = load
         return render(request, self.template_name,context)
     def post(self, request, *args, **kwargs):
         subjects_list=self.get_info()

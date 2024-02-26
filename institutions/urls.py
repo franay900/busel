@@ -22,6 +22,9 @@ urlpatterns=[
 	path('unblock_institution/<int:institution>',UnblockInstitution.as_view() ,name="UnBlockInstitution"),
 	path('delete_institution/<int:institution>',DeleteInstitutionForever.as_view() ,name="DeleteInstitution"),
 	path('edit_institution/<int:pk>', EditInstitutuonView.as_view(), name="EditInstitution"),
+	path('connection_requests', ConnectionRequests.as_view(), name="ConnectionRequests"),
+	path('connection_requests_delete/<int:pk>', DeleteConnection.as_view(), name="ConnectionRequestsDelete"),
+	path('connection_requests_approval/<int:pk>', ApprovalConnection.as_view(), name="ApprovalConnection"),
 	#
 
 	path('ads/', AdsCreateView.as_view(), name='create_ad'),
