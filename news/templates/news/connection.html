@@ -87,23 +87,23 @@
 
         <div class="formbold-form-step-1 active">
             <div>
-                <label for="name" class="formbold-form-label"> Полное наименование ОО </label>
+                <label for="name" class="formbold-form-label"> Полное наименование ОО <small>*</small> </label>
                 <input
                   type="text"
                   name="iname"
                   id="iname"
-                  placeholder="Муниципальное автономное общеобразовательное учреждение «Средняя общеобразовательная школа №15»"
+                  placeholder=""
                   class="formbold-form-input"
                   required="required"
                 />
             </div>
             <div>
-                  <label for="sname" class="formbold-form-label"> Краткое наименование ОО </label>
+                  <label for="sname" class="formbold-form-label"> Краткое наименование ОО <small>*</small> </label>
                   <input
                   type="text"
                   name="sname"
                   id="sname"
-                  placeholder="МБОУ СОШ №15"
+                  placeholder=""
                   class="formbold-form-input"
                   required="required"
                   />
@@ -131,50 +131,71 @@
           </div>
 
             <div>
-                <label for="department" class="formbold-form-label"> Орган управления (можно оставить пустым)</label>
+                {% if not mo %}
+                <label for="department" class="formbold-form-label">
+
+                    Орган управления (можно оставить пустым)
+
+                </label>
                 <select class="formbold-form-select" name="department" id="department">
                     <option >Не выбрано</option>
                     {% for department in departments %}
-
+                    {% if department.short_title != 'МО РФ Г. Чебаркуль' %}
                     <option value="{{ department.id }}">{{ department }}</option>
+                    {% endif %}
                     {% endfor %}
                   </select>
+                {% else  %}
+                <label for="department" class="formbold-form-label">
 
+                    Орган управления
+
+                </label>
+                <select class="formbold-form-select" name="department" id="department" >
+
+                    {% for department in departments %}
+                    {% if department.short_title == 'МО РФ Г. Чебаркуль' %}
+                    <option value="{{ department.id }}" >{{ department }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                 {% endif %}
             </div>
           <div>
-              <label for="city" class="formbold-form-label"> Город </label>
+              <label for="city" class="formbold-form-label"> Город <small>*</small> </label>
               <input
               type="text"
               name="city"
               id="city"
-              placeholder="Казань"
+              placeholder=""
               class="formbold-form-input"
               required="required"
               />
           </div>
+            <small>* обязатаельно для заполнения</small>
         </div>
 
         <div class="formbold-form-step-2">
             <div class="formbold-input-flex">
 
               <div>
-                  <label for="surname" class="formbold-form-label"> Фамилия </label>
+                  <label for="surname" class="formbold-form-label"> Фамилия <small>*</small> </label>
                   <input
                     type="text"
                     name="surname"
                     id="surname"
-                    placeholder="Иванов"
+                    placeholder=""
                     class="formbold-form-input"
                     required="required"
                   />
               </div>
               <div>
-                  <label for="name" class="formbold-form-label"> Имя </label>
+                  <label for="name" class="formbold-form-label"> Имя <small>*</small> </label>
                   <input
                     type="text"
                     name="name"
                     id="name"
-                    placeholder="Иван"
+                    placeholder=""
                     class="formbold-form-input"
                     required="required"
                   />
@@ -183,18 +204,18 @@
             <div class="formbold-input-flex">
 
               <div>
-                  <label for="type" class="formbold-form-label"> Отчество </label>
+                  <label for="type" class="formbold-form-label"> Отчество <small>*</small></label>
                   <input
                     type="text"
                     name="mname"
                     id="mname"
-                    placeholder="Иванович"
+                    placeholder=""
                     class="formbold-form-input"
                     required="required"
                   />
               </div>
               <div>
-                  <label for="dr" class="formbold-form-label"> Дата рождения </label>
+                  <label for="dr" class="formbold-form-label"> Дата рождения <small>*</small> </label>
                   <input
                     type="date"
                     name="dr"
@@ -206,29 +227,40 @@
             </div>
             <div class="formbold-input-flex">
             <div>
-                  <label for="email" class="formbold-form-label"> Электронная почта </label>
+                  <label for="email" class="formbold-form-label"> Электронная почта <small>*</small> </label>
                   <input
                     type="email"
                     name="email"
                     id="email"
-                    placeholder="ivan.ivanov@domen.ru"
+                    placeholder=""
                     class="formbold-form-input"
                     required="required"
                   />
             </div>
                 <div>
-                  <label for="number" class="formbold-form-label"> Номер телефона </label>
+                  <label for="number" class="formbold-form-label"> Номер телефона <small>*</small> </label>
                   <input
                     type="tel"
                     name="number"
                     id="number"
-                    placeholder="+79958884839"
+                    placeholder=""
                     class="formbold-form-input"
                     required="required"
                   />
             </div>
             </div>
-          <div>
+                        <div>
+                <label for="inn" class="formbold-form-label"> ИНН <small>*</small> </label>
+                <input
+                  type="text"
+                  name="inn"
+                  id="inn"
+                  placeholder=""
+                  class="formbold-form-input"
+                  required="required"
+                />
+            </div>
+          <div class="mt-3">
             <label for="message" class="formbold-form-label"> Комментарий к заявке </label>
             <textarea
               rows="6"
@@ -238,6 +270,7 @@
               class="formbold-form-input"
             ></textarea>
           </div>
+            <small>* обязатаельно для заполнения</small>
         </div>
 
         <div class="formbold-form-step-3">
@@ -321,7 +354,9 @@
     justify-content: center;
     padding: 48px;
   }
-
+  small {
+    color:red;
+  }
   .formbold-form-wrapper {
     margin: 0 auto;
     max-width: 700px;

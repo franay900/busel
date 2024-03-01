@@ -21,6 +21,7 @@ urlpatterns = [
 	path('student-codes/create', student_code,name='CreateStudentsCode'),
 
 	path('connection/', Connection.as_view(),name='Connection'),
+	path('connection/mo', ConnectionMO1.as_view(),name='ConnectionMO'),
 
 	#Смена пароля
 	path('password-reset/', UserForgotPasswordForm.as_view(),name='password-reset'),

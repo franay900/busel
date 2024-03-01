@@ -34,7 +34,7 @@
             <td>{{ request.email }}</td>
             <td>{{ request.phone }}</td>
             <td class="text-center">
-                <a class="request-info text-info"  title="Посмотреть подробнее" inst_title="{{ request.title }}" stitle="{{ request.short_title }}"  phone="{{request.phone}}" email="{{ request.email }}" fio="{{ request.surname }} {{ request.name }} {{ request.middle_name }}" city="{{ request.city }}" type="{{ request.typeInstitutions }}" kind="{{ request.kindInstitutions }}" dep="{{ request.institution }}" comment="{{ request.comment }}">
+                <a class="request-info text-info"  title="Посмотреть подробнее" inst_title="{{ request.title }}" stitle="{{ request.short_title }}"  phone="{{request.phone}}" email="{{ request.email }}" fio="{{ request.surname }} {{ request.name }} {{ request.middle_name }}" city="{{ request.city }}" type="{{ request.typeInstitutions }}" kind="{{ request.kindInstitutions }}" dep="{{ request.institution }}" comment="{{ request.comment }}" inn="{{ request.inn }}">
                     <i class="bi bi-info-circle"></i>
                 </a>
 
@@ -108,6 +108,10 @@
                     <td id="dep"></td>
                 </tr>
                 <tr>
+                    <td>ИНН</td>
+                    <td id="inn"></td>
+                </tr>
+                <tr>
                     <td>Комментарий к заявке</td>
                     <td id="comment"></td>
                 </tr>
@@ -133,6 +137,7 @@
         $('#kind').text($(this).attr('kind'))
         $('#dep').text($(this).attr('dep'))
         $('#comment').text($(this).attr('comment'))
+        $('#inn').text($(this).attr('inn'))
     })
 
 </script>

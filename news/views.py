@@ -24,6 +24,8 @@ from django.urls import reverse_lazy
 from modules.users import confirm_email
 from django.contrib.auth.views import LoginView
 from institutions.models import Institutions,TypeInstitutions, KindInstitutions, ConnectInstituions
+from django.db.models import Q
+
 
 
 
@@ -167,12 +169,18 @@ class UserForgotPasswordForm(PasswordResetView):
 class Connection(View):
 	def get(self,request):
 		context = {}
-		context['types'] = TypeInstitutions.objects.all()
+
 		context['kinds'] = KindInstitutions.objects.all()
 		context['departments'] = Institutions.objects.filter(
                 typeInstitutions__title="Орган управления", is_active=True
             )
 		template = 'news/connection.html'
+
+		if request.GET.get('mo'):
+			context['mo'] = True
+			context['types'] = TypeInstitutions.objects.filter(~Q(title='Орган управления'))
+		else:
+			context['types'] = TypeInstitutions.objects.all()
 		return render(request,template,context)
 	def post(self,request):
 		data = [
@@ -188,19 +196,26 @@ class Connection(View):
 			request.POST.get('dr'),
 			request.POST.get('number'),
 			request.POST.get('message'),
-			request.POST.get('email')
+			request.POST.get('email'),
+			int(request.POST.get('inn'))
 
 		]
+
 		kind = KindInstitutions.objects.get(pk=int(data[3]))
 		type_ = TypeInstitutions.objects.get(pk=int(data[2]))
+		print(data)
 		if data[5]!='Не выбрано':
 			institution = Institutions.objects.get(pk=int(data[5]))
 		else:
 			institution = Institutions.objects.get(title="Организации ПК Бусел")
 
 		if data[0] and data[1] and data[4] and data[6] and data[7] and data[8] and data[10] and data[12]:
-			ConnectInstituions.objects.create(title=data[0],short_title=data[1],typeInstitutions=type_,kindInstitutions=kind,city=data[4], institution=institution, name=data[6],surname=data[7], middle_name=data[8],birthday=data[9],phone=data[10],comment=data[11], email=data[12])
+			ConnectInstituions.objects.create(title=data[0],short_title=data[1],typeInstitutions=type_,kindInstitutions=kind,city=data[4], institution=institution, name=data[6],surname=data[7], middle_name=data[8],birthday=data[9],phone=data[10],comment=data[11], email=data[12], inn=data[13])
 			messages.success(request,'Заявка принята')
 		else:
 			messages.error(request,'Ошибка')
 		return redirect('Connection')
+
+class ConnectionMO1(View):
+    def get(self, request):
+        return render(self.request,'news/mo_1.html')

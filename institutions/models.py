@@ -54,6 +54,7 @@ class Institutions(models.Model):
     lim = models.IntegerField(default = 0)
     number_of_lessons = models.IntegerField(default = 8, verbose_name='Количество уроков (занятий) в расписании')
     second_shift = models.BooleanField(default=False)
+    inn = models.IntegerField(null=True)
     class Meta:
         verbose_name = 'Организацию'
         verbose_name_plural = 'Организации'
@@ -71,6 +72,7 @@ class ConnectInstituions(models.Model):
     typeInstitutions = models.ForeignKey(TypeInstitutions, on_delete=models.PROTECT, verbose_name='Тип', null=True)
     kindInstitutions = models.ForeignKey(KindInstitutions, on_delete=models.PROTECT, verbose_name='Вид', null=True,
                                          blank=True)
+    inn = models.IntegerField(null=True)
     city = models.CharField(max_length=150, verbose_name='Город')
     email = models.CharField(max_length=150, verbose_name='Почта')
     phone = models.CharField(max_length=150, verbose_name='Телефон')

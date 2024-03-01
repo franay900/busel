@@ -521,7 +521,9 @@ class ApprovalConnection(PermissionRequiredMixin, View):
         chars = "abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
         for i in range(8):
             login += random.choice(chars)
-        institutions_create = Institutions.objects.create(title=connection.title, short_title=connection.short_title,year=Year.objects.all().last(),typeInstitutions=connection.typeInstitutions,kindInstitutions=connection.kindInstitutions, departmental_organization=connection.institution)
+        institutions_create = Institutions.objects.create(title=connection.title, short_title=connection.short_title,year=Year.objects.all().last(),
+                                                          typeInstitutions=connection.typeInstitutions,kindInstitutions=connection.kindInstitutions,
+                                                          departmental_organization=connection.institution, inn=connection.inn)
 
 
         group = connection.typeInstitutions.group.all()[0]
@@ -532,6 +534,8 @@ class ApprovalConnection(PermissionRequiredMixin, View):
         ConnectInstituions.objects.get(pk=pk).delete()
         messages.success(request,f'Заявка успешно одобрена! Пригласительный код:{login}')
         return redirect('ConnectionRequests')
+
+
 class EditInstitutuonView(UpdateView):
     template_name = "institutions/institutions.html"
     form_class = InstitutionsInfoForm
