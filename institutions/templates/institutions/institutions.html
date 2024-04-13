@@ -30,7 +30,7 @@
                   <i class="bi bi-list-check"></i> Типы уроков 
                 </a>
                 <a href="#security" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded">
-                  <i class="bi bi-mortarboard"></i> Типы экзаменов
+                  <i class="bi bi-bag-fill"></i> Оплата
                 </a>
                 {% endif %}
               </nav>
@@ -153,31 +153,28 @@
               </div>
 
               <div class="tab-pane" id="security">
-                <h6>Типы экзаменов</h6>
+                <h6>Оплата</h6>
                 <hr>
-                 <table class="table table-bordered table-sm table-hover">
-                        <thead class="bg-info text-white">
-                            <th class="text-center">№</th>
-                            <th class="text-center">Полное наименование</th>
-                            <th class="text-center">Краткое наименование</th>
-                            <th class="text-center">Тип</th>
-                        </thead>
-                                <tbody>
-                            {% for type in typese %}
-                            <tr>
-                                <td class="text-center">{{ forloop.counter }}</td>
-                                <td>{{ type.name }}</td>
-                                <td>{{ type.short_name }}</td>
-                                <td>{% if type.institution %}Индвидуальный{% else %}Системный{% endif %}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
+                  <div class="row">
+                      <div class="col font-weight-bold" >Ваш баланс:</div>
+                      <div class="col">
+                          50 ₽
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col font-weight-bold">Тарифный план:</div>
+                      <div class="col">Расширенный ОО (120 р/месяц)</div>
+                  </div>
+                  <div class="row">
+                      <div class="col font-weight-bold">Окончание подписки:</div>
+                      <div class="col">18.03.2024</div>
+                  </div>
 
-                    </table>
-
-                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">
-                 <i class="bi bi-folder-plus"></i> Добавить тип экзамена
-                </button> 
+                  <div class="mt-3">
+                      <button class="btn btn-info">Оплатить за период</button>
+                      <button class="btn btn-info">Пополнить баланс</button>
+                      <button class="btn btn-info">Сменить тариф</button>
+                  </div>
               </div>
               <form method="POST">
               {% csrf_token %}

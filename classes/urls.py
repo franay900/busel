@@ -42,5 +42,12 @@ urlpatterns=[
 
 	path('group_view/',GroupView.as_view() ,name="Groups"),
 
+	# кабинеты
+	path('cabinets/', CabinetsView.as_view(), name="Cabinets"),
+	path('cabinets/floors/add', FloorAddView.as_view(), name="AddFloor"),
+	path('cabinets/add', CabinetsAdd.as_view(), name="AddCabinet"),
+	path('cabinets/delete/<int:pk>', CabinetsDelete.as_view(), name="DeleteCabinet"),
+	path('cabinets/edit/', CabinetsEdit.as_view(), name="EditCabinet"),
+
 ]
 

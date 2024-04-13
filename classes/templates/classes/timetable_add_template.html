@@ -57,7 +57,14 @@
 					{% endfor %}
 				</select>
 			</td>
-			<td  ><select disabled="" class="custom-select custom-select-sm " name="" id=""></select></td>
+			<td  >
+				 <select class="custom-select custom-select-sm" name="c{{ forloop.parentloop.parentloop.counter }}{{ forloop.parentloop.counter }}" id="">
+					 <option value=""></option>
+				{% for cabinet in cabinets %}
+				<option  value="{{ cabinet.pk }}" {% if subject.cabinet.pk == cabinet.pk  %} selected {% endif %}  >{{ cabinet.number }}</option>
+				{% endfor %}
+			  </select>
+			</td>
 			<td class="text-center">
 				{% if forloop.last %}
 				<button rowspan=1 type="button" class="btn btn-sm" id="plus" value="{{ forloop.parentloop.parentloop.counter }}{{ forloop.parentloop.counter }}">+</button>
@@ -79,7 +86,14 @@
 					{% endfor %}
 				</select>
 			</td>
-			<td  ><select disabled="" class="custom-select custom-select-sm " name="" id=""></select></td>
+			<td>
+				<select  class="custom-select custom-select-sm" name="c{{ forloop.parentloop.counter }}{{ forloop.counter }}"  id="">
+					<option value=""></option>
+					{% for cabinet in cabinets %}
+        				<option  value="{{ cabinet.pk }}">{{ cabinet.number }}</option>
+        			{% endfor %}
+				</select>
+			</td>
 			<td class="text-center"><button rowspan=1 type="button" class="btn btn-sm" id="plus" value="{{ forloop.parentloop.counter }}{{ forloop.counter }}">+</button></td>
 		</tr>
 		{% endif %}

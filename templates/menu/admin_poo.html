@@ -12,6 +12,11 @@
           <a class="dropdown-item" href="{% url 'institutionsHome' %}">Настройки</a>
 
           <a class="dropdown-item" href="{% url 'create_ad' %}">Объявления</a>
+            <a class="dropdown-item" href="{% url 'ProfessionList' %}">Профессии</a>
+          <a class="dropdown-item" href="{% url 'Subject_list' %}">Дисциплины</a>
+          <a class="dropdown-item" href="{% url 'Curriculum' %}">Учебные планы</a>
+          <a class="dropdown-item" href="{% url 'StudyPeriods' %}">Учебные периоды</a>
+          <a class="dropdown-item" href="{% url 'Bell_profile_list' %}">Расписание звонков</a>
 
           
           {% endif %}
@@ -27,22 +32,6 @@
 
 
 
-             <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle "  href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="bi bi-easel2"></i> Образование
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-
-          <a class="dropdown-item" href="{% url 'ProfessionList' %}">Профессии</a>
-          <a class="dropdown-item" href="{% url 'Subject_list' %}">Дисциплины</a>
-          <a class="dropdown-item" href="{% url 'Curriculum' %}">Учебные планы</a>
-          <a class="dropdown-item" href="{% url 'StudyPeriods' %}">Учебные периоды</a>
-          <a class="dropdown-item" href="{% url 'Bell_profile_list' %}">Расписание звонков</a>
-          
-          
-        </div>
-          
-        </li>
 
 
         <li class="nav-item dropdown">
@@ -85,10 +74,13 @@
           {% endif %}
 
           <a class="dropdown-item" href="{% url 'MyJournal' %}">Мой журнал</a>
-
+            <a class="dropdown-item" href="{% url 'AttendanceJournal' %}">Посещаемость</a>
         
           
        
         </div>
+      </li>
+    <li class="nav-item">
+         <a class="nav-link " href="{% url 'ReportsView' %}"><i class="bi bi-file-earmark-check"></i> Отчеты</a>
       </li>
       {% endif %}

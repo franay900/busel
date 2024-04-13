@@ -1,0 +1,313 @@
+{% extends 'lk.html' %}
+{% load mark_tags %}
+{% load user_tags %}
+{% load attendance %}
+
+{% block h2 %}
+<i class="bi bi-layout-text-sidebar"></i> {{ title }} 
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        
+        <div class="select-block">
+            <div class="select-title">
+                Класс:
+            </div>
+            <div class="select-wrapper">
+                <select name="classes" id="" class="select">
+                    {% for class in classes %}
+                    <option value="{{ class.pk }}" {% if load_pk.class_pk.pk == class.pk %} selected="" {% endif %}>{{ class }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="select-block">
+            <div class="select-title">
+                Предмет:
+            </div>
+            <div class="select-wrapper">
+
+
+                <select name="load" id="" class="select">
+                    {% for load in loads %}
+                    <option {% if load_pk.pk == load.pk %} selected="" {% endif %}  value="{{ load.pk }}">{{ load.subject_pk }} {% if load.subgroup %} ({{ load.subgroup.name }}) {% endif %}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="select-block">
+            <div class="select-title">
+                Учебный период:
+            </div>
+            <div class="select-wrapper">
+                <select name="period" id="periods" class="select">
+                    {% for periods in periods %}
+                        <option {% if period.pk == periods.pk %} selected="" {% endif %} value="{{periods.pk}}">{{ forloop.counter }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="select-block">
+            <button class="show_journal" type="submit">Показать</button>
+        </div>
+        
+    </div>
+</form>
+
+        <div class="form-group">
+
+         <div class="select-block">
+            <div class="select-title">
+                Цветные оценки:
+            </div>
+            <div class="" style="margin-left:4px">
+                <div class="switch">
+                    <input class="switch_checkbox" type="checkbox" checked >
+                </div>
+            </div>
+             <div class="select-block">
+            <div class="select-title" style="margin-left:40px">
+                Выставление с клавиатуры:
+            </div>
+            <div class="" style="margin-left:4px">
+                <div class="switch">
+                    <input class="switch_checkbox" type="checkbox" >
+                </div>
+            </div>
+            </div>
+        <div class="select-block">
+            <a style="margin-left:6px" class="show_journal">Темы уроков и домашнее задание</a>
+        </div>
+            <div class="select-block" style="margin-left:-6px">
+            <a class="show_journal">Итоговые оценки</a>
+            </div>
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <td class="number" rowspan="3">№</td>
+                <td class="fio" rowspan="3">Фамилия, Имя</td>
+                <td class="month" colspan="0" id="sep" >Сентябрь</td>
+                <td class="month" colspan="0" id="oct" >Октябрь</td>
+                <td class="month" colspan="0" id="nov" >Ноябрь</td>
+                <td class="month" colspan="0" id="dec" >Декабрь</td>
+
+
+                <td class="month" colspan="0" id="jan" >Январь</td>
+                <td class="month" colspan="0" id="feb" >Февраль</td>
+                <td class="month" colspan="0" id="march" >Март</td>
+
+
+                <td class="month" colspan="0" id="april" >Апрель</td>
+                <td class="month" colspan="0" id="may" >Май</td>
+                <td class="sball" rowspan="3">Средений балл</td>
+                <td class="itog" rowspan="3">1 полугодие</td>
+            </tr>
+            <tr class="dates" >
+                {% for lesson in lessons %}
+                <td class="date " colspan="{{ lesson.types.all.count }}">{{ lesson.date|date:'d' }}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                {% for lesson in lessons %}
+                {% if lesson.types.all %}
+                {% for lesson_type in lesson.types.all %}
+                <td class="type_lessons day{{ lesson.date|date:'m' }}">{{ lesson_type.short_name }}</td>
+                {% endfor %}
+                {% endif %}
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+        {% for student in students %}
+            <tr>
+                <td class="num">{{ forloop.counter }}</td>
+                <td class="td_fio" >{{ student.user.last_name }} {{ student.user.first_name }}</td>
+                {% for lesson in lessons %}
+                {% for lesson_type in lesson.types.all %}
+                <td class="mark" >
+                    {% get_marks lesosn=lesson.pk type_l=lesson_type.pk student=student.pk as mark %}
+
+                    <div class="mark_div mark{% if mark.mark %}{{ mark.mark }}{% endif %} {% if mark.mark2 %}one_mark{% endif %}">{% if mark.mark %}{{ mark.mark }}{% endif %}</div>
+
+                    <input class="edit_mark" type="text" type_lesson="{{ lesson_type.id }}" student="{{ student.pk }}" lesson="{{ lesson.pk }}">
+                </td>
+                {% endfor %}
+                {% endfor %}
+                <td class="average" id="av{{ student.pk }}">
+                    {% get_average student=student.pk as average %}
+                    {{ average }}
+
+                </td>
+                <td></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+
+<nav>
+    
+    
+
+    
+    <div class="pagination">
+        {% for page in lessons.paginator.page_range %}
+        <form method="post">
+            <input type="text" name="load" value="{{ load_pk.pk }}" style="display: none;">
+            {% csrf_token %}
+        <button name="page" value="{{ page }}">{{ page }}</button>
+        </form>
+        {% endfor %}
+    </div>
+    
+    
+</nav>
+
+    <script>
+        $('.mark').on('click', function(){
+            $(this).children('.mark_div').css('display','none');
+            $(this).children('.edit_mark').css('display','block');
+            $(this).children('.edit_mark').focus();
+        });
+        $('.edit_mark').on('focusout', function(){
+            savemark(this)
+        })
+
+        function savemark(self){
+
+
+            var mark = parseInt($(self).val());
+            var url='{% url 'Mark' %}'
+            var token='{{ csrf_token }}'
+            var type_lesson = $(self).attr('type_lesson')
+            var student = $(self).attr('student')
+            var lesson = $(self).attr('lesson')
+
+            $(self).css('display', 'none');
+            if ($.isNumeric( $(self).val() ) == false){
+                return 0;
+            }
+            if ($(self).val().trim().length === 0){
+                return 0;
+            }
+            if (mark <1 | mark > 5){
+                return 0;
+            }
+
+
+
+            $.ajax({
+                  url: url,
+                  method: 'post',
+                  dataType: 'json',
+                  data: {
+                    isitog:0,
+                    itog:0,
+                    attendance:0,
+                    red_mark:0,
+                    del_mark:0,
+                    mark: mark,
+                    two_mark:0,
+                    student:student,
+                    type:type_lesson,
+                    lesson:lesson,
+                    load:'{{load_pk.pk}}',
+                    csrfmiddlewaretoken: token
+                  },
+                  // если успешно, то
+                  success: function (response) {
+                      if ($('.switch_checkbox').is(':checked')==false) {
+
+
+                        $(self).parent().append(`<div class='mark_div markBW'>${mark}</div>`)
+                    }
+                    else {
+                        $(self).parent().append(`<div class='mark_div mark${mark}'>${mark}</div>`)
+                    }
+                    $('#av'+student).text(response.result)
+                    console.log(response.mark_pk)
+                  },
+                  // если ошибка, то
+                  error: function (response) {
+                      alert("Ошибка")
+                  }
+              });
+        }
+
+
+        var count_sep=$('table').find('.day09').length;
+        if (count_sep){
+          $(sep).attr('colspan',count_sep).show()
+      }
+        var count_oct=$('table').find('.day10').length;
+        if (count_oct){
+        $(oct).attr('colspan',count_oct).show()
+      }
+        var count_nov=$('table').find('.day11').length;
+        if (count_nov){
+          $(nov).attr('colspan',count_nov).show()
+        }
+        var count_dec=$('table').find('.day12').length;
+        if (count_dec){
+        $(dec).attr('colspan',count_dec).show()
+        }
+
+
+
+
+        var count_jan=$('table').find('.day01').length;
+
+        if (count_jan){
+        $(jan).attr('colspan',count_jan).show()
+        }
+
+
+        var count_feb=$('table').find('.day02').length;
+        if (count_feb){
+        $(feb).attr('colspan',count_feb).show()
+        }
+
+        var count_mar=$('table').find('.day03').length;
+        if (count_mar){
+        $(march).attr('colspan',count_mar).show()
+        }
+
+
+        var count_ap=$('table').find('.day04').length;
+        if (count_ap){
+        $('#april').attr('colspan',count_ap).show()
+        }
+
+        var count_may=$('table').find('.day05').length;
+        if (count_may){
+        $('#may').attr('colspan',count_may).show()
+        }
+
+
+
+
+        $(":checkbox").change(function(){
+
+        if(this.checked){
+            console.log(1);
+        }else{
+            console.log(2);
+        }
+
+    });
+
+
+
+
+
+    </script>
+
+{% endblock %}

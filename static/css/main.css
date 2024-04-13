@@ -1,3 +1,6 @@
+
+
+
 .view-account{
 background:#FFFFFF; 
 margin-top:20px;
@@ -905,7 +908,9 @@ body {
   color: #494b4d;
   font-size: 14px;
   line-height: 20px;
+  background-color:F4F7FD;
 }
+
 
 h4 {
   margin: 0 0 10px 0;

@@ -300,6 +300,68 @@ class DeleteCurriculum(InstitutionsMixin,AdminPermissionMixin, DeleteView):
         return self.post(request, *args, **kwargs)
 
 
+class CabinetsView(View):
+    def get(self, request):
+        context = {}
+        context['title'] = 'Кабинеты'
+        context['floors'] = Floors.objects.filter(institution=request.user.institution).order_by('number')
+        context['teachers'] = UserNet.objects.filter(institution=self.request.user.institution.pk,groups__name__in=['Учитель','Преподаватель'],is_active=True)
+        context['cabinets'] = [cabinet for cabinet in Cabinets.objects.filter(floor__institution=request.user.institution).order_by('number')]
+        return render(request,'classes/cabinets.html', context)
+
+class FloorAddView(View):
+    def post(self, request):
+        try:
+            number = request.POST.get('number')
+            floor = Floors.objects.filter(number=number, institution=request.user.institution).first()
+            if not floor:
+                Floors.objects.create(number=number, institution=request.user.institution)
+            else:
+                messages.error(request, 'Этот этаж уже существует.')
+        except:
+            messages.error(request,'Во время обработки формы произошла ошибка.')
+        return redirect('Cabinets')
+class CabinetsAdd(View):
+    def post(self,request):
+        try:
+            data = [
+                request.POST.get('floor'),
+                request.POST.get('number'),
+                request.POST.get('name'),
+                request.POST.get('teacher'),
+
+            ]
+            floor = Floors.objects.filter(number=data[0],institution=request.user.institution).first()
+            if data[3] != '':
+                responsible = UserNet.objects.get(pk=int(data[3]))
+                Cabinets.objects.create(number=data[1],floor=floor,name=data[2], responsible=responsible)
+            else:
+                Cabinets.objects.create(number=data[1],floor=floor,name=data[2])
+        except:
+            messages.error(request, 'Во время обработки формы произошла ошибка.')
+        return redirect('Cabinets')
+
+class CabinetsEdit(View):
+    def post(self,request):
+        data = [
+            request.POST.get('floor'),
+            request.POST.get('number'),
+            request.POST.get('name'),
+            request.POST.get('teacher'),
+            request.POST.get('cabinet_id'),
+
+        ]
+        if data[3] != '':
+            responsible = UserNet.objects.get(pk=int(data[3]))
+            Cabinets.objects.filter(pk=int(data[4])).update(number=data[1], name=data[2], responsible=responsible)
+        else:
+            Cabinets.objects.filter(pk=int(data[4])).update(number=data[1], name=data[2], responsible=None)
+        return redirect('Cabinets')
+
+class CabinetsDelete(View):
+    def get(self,request,pk):
+        Cabinets.objects.get(pk=pk).delete()
+        return redirect('Cabinets')
 
 class LoadView(PermissionRequiredMixin, TimetableSettigns,SuccessMessageMixin, View):
     form_class = СurriculumForm
@@ -431,6 +493,7 @@ class AddTimetableTemplate(PermissionRequiredMixin, TimetableSettigns, View):
         context={}
         context['days'] = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
         context['title'] = 'Добавление шаблона расписания'
+        context['cabinets'] = Cabinets.objects.filter(floor__institution__pk=request.user.institution.pk).order_by('number')
         context['loads']=Load.objects.filter(class_pk=self.request.POST.get("class"))
         context['class_pk']=self.request.POST.get("class")
         context['numbers'] = list(range(1,self.request.user.institution.number_of_lessons+1))
@@ -448,11 +511,20 @@ class CreateTimetableTemplate(PermissionRequiredMixin,View):
         for bell in bell_filter:
             lesson=bell
             loads=request.POST.getlist(str(bell.day)+str((bell.lesson)))
-            
-            for load in loads:
+            cabinets = request.POST.getlist('c' + str(bell.day) + str((bell.lesson)))
+            for i in range(0,len(loads)):
+                load = loads[i]
+                try:
+                    cabinet = cabinets[i]
+                except:
+                    cabinet = None
                 if load:
                     get_subject=Load.objects.get(pk=int(load))
-                    SubjectTemplate.objects.create(day=bell.day,lesson=bell.lesson,profile=template,subject_pk=get_subject)
+                    try:
+                        cab = Cabinets.objects.get(pk=cabinet)
+                    except:
+                        cab = None
+                    SubjectTemplate.objects.create(day=bell.day,lesson=bell.lesson,profile=template,subject_pk=get_subject, cabinet=cab)
 
         return redirect(class_get.timetable_templates())
 
@@ -469,6 +541,8 @@ class UpdateTimetableTemplate(PermissionRequiredMixin,View):
         context['loads']=Load.objects.filter(class_pk=self.get_template().class_pk.pk)
         context['days'] = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
         context['title'] = 'Редактирование'+'"'+self.get_template().name+'"'
+        context['cabinets'] = Cabinets.objects.filter(floor__institution__pk=request.user.institution.pk).order_by(
+            'number')
         context['numbers'] = list(range(1,self.request.user.institution.number_of_lessons+1))
         context['number'] = self.request.user.institution.number_of_lessons
         return render(request, self.template_name,context)
@@ -492,13 +566,22 @@ class UpdateTimetableTemplate(PermissionRequiredMixin,View):
             lesson=bell
             loads=request.POST.getlist(str(bell.day)+str((bell.lesson)))
             new_loads=list(filter(None, loads))
-            for load in new_loads:
-                 check_template_subjects=SubjectTemplate.objects.filter(day=bell.day,lesson=bell.lesson,profile=template,subject_pk__id=load).values_list('subject_pk')
+            cabinets = request.POST.getlist('c' + str(bell.day) + str((bell.lesson)))
+            for i in range(0,len(new_loads)):
+
+                 load = new_loads[i]
+
+                 try:
+                     cab = Cabinets.objects.get(pk=cabinets[i])
+                 except:
+                     cab = None
+                 check_template_subjects=SubjectTemplate.objects.filter(day=bell.day,lesson=bell.lesson,profile=template,subject_pk__id=load, cabinet=cab).values_list('subject_pk')
                  if check_template_subjects:
                     sub_template=check_template_subjects[0][0]
                  else:
+                        SubjectTemplate.objects.filter(day=bell.day,lesson=bell.lesson,profile=template,subject_pk__id=load).delete()
                         get_subject=Load.objects.get(pk=int(load))
-                        SubjectTemplate.objects.create(day=bell.day,lesson=bell.lesson,profile=template,subject_pk=get_subject)
+                        SubjectTemplate.objects.create(day=bell.day,lesson=bell.lesson,profile=template,subject_pk=get_subject, cabinet=cab)
 
 
         return redirect(class_get.timetable_templates())
@@ -548,7 +631,7 @@ class TimetableWeek(PermissionRequiredMixin, TimetableSettigns, View):
                         weekday=date_week.isoweekday()
                         get_lesson=SubjectTemplate.objects.filter(profile__id=post_week,day=weekday)
                         for lesson in get_lesson:
-                            lesson_save=Lessons.objects.create(number=lesson.lesson,date=date_week,class_pk=self.get_class(),subject_pk=lesson.subject_pk,teacher=lesson.subject_pk.teacher)
+                            lesson_save=Lessons.objects.create(number=lesson.lesson,date=date_week,class_pk=self.get_class(),subject_pk=lesson.subject_pk,teacher=lesson.subject_pk.teacher,cabinet=lesson.cabinet)
                             lesson_save.types.add(get_types.pk)
         messages.success(request,'Уроки успешно распределены')
         return redirect(request.META.get('HTTP_REFERER'))
@@ -566,6 +649,8 @@ class EditLessons(PermissionRequiredMixin,TimetableSettigns,View):
         context['lessons']=self.get_lessons()
         context['class']=self.get_class()
         context['loads']=self.get_loads()
+        context['cabinets'] = Cabinets.objects.filter(floor__institution__pk=request.user.institution.pk).order_by(
+            'number')
         context['teachers']=UserNet.objects.filter(institution=request.user.institution,groups__name__in=['Учитель', 'Преподаватель'],is_active=True)
         return render(request, self.template_name, context)
     def post(self,request,class_pk):

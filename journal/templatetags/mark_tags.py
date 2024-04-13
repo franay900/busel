@@ -9,7 +9,7 @@ register = template.Library()
 def get_marks(context,lesosn,type_l,student):
 	
 
-	return Marks.objects.filter(student__id=student,lesson=lesosn,lesson_type__id=type_l).first()
+	return Marks.objects.filter(student__id=student,lesson=lesosn,lesson_type__id=type_l).last()
 
 @register.simple_tag(name='get_marks_itog', takes_context=True)
 def get_marks_itog(context,period,student,load):
@@ -29,7 +29,7 @@ def sball_count(context,student):
 			count_itog=marks.exclude(mark__isnull=False,attendance=1).count()+marks.exclude(mark2__isnull=False,attendance=1).count()
 			sum_itog=sum_mark['mark__sum']+sum_mark['mark2__sum']
 		else: 
-			print(2)
+
 			count_itog=marks.exclude(mark__isnull=False,attendance=1).count()
 			sum_itog=sum_mark['mark__sum']
 
@@ -37,11 +37,36 @@ def sball_count(context,student):
 
 		return sum_itog, count_itog, marks.exclude(mark__isnull=False,attendance=1).count(), marks.exclude(mark__gt=1,attendance=1).count()
 		
-		
+
+@register.simple_tag(name='get_average', takes_context=True)
+def get_average(context, student):
+	marks = Marks.objects.filter(student=student, lesson__in=context['all_lessons'])
+	mark_sum = 0
+	mark_count = 0
+	result = 0
+	arr = []
+	for mark in marks:
+		if mark.lesson not in arr:
+			arr.append(mark.lesson)
+			if mark.mark:
+				mark_sum+=mark.mark
+				mark_count +=1
+			if mark.mark2:
+				mark_sum+=mark.mark2
+				mark_count += 1
+	try:
+		result = "{:.2f}".format(mark_sum/mark_count)
+	except:
+		result = ''
+	return result
 
 @register.simple_tag(name='get_itogs', takes_context=True)
 def get_itogs(context,itog,student,load):
 	
 
-	return MarksItog.objects.filter(student__id=student,itog=itog,load__pk=load).first()
+	return MarksItog.objects.filter(student__id=student,itog=itog,load__pk=load)
+
+
+
+
 

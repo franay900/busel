@@ -1,64 +1,43 @@
- <!--
- <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">Бусел</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+{% load static %}
+<header>
+<a href="" class="lk-logo">
+<img src="{% static 'img/lk-logo.png'%}" alt="">
+</a>
+<nav>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="{% url 'home' %}">Главная <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
+  <ul>
+  <li>
 
-        {% if request.user.is_authenticated %}
-        <a class="nav-link" href="{% url 'add_news' %}">Добавить новость</a>
-        {% endif %}
+      <a href="#">Главная</a>
+  </li>
+  <li>
 
-      </li>
-      
-    </ul>
-    <span class="navbar-text">
-      {% if request.user.is_authenticated %}
-      Добро пожаловать,{{ user.username }} | <a href="{% url 'logout' %}">Выход</a>
-      {% else %}
-      <a href="{% url 'login' %}" >Вход</a> 
-      {% endif %}
-         
-        
-      </span>
-  </div>
+
+      <a href="#">Мой класс <i class='bx bx-chevron-down'></i></a>
+      <ul>
+        <li><a href="#">Ученики</a></li>
+        <li><a href="">Журнал</a></li>
+      </ul>
+
+  </li>
+  <li>
+    <a href="#">Журналы <i class='bx bx-chevron-down'></i></a>
+
+    <ul>
+        <li><a href="#">Мой журнал</a></li>
+        <li><a href="#">Посещаемости</a></li>
+      </ul>
+
+
+  </li>
+
+      <li>
+    <a href="#">Отчеты</a>
+
+
+
+  </li>
+  </ul>
 </nav>
 
--->
-
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-  <a class="navbar-brand" href="#">Бусел</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
-  <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Главная <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#">О проекте</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#">Заявка на участие в тестировании</a>
-      </li>
-
-        {% if request.user.is_superuser %}
-        <li class="nav-item">
-        
-        <a class="nav-link" href="{% url 'add_news' %}">Добавить новость</a>
-        </li>
-        {% endif %}
-    </ul>
-      <a class="btn btn-outline-success my-2 my-sm-0" href="{% url 'login' %}" >Вход</a>
-
-  </div>
-</nav>
+</header>

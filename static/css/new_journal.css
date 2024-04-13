@@ -1,0 +1,505 @@
+@font-face {
+    font-family: "Cera PRO Regular";
+    src: url("https://db.onlinewebfonts.com/t/917a69d24b88e2d4d2ca803c0605bd59.eot");
+    src: url("https://db.onlinewebfonts.com/t/917a69d24b88e2d4d2ca803c0605bd59.eot?#iefix")format("embedded-opentype"),
+    url("https://db.onlinewebfonts.com/t/917a69d24b88e2d4d2ca803c0605bd59.woff2")format("woff2"),
+    url("https://db.onlinewebfonts.com/t/917a69d24b88e2d4d2ca803c0605bd59.woff")format("woff"),
+    url("https://db.onlinewebfonts.com/t/917a69d24b88e2d4d2ca803c0605bd59.ttf")format("truetype"),
+    url("https://db.onlinewebfonts.com/t/917a69d24b88e2d4d2ca803c0605bd59.svg#Cera PRO Regular")format("svg");
+}
+
+* {
+    margin:0;
+    padding:0;
+
+}
+
+body {
+    font-family: Cera Pro;
+}
+
+.lk-logo > img{
+    height: 50px;
+    margin-top: 7px;
+    margin-left: 90px;
+
+}
+
+header {
+
+
+    width: 100%;
+    height: 50px;
+    background: rgba(57, 150, 227, 0.8);
+    display: flex;
+
+}
+huader ul {
+    position: relative;
+}
+header ul li {
+    position: relative;
+    float:left;
+    list-style:none;
+    padding: 15px;
+
+}
+
+header  ul li a {
+
+    color: rgb(255, 255, 255);
+    font-family: Cera Pro;
+    font-size: 15px;
+
+    margin-right:10px;
+
+    text-decoration:none;
+}
+
+
+
+header ul li ul {
+    position: absolute;
+    left:0;
+    color: #fff;
+    box-shadow: 0px 0px 4px -2px rgba(0, 0, 0, 0.5);
+    margin-top: 17px;
+    z-index:2;
+    background:#fff;
+    display:none;
+    width:200px;
+
+}
+header ul li ul li{
+      position: relative;
+      width:85%;
+      border 1px solid rgba(0,0,0,0.2);
+
+
+}
+
+header ul li ul li:hover a{
+     color:#fff;
+
+}
+header ul li ul li a {
+
+    color: #000000;
+    text-decoration:none;
+
+
+}
+header ul li ul li:hover {
+    background: blue;
+    background: rgba(57, 150, 227, 0.8);
+
+}
+
+header ul li:hover ul {
+    display:block;
+}
+.container {
+    margin-left:100px;
+    margin-right:100px;
+}
+
+
+
+
+h4 {
+    color: rgba(10, 57, 108, 0.8);
+    font-family: Cera Pro;
+    font-size: 33px;
+    font-weight: 700;
+    line-height: -1px;
+    letter-spacing: 0px;
+    text-align: left;
+    margin-top:10px;
+}
+
+table {
+
+    border-collapse: collapse;
+    
+    border-spacing: 1em 2px;
+    margin-top: 10px;
+}
+
+
+.mark:hover {
+    background-color:  rgb(189, 213, 236);
+}
+
+
+thead  {
+    
+    background: rgba(57, 150, 227, 0.79);
+    width: 1211px;
+    height: 135px;
+}
+
+
+thead > tr > td {
+    color: rgba(255, 255, 255, 0.82);
+    font-family: Cera Pro;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 19px;
+    letter-spacing: 0px;
+    text-align: left;
+    width: 64px;
+    height: 42px;
+}
+
+.number {
+    width: 50px;
+    
+    border-radius: 20px 0 0 0;
+    color: rgba(255, 255, 255, 0.82);
+    font-family: Cera Pro;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 19px;
+    letter-spacing: 0px;
+    text-align: center;
+}
+
+.itog {
+    border-radius: 0 20px 0 0 ;
+    text-align: center;
+}
+
+.date {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.82);
+    font-family: Cera Pro;
+    font-size:16px;
+    font-weight: 700;
+    line-height: -1px;
+    letter-spacing: 0px;
+    border-right: 1px solid rgb(202, 200, 200);
+    border-bottom: 1px solid rgb(202, 200, 200);
+    border-top: 1px solid rgb(202, 200, 200);
+   
+}
+
+
+.fio {
+    width: 222px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.82);
+    font-family: Cera Pro;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 18px;
+    letter-spacing: 0px;
+    border-right: 1px solid rgb(202, 200, 200);
+    border-left: 1px solid rgb(202, 200, 200);
+    
+    
+    
+}
+
+
+
+.sball {
+    width: 69px;
+    text-align: center;
+    border-right: 1px solid rgb(202, 200, 200);
+    
+}
+
+.type_lessons{
+    text-align: center;
+    border-right: 1px solid rgb(202, 200, 200);
+}
+.month {
+    text-align: center;
+    border-right: 1px solid rgb(202, 200, 200);
+}
+
+
+tbody >tr >td {
+    border: 1px solid rgb(202, 200, 200);
+    height: 34px;
+}
+
+.num{
+    text-align: center;
+}
+
+
+.num, .td_fio {
+    color: rgba(0, 0, 0, 0.8);
+    font-family: Cera Pro;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 18px;
+    letter-spacing: 0px;
+    
+}
+.td_fio{
+    padding-left: 3px;
+}
+
+.mark {
+    text-align: center;
+
+}
+
+.mark_div {
+    
+    width: 21px;
+    height: 29px;
+
+    margin-left: 22px;
+    margin-top: 4px;
+    width: 21px;
+    height: 29px;
+    font-size: 24px;
+    font-family: Cera Pro;
+}
+
+.mark5{
+    background: rgba(31, 153, 28, 0.75);
+    color:#fff;
+}
+.mark4{
+    background: rgba(45, 158, 135, 0.75);
+    color:#fff;
+}
+.mark3{
+    background: rgb(216, 167, 59);
+    color:#fff;
+}
+.mark2{
+    background: rgba(190, 55, 55, 0.79);
+    color:#fff;
+}
+
+
+
+.marks_div{
+
+
+}
+
+.one_mark {
+    margin-left:7px;
+
+}
+.two_mark {
+    margin-left:0;
+    width:30px;
+}
+
+.edit_mark {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    outline:none;
+    border: 0px;
+    display: none;
+    
+}
+
+.markBW{
+    font-family:Arial;
+    color: rgba(0, 0, 0, 0.65);
+    font-family: Cera Pro;
+    font-weight: 500;
+    line-height: -1px;
+    letter-spacing: 0px;
+    font-size:20px;
+
+}
+.edit_mark:focus{
+    border: none;
+    outline:none;
+    background-color:  rgb(189, 213, 236);
+    border: 1px solid rgb(202, 200, 200);
+  }
+  input[type="text"]{text-align: center;}
+
+
+.month{
+  display: none;
+}
+
+
+.form-group{
+    display:flex;
+}
+
+.select-title{
+    font-family: Cera Pro;
+    font-size: 14px;
+	font-weight: 700;
+	margin-top: 9px;
+
+
+}
+
+.select {
+	/* Растягиваем блок на 100% родительского блока, для правильного размещения кастомной стрелочки */
+	width: 100%;
+
+	/* Убираем браузерную стрелку */
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	appearance: none;
+
+	/* Задаем свой фон и рамку */
+	border: 1px solid #7E9BBD;
+	border-radius: 6px;
+	background-color: #fff;
+
+	/* Отступы от рамки к тексту */
+	padding: 10px 35px 10px 15px;
+
+	/* Убираем баузерную обводку*/
+	outline: none;
+
+	cursor: pointer;
+	margin-left:10px;
+
+}
+.form-group {
+    margin-top:20px;
+}
+/* Убираем стрелочку в IE 10 и 11 */
+.select::-ms-expand {
+	display: none;
+}
+
+/* По клику - убираем обводку и добавляем свою*/
+.select:focus {
+	outline: none;
+	box-shadow: 0px 0px 0px 1px #38577a, 0px 0px 10px #7e9bbd;
+}
+
+/* Делаем .select-wrapper родительским элементом для позиционирования "стрелочки" */
+.select-wrapper {
+	position: relative;
+}
+
+/* Рисуем стрелочку */
+.select-wrapper::before {
+	content: "";
+
+	position: absolute;
+	top: 42%;
+	right: 6px;
+	transform: translateY(-50%);
+
+	display: block;
+
+	/* Рисуем треугольник */
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 10.4px 6px 0 6px;
+	border-color: #7e9bbd transparent transparent transparent;
+
+	/* Снимаем клик с треугольника */
+	pointer-events: none;
+}
+
+.select-block {
+    display:flex;
+    margin-right:40px;
+}
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    margin-left:10px;
+
+  }
+
+
+
+  input[type="checkbox"]{
+    position: relative;
+    width: 65px;
+    height: 27px;
+    -webkit-appearance: none;
+    outline: none;
+    background: #c6c6c6;
+    border-radius: 20px;
+    box-shadow: inset 0 0 5px rgba(0,0,0,.2);
+    margin-top:5px;
+
+  }
+
+  input:checked[type="checkbox"]{
+
+    background: rgba(57, 150, 227, 0.25);
+  }
+
+  input[type="checkbox"]:before {
+    content: '';
+    position: absolute;
+    width: 35px;
+    height: 27px;
+    border-radius: 20px;
+    top: 0;
+    left: 0;
+    background: #fff;
+    transition: .5s;
+    transform: scale(1.1);
+    box-shadow: 0 2px 5px rgba(0,0,0,.2);
+  }
+
+  input:checked[type="checkbox"]:before {
+    left: 40px;
+  }
+
+  .show_journal {
+    font-size:14px;
+    box-sizing: border-box;
+    border: 1px solid rgba(10, 57, 108, 0.8);
+    border-radius: 6px;
+
+    background: rgba(57, 150, 227, 0.25);
+
+    padding: 10px 13px;
+
+  }
+
+  .show_journal:hover {
+
+    background: rgba(57, 150, 227, 0.38);
+
+  }
+
+
+  .average {
+    text-align:center;
+  }
+
+
+.pagination {
+    list-style-type: none;
+    display: flex;
+    margin-top: 25px;
+}
+
+.pagination button {
+
+    background: none;
+    border: none;
+    appearance: none;
+    margin-right: 10px;
+    width: 41px;
+    height: 41px;
+    background-color: #ccccccaf;
+    border-radius: 7px;
+}
+
+.pagination button:hover {
+
+    background-color: #ccc;
+}

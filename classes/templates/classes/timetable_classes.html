@@ -5,35 +5,55 @@
 
 
 {% block content %}
-	<table class="rtable">
-		<thead>
+
+
+<div class="alert alert-info" role="alert">
+  <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Условные обозначения</h4>
+  <p>
+	  <i class="bi bi-app-indicator"></i> - Шаблоны <br>
+	  <i class="bi bi-bar-chart-steps"></i> - распределение уроков <br>
+	  <i class="bi bi-pencil-square"></i> - редактирование уроков
+  </p>
+
+</div>
+	<table class="table table-sm table-bordered table-hover mt-6">
+		<thead class="bg-info text-white">
 		<tr>
 			{% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
 			<th class="text-center">Группа</th>
 			{% else %}
 			<th class="text-center">Класс</th>
 			{% endif %}
-			<th >Учебный план</th>
+			<th class="text-center">Классный руководитель</th>
+			<th  class="text-center" >Учебный план</th>
+			<th  class="text-center">Смена</th>
+			<th class="text-center">Учебные периоды</th>
+
 			<th colspan="3" class="text-center">Действие</th>
 		</tr>
 		</thead>
 		{% for i in classes %}
 		<tr>
 			<td class="text-center">{{ i }}</td>
+			<td>{{ i.class_teacher }}</td>
 			<td >{{ i.сurriculum }}</td>
-			<td ><a href="{{ i.timetable_templates }}">Шаблоны</a></td>
+			<td>{{ i.change }} смена</td>
+			<td>{{ i.period_profile }}</td>
+			<td class="text-center"><a href="{{ i.timetable_templates }}" title="Шаблоны"><i class="bi bi-app-indicator"></i></a>
 			
 
 			{% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
-			<td ><a href="{{ i.timetable_weeks }}">Распределение занятий</a></td>
-			<td ><a href="{% url 'EditLesson' class_pk=i.pk %}">Редактирование занятий</a></td>
+			<a href="{{ i.timetable_weeks }}" title="Распределение занятий"><i class="bi bi-bar-chart-steps"></i></a>
+			<a href="{% url 'EditLesson' class_pk=i.pk %}" title="Редактирование занятий"><i class="bi bi-pencil-square"></i></a>
 			{% else %}
-			<td ><a href="{{ i.timetable_weeks }}">Распределение уроков</a></td>
-			<td ><a href="{% url 'EditLesson' class_pk=i.pk %}">Редактирование уроков</a></td>
+			<a href="{{ i.timetable_weeks }}" title="Распределение уроков"><i class="bi bi-bar-chart-steps"></i></a>
+			<a href="{% url 'EditLesson' class_pk=i.pk %}" title="Редактирование уроков"><i class="bi bi-pencil-square"></i></a>
 			{% endif %}
 
-			
+			</td>
 		</tr>
 		{% endfor %}
 	</table>
+
+
 {% endblock %}

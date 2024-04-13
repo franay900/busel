@@ -1,8 +1,9 @@
 from django.db import models
 from institutions.models import Institutions,Periods, SystemMarks, Subject, Year
-from classes.models import Load,Classes,Student
+from classes.models import Load,Classes,Student, Cabinets
 from user_account.models import UserNet
 from django.urls import reverse
+
 
 
 class LessonType(models.Model):
@@ -38,6 +39,7 @@ class Lessons(models.Model):
     types=models.ManyToManyField(LessonType)
     teacher=models.ForeignKey(UserNet, on_delete=models.SET_NULL, verbose_name="Учитель",
                                        null=True)
+    cabinet = models.ForeignKey(Cabinets, on_delete=models.SET_NULL, null=True)
     ktp = models.ForeignKey('TopiCktp', on_delete=models.SET_NULL, null=True)
 
 

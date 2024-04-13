@@ -4,6 +4,9 @@ from institutions.models import Periods
 from journal.models import Lessons, Marks
 from django.db.models import Q, Sum
 from datetime import datetime
+from django.core.paginator import Paginator
+
+
 
 class Journal():
 	type_journal='my'
@@ -13,7 +16,11 @@ class Journal():
 		context={}
 		context['title'] = 'Журнал'
 		if self.get_loads():
-			context['lessons']=self.get_lessons()
+			paginator = Paginator(self.get_lessons(), 14)
+			page_number = self.request.POST.get('page') or 1
+			page_obj = paginator.get_page(page_number)
+			context['lessons']= page_obj
+			context['all_lessons']= self.get_lessons()
 			context['period']=self.get_period()
 			context['periods']=Periods.objects.filter(profile=self.get_period().profile)
 			context['loads']=self.get_loads()

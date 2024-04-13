@@ -16,6 +16,7 @@ urlpatterns=[
 
 	path('profession/',ProfessionsView.as_view(),name="ProfessionList"),
 	path('delete_profession/<int:pk>/',DeleteProfession.as_view() ,name="DeleteProfession"),
+
 	#админка
 	path('create_institution/',InstitutionCreate.as_view() ,name="InstitutionCreate"),
 	path('block_institution/<int:institution>',BlockInstitution.as_view() ,name="BlockInstitution"),

@@ -14,7 +14,7 @@ from .permissions import InstitutionsMixin
 from .utils import Study_Periods
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from journal.models import LessonType, TypeExams
-from classes.models import Classes, Student, Professions, Сurriculum
+from classes.models import Classes, Student, Professions, Сurriculum, Floors
 
 
 class InstitutionsHomeView(PermissionRequiredMixin, SuccessMessageMixin, View):
@@ -243,6 +243,8 @@ class BellProfileCreateView(AdminPermissionMixin, CreateView):
 
     def get_success_url(self):
         return reverse("Bell_profile_list")
+
+
 
 
 class SubjectView(AdminPermissionMixin, CreateView):

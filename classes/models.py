@@ -67,6 +67,19 @@ class Subgroups(models.Model):
     class Meta:
         ordering=['subject_pk','name']
 
+
+#этажи и кабинеты
+class Floors(models.Model):
+    number = models.IntegerField(null=False)
+    institution = models.ForeignKey(Institutions, on_delete=models.CASCADE, verbose_name='Организация')
+
+class Cabinets(models.Model):
+    number = models.IntegerField(null=False)
+    floor = models.ForeignKey(Floors,on_delete=models.CASCADE,null=True)
+    name = models.CharField(max_length=150)
+    responsible = models.ForeignKey(UserNet, on_delete=models.SET_NULL, verbose_name="Отвественный",
+                                       null=True)
+
 # Учебный план
 
 class Сurriculum(models.Model):
@@ -114,6 +127,7 @@ class SubjectTemplate(models.Model):
     profile = models.ForeignKey(TimetableTemplates, on_delete=models.CASCADE)
     lesson = models.IntegerField(null=True)
     day = models.IntegerField(null=True)
+    cabinet = models.ForeignKey(Cabinets, on_delete=models.SET_NULL, null=True)
     subject_pk = models.ForeignKey('Load', on_delete=models.CASCADE,null=True, verbose_name='Предмет')
 
 

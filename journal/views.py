@@ -38,7 +38,7 @@ class SchoolJournalView(View, Journal):
     def post(self, request, *args, **kwargs):
         
         
-        return render(request, 'journal/journal.html', self.get_context())
+        return render(request, 'journal/new_journal.html', self.get_context())
         
 
 class ClassesJournalView(View, Journal):
@@ -239,6 +239,26 @@ class Mark(View):
                 get_mark = Marks.objects.get(pk=del_mark)
 
                 get_mark.delete()
+            load = request.POST['load']
+            lessons = Lessons.objects.filter(subject_pk__pk=int(load))
+            marks = Marks.objects.filter(student=student, lesson__in=lessons)
+            mark_sum = 0
+            mark_count = 0
+            result = 0
+            arr = []
+            for mark in marks:
+                if mark.lesson not in arr:
+                    arr.append(mark.lesson)
+                    if mark.mark:
+                        mark_sum+=mark.mark
+                        mark_count +=1
+                    if mark.mark2:
+                        mark_sum+=mark.mark2
+                        mark_count += 1
+            try:
+                result = "{:.2f}".format(mark_sum/mark_count)
+            except:
+                result = ''
         else:
             get_load = Load.objects.get(pk=lesson)
             period = Periods.objects.get(pk=itog)
@@ -270,8 +290,11 @@ class Mark(View):
                 get_mark = MarksItog.objects.get(pk=del_mark)
 
                 get_mark.delete()
-
-        return HttpResponse(mark_pk)
+        response = {
+            'mark_pk': mark_pk,
+            'result':result
+        }
+        return JsonResponse(response)
 
     def get(self, request, *args, **kwargs):
         return HttpResponse('Кукиш')
@@ -637,6 +660,7 @@ class List_KTP(CreateView):
 
     def get_success_url(self):
         return reverse('KTP_pk', kwargs={'pk':self.object.pk})
+
 
 
 class KTPView(View):

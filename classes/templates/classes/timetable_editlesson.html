@@ -31,7 +31,7 @@
 {% if lessons %}
 <form method="POST">
 {% csrf_token %}
-<table class="table table-sm table-bordered mt-3">
+<table class="table table-sm table-bordered table-hover mt-3">
   <tr>
     <td id="" style="width:5%">Номер</td>
     <td id="" style="width: 10%">Время</td>
@@ -65,7 +65,15 @@
       <option value="{{ teacher.pk }}" pk="{{teacher.pk}}" {% if lesson.teacher == teacher %} selected="" {% endif %}>{{ teacher }}</option>
       {% endfor %}
     </select></td>
-    <td><select class="form-control form-control-sm" disabled="" name="" id=""></select></td>
+    <td>
+
+      <select class="custom-select custom-select-sm" name="cabinet{{ lesson.pk }}" id="">
+        <option value=""></option>
+        {% for cabinet in cabinets %}
+        <option value="{{ cabinet.pk }}" {% if cabinet.pk == lesson.cabinet.pk %}selected{% endif %}>{{ cabinet.number }}</option>
+        {% endfor %}
+      </select>
+    </td>
   </tr>
   {% endfor %}
 </table>

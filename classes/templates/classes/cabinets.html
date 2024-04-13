@@ -1,0 +1,224 @@
+{% extends 'user_index.html' %}
+{% block h2 %}
+<i class="bi bi-building-gear"></i> {{ title }} <span class="badge badge-success">New</span>
+{% endblock %}
+
+
+{% block content %}
+
+{% if floors %}
+<div class="mt-6">
+	{% for floor in floors %}
+<table class="table table-sm table-bordered table-hover">
+	<thead class="bg-info text-white">
+		<tr>
+			<th class="text-center" colspan="4">{{ floor.number }} этаж</th>
+
+		</tr>
+		<tr>
+			<th class="text-center">№</th>
+			<th class="text-center">Название</th>
+			<th class="text-center">Ответственный</th>
+			<th class="text-center">Действие</th>
+		</tr>
+	</thead>
+
+	<tbody>
+    {% for cabinet in cabinets %}
+    {% if floor.number == cabinet.floor.number %}
+	<tr>
+		<td class="text-center">{{ cabinet.number }}</td>
+		<td>{{ cabinet.name }}</td>
+		<td>
+            {% if cabinet.responsible %}
+            {{ cabinet.responsible }}
+            {% else %}
+            Не указан
+            {% endif %}
+        </td>
+		<td class="text-center">
+			 <a class="edit text-info" title="Редактировать" number="{{ cabinet.number }}" name="{{ cabinet.name }}" responsible="{{ cabinet.responsible.pk }}" cabinet_id="{{ cabinet.id }}"><i class="bi bi-pencil-square"></i></a>
+              <a  href="{% url 'DeleteCabinet' pk=cabinet.pk %}" class="deleteClass text-info" name="{{ class }}" pk="{{ class.pk }}" title="Удалить"><i class="bi bi-trash-fill"></i></a>
+		</td>
+	</tr>
+    {% endif %}
+    {% endfor %}
+		<tr>
+
+			<td class="text-center" colspan="4">
+				<button class="btn btn-sm btn-info add" floor="{{ floor.number }}">Добавить кабинет</button>
+			</td>
+		</tr>
+	</tbody>
+	</table>
+	{% endfor %}
+</div>
+{% else %}
+<div class="alert alert-danger mb-3 mt-3" role="alert">
+  <i class="bi bi-question-circle-fill"></i> В вашей организации не найдено этажей. Ниже можете добавить.
+</div>
+{% endif %}
+
+
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">
+  Добавить этаж <i class="bi bi-plus-circle-dotted"></i>
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<form action="{% url 'AddFloor' %}" method="post">
+		{% csrf_token %}
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        <h5 class="modal-title text-white" id="exampleModalLabel"><i class="bi bi-plus-circle-dotted"></i> Добавление этажа в здание</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+			<div class="col">Номер этажа:</div>
+			<div class="col"><input class="form-control form-cntrol-sm" type="number" name="number"></div>
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-info"><i class="bi bi-plus-circle-dotted"></i> Добавить</button>
+      </div>
+    </div>
+  </div>
+		</form>
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="editCabinet" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info ">
+        <h5 class="modal-title text-white" id="exampleModalLabel"><i class="bi bi-pencil-square"></i> Редактирование кабинета</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="{% url 'EditCabinet' %}" method="POST">
+        {% csrf_token %}
+      <div class="modal-body">
+                  <div class="row">
+              <div class="col">Номер:</div>
+              <div class="col">
+                  <input name="number" type="number" class="form-control form-control-sm number" required>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col">Наименование:</div>
+              <div class="col">
+                  <input name="name" type="text" class="form-control form-control-sm name" required placeholder="Кабинет ОБЖ">
+              </div>
+          </div>
+          <div class="row">
+              <div class="col">Отвественный:</div>
+              <div class="col">
+                  <select name="teacher" id="" class="custom-select custom-select-sm">
+                      <option class="t0" value="">Не указан</option>
+                      {% for teacher in teachers %}
+                      <option class="t{{ teacher.pk }}" value="{{ teacher.pk }}">{{ teacher }}</option>
+                      {% endfor %}
+                  </select>
+              </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+
+        <button type="submit" class="btn btn-info">Сохранить изменения</button>
+        <input  class="cabinet_id" name="cabinet_id" style="display: none;" type="text">
+
+      </div>
+    </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="addCabinet" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info ">
+        <h5 class="modal-title text-white" id="exampleModalLabel"><i class="bi bi-pencil-square"></i> Добавление кабинета на
+            <a class="floor_text"></a> этаж</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="{% url 'AddCabinet' %}" method="POST">
+        {% csrf_token %}
+      <div class="modal-body">
+          <div class="row">
+              <div class="col">Номер:</div>
+              <div class="col">
+                  <input name="number" type="number" class="form-control form-control-sm" required>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col">Наименование:</div>
+              <div class="col">
+                  <input name="name" type="text" class="form-control form-control-sm" required placeholder="Кабинет ОБЖ">
+              </div>
+          </div>
+          <div class="row">
+              <div class="col">Отвественный:</div>
+              <div class="col">
+                  <select name="teacher" id="" class="custom-select custom-select-sm">
+                      <option value="">Не указан</option>
+                      {% for teacher in teachers %}
+                      <option value="{{ teacher.pk }}">{{ teacher }}</option>
+                      {% endfor %}
+                  </select>
+              </div>
+          </div>
+
+      </div>
+      <div class="modal-footer">
+
+        <button type="submit" class="btn btn-info"><i class="bi bi-building-add"></i> Добавить кабинет</button>
+        <input  class="floor_add" name="floor" style="display: none;" type="text">
+
+      </div>
+    </div>
+    </form>
+  </div>
+</div>
+
+
+
+<script type="text/javascript">
+    $('.edit').on('click',function(event){
+    const modal = new bootstrap.Modal(document.querySelector('#editCabinet'));
+    $('.number').attr('value',$(this).attr('number'))
+    $('.name').attr('value',$(this).attr('name'))
+    $('.cabinet_id').attr('value',$(this).attr('cabinet_id'))
+
+    $("option:selected").prop("selected", false);
+
+    $('.t'+$(this).attr('responsible')).attr("selected", "selected")
+
+
+    modal.show();
+
+
+  })
+  $('.add').on('click',function(event){
+    const modal = new bootstrap.Modal(document.querySelector('#addCabinet'));
+    $('.floor_text').text($(this).attr('floor'))
+    $('.floor_add').attr('value',($(this).attr('floor')))
+    modal.show();
+
+
+  })
+
+</script>
+
+{% endblock %}

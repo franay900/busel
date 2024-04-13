@@ -122,11 +122,21 @@
               </div>
               <div>
                   <label for="kind" class="formbold-form-label"> Вид ОО </label>
+                   {% if not mo %}
                   <select class="formbold-form-select" name="kind" id="kind">
                       {% for kind in kinds %}
                     <option value="{{ kind.id }}">{{ kind }}</option>
                     {% endfor %}
                   </select>
+                  {% else %}
+                  <select class="formbold-form-select" name="kind" id="kind">
+                      {% for kind in kinds %}
+                      {% if kind.title != 'Общественная организация' and kind.title != 'Министерство' %}
+                    <option value="{{ kind.id }}">{{ kind }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                  {% endif %}
               </div>
           </div>
 

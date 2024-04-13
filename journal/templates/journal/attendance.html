@@ -29,7 +29,7 @@
                 id="">
             {% for classes in classes %}
             <option {% if class.pk == classes.pk %} selected="" {% endif %}
-                    value="{% url 'AttendanceJournalPk' pk=classes.pk %}">{{ classes.class_number }}{{ classes.letter }}
+                    value="{% url 'AttendanceJournalPk' pk=classes.pk %}">{{ classes }}
             </option>
             {% endfor %}
         </select>

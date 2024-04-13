@@ -1,4 +1,4 @@
-from classes.models import Classes, BellTimetable
+from classes.models import Classes, BellTimetable, Cabinets
 from journal.models import Lessons
 from .models import СurriculumSubject, Load
 from modules.weeks import get_all_weeks, get_dates
@@ -64,12 +64,20 @@ class TimetableSettigns():
 
             get_new_lesson=self.request.POST.get("lesson"+str(lesson.pk))
             get_new_teacher=self.request.POST.get("teacher"+str(lesson.pk))
-            
+            get_new_cabinet=self.request.POST.get("cabinet"+str(lesson.pk))
+
             if get_new_lesson and get_new_teacher:
                 get_load=Load.objects.get(pk=get_new_lesson)
                 get_teeacher=UserNet.objects.get(pk=get_new_teacher)
+                try:
+                    get_cabinet = Cabinets.objects.get(pk=get_new_cabinet)
+                    lesson.cabinet = get_cabinet
+                except:
+                    lesson.cabinet = None
+
                 lesson.teacher=get_teeacher
                 lesson.subject_pk=get_load
+
                 lesson.save()
             else:
                 lesson.delete()
