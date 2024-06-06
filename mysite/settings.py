@@ -12,7 +12,9 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+import pymysql
 
+pymysql.install_as_MySQLdb()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -51,6 +53,7 @@ INSTALLED_APPS = [
     'simple_history',
     'crispy_forms',
     'crispy_bootstrap4',
+     'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -92,8 +95,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'busel',
-        'USER': 'ilnur',
-        'PASSWORD': '123',
+        'USER': 'root',
+        'PASSWORD': '',
         'HOST': 'localhost',
         'Port': '3306',
 

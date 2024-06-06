@@ -1,0 +1,181 @@
+{% extends 'lk.html' %}
+{% load timetable_tags %}
+{% load static %}
+{% block h2 %}
+{{ title }} 
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="modal animate__animated animate__slideInDown" id="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            
+            <h3>Создать напоминание</h3>
+            <span class="close" onclick="closeModal()">
+              <img src="{% static 'img/close_icon.png' %}" alt="">
+            </span>
+          </div>
+            
+            
+            <div class="modal-body">
+              <div class="row">
+                <div class="col "><p class="reminder_text">Текст напоминания:</p></div>
+                <div class="col"><input class="custom_input" type="text"></div>
+              </div>
+
+              <div class="row">
+                <div class="col "><p class="reminder_text">Дата:</p></div>
+                <div class="col"><input class="custom_input" type="date"></div>
+              </div>
+
+              <div class="row">
+                <div class="col "><p class="reminder_text">Время:</p></div>
+                <div class="col"><input class="custom_input" type="time"></div>
+              </div>
+
+              
+              
+              
+            </div>
+        </div>
+    </div>
+
+<div class="desktop__content">
+    <div class="row">
+        <div class="desktop__col">
+            <h3 class="desktop__title">Мои журналы</h3>
+            <div class="journals">
+                {% get_journals user=request.user as journals %}
+                {% for journal in journals %}
+                <div class="journals__row">
+                    <div class="journals__col">Класс {{ journal.class_pk }}</div>
+                    <div class="journals__col">23.05.2024</div>
+                    <div class="journals__col subject">{{ journal.subject_pk.subject.short_title|truncatechars:8 }}</div>
+                </div>
+                {% endfor %}
+                
+            </div>
+        </div>
+        <div class="desktop__col calendar ">
+            
+            <h3 class="desktop__title">Март 2024</h3>
+            <div class="desktop__calendar">
+
+            </div>
+            
+
+            <div class="reminders">
+                <div class="reminder_row ">
+                    
+                    <p>
+                        *здесь будут напоминания
+                    </p>
+                </div>
+                <div class="reminder_row">
+                    
+                    <p>
+                        *здесь будут напоминания
+                    </p>
+                </div>
+            </div>
+            <a class="add_reminder" id="openModal">Добавить напоминание +</a>
+        </div>
+        <div class="desktop__col desktop__class">
+            <h3 class="desktop__title">Классное руководство</h3>
+            <h3 class="desktop__title">7В</h3>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function createCalendar(elem,year,month) {
+        elem = document.querySelector(elem);
+        console.log(elem);
+        let mon = month - 1;
+        let d = new Date(year, mon);
+        let table = `
+            
+            <table class="dates">
+                <tr class="dates__tr">
+                    <th>ПН</th>
+                    <th>ВТ</th>
+                    <th>СР</th>
+                    <th>ЧТ</th>
+                    <th>ПТ</th>
+                    <th>СБ</th>
+                    <th>ВС</th>
+                </tr>
+                <tr class="days__tr">
+            
+        `;
+        
+        for(let i = 0; i < getDay(d);i++){
+            table += '<td></td>';            
+        }
+        while (d.getMonth() == mon){ 
+            table += '<td>' + d.getDate() + '</td>';
+          
+            if (getDay(d) % 7 == 6 ){
+                table +=`</tr><tr class="days__tr">`;
+                
+            }
+            d.setDate(d.getDate()+1);
+        }
+        table+='</tr></table>';
+        
+        elem.innerHTML += table;
+        
+    }
+
+    function getDay(date) {
+        let day = date.getDay();
+        if (day == 0){
+            day = 7;
+            
+        }
+        return day-1;
+        
+    }
+
+    createCalendar('.desktop__calendar', 2024,5);
+    let uls = document.querySelectorAll('.click_ul');
+    
+    function toggleDisplay(element) {
+    
+    if (element.style.display === 'none') {
+        element.style.display = 'block';
+    } else {
+        element.style.display = 'none';
+    }
+    }
+
+    
+    uls.forEach(element => {
+    let elem = element.querySelector('ul');
+    elem.style.display = 'none';
+    element.addEventListener('click', function(){
+        
+        
+        toggleDisplay(elem);
+    });
+    });
+
+    const openModalButton = document.getElementById('openModal');
+    const modal = document.getElementById('modal');
+    const modalContent = document.querySelector('.modal-content');
+    modal.style.display = 'none';
+    openModalButton.addEventListener('click', () => {
+        modal.style.display = 'flex';
+        modalContent.classList.add('show'); 
+    });
+
+    function closeModal() {
+        modal.style.display = 'none';
+        modalContent.classList.remove('show'); 
+    }
+</script>
+
+{% endblock %}

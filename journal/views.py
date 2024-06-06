@@ -44,23 +44,31 @@ class SchoolJournalView(View, Journal):
 class ClassesJournalView(View, Journal):
     template_name = 'journal/journal.html'
     type_journal='school'
+
+
     def get_classes(self):
         return Classes.objects.filter(class_teacher=self.request.user)
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name, self.get_context())
 
     def post(self, request, *args, **kwargs):
-        return render(request, self.template_name, self.get_context())
+        return render(request, self.template_name(), self.get_context())
 
 class MyJournalView(View, Journal):
-    template_name = 'journal/journal.html'
+    
     type_journal='my'
+    
+    def get_template(self):
+        if UserNet.objects.filter(pk=self.request.user.pk,groups__name__in=['Администратор ОО']):
+            return 'journal/journal.html'
+        else:
+            return 'journal/new_journal.html'
     def get(self, request, *args, **kwargs):
-
-        return render(request, self.template_name, self.get_context())
+        
+        return render(request, self.get_template(), self.get_context())
 
     def post(self, request, *args, **kwargs):
-        return render(request, self.template_name, self.get_context())
+        return render(request, self.get_template(), self.get_context())
 
 
 def check_period(self, load):
@@ -84,10 +92,16 @@ def check_period(self, load):
 
 class LessonTopics(View):
 
+    
+        
     def get_load(self, **kwargs):
         load = self.kwargs['load']
         return Load.objects.get(pk=load)
     def get(self, request, *args, **kwargs):
+        if UserNet.objects.filter(pk=self.request.user.pk,groups__name__in=['Администратор ОО']):
+            template =  'journal/lesson_topics.html'
+        else:
+            template =  'journal/topics.html'
         self.referer = self.request.META.get('HTTP_REFERER')
         load_pk = self.kwargs.get("load")
         load = Load.objects.get(pk=load_pk)
@@ -103,7 +117,7 @@ class LessonTopics(View):
         context['BellProfile'] = BellProfile.objects.get(pk=get_class.bell_profile.pk)
         context['referer']=self.referer
         context['ktp'] = KTP.objects.filter(loads=load)
-        return render(request, 'journal/lesson_topics.html', context)
+        return render(request, template, context)
 
     def post(self, request, *args, **kwargs):
         load_pk = self.kwargs.get("load")

@@ -81,7 +81,7 @@
             </div>
             </div>
         <div class="select-block">
-            <a style="margin-left:6px" class="show_journal">Темы уроков и домашнее задание</a>
+            <a href="{% url 'LessonTopics' load=load_pk.pk period=period.pk %}" style="margin-left:6px" class="show_journal">Темы уроков и домашнее задание</a>
         </div>
             <div class="select-block" style="margin-left:-6px">
             <a class="show_journal">Итоговые оценки</a>
@@ -109,7 +109,7 @@
                 <td class="sball" rowspan="3">Средений балл</td>
                 <td class="itog" rowspan="3">1 полугодие</td>
             </tr>
-            <tr class="dates" >
+            <tr class="journal_dates" >
                 {% for lesson in lessons %}
                 <td class="date " colspan="{{ lesson.types.all.count }}">{{ lesson.date|date:'d' }}</td>
                 {% endfor %}
@@ -172,138 +172,25 @@
 </nav>
 
     <script>
-        $('.mark').on('click', function(){
-            $(this).children('.mark_div').css('display','none');
-            $(this).children('.edit_mark').css('display','block');
-            $(this).children('.edit_mark').focus();
-        });
-        $('.edit_mark').on('focusout', function(){
-            savemark(this)
-        })
+       function updateColspan(selector, targetElementId) {
+    const count = document.querySelector('table').querySelectorAll(selector).length;
+    if (count) {
+        const targetElement = document.getElementById(targetElementId);
+        targetElement.setAttribute('colspan', count);
+        targetElement.style.display = 'table-cell'; // показываем элемент
+    }
+}
 
-        function savemark(self){
-
-
-            var mark = parseInt($(self).val());
-            var url='{% url 'Mark' %}'
-            var token='{{ csrf_token }}'
-            var type_lesson = $(self).attr('type_lesson')
-            var student = $(self).attr('student')
-            var lesson = $(self).attr('lesson')
-
-            $(self).css('display', 'none');
-            if ($.isNumeric( $(self).val() ) == false){
-                return 0;
-            }
-            if ($(self).val().trim().length === 0){
-                return 0;
-            }
-            if (mark <1 | mark > 5){
-                return 0;
-            }
-
-
-
-            $.ajax({
-                  url: url,
-                  method: 'post',
-                  dataType: 'json',
-                  data: {
-                    isitog:0,
-                    itog:0,
-                    attendance:0,
-                    red_mark:0,
-                    del_mark:0,
-                    mark: mark,
-                    two_mark:0,
-                    student:student,
-                    type:type_lesson,
-                    lesson:lesson,
-                    load:'{{load_pk.pk}}',
-                    csrfmiddlewaretoken: token
-                  },
-                  // если успешно, то
-                  success: function (response) {
-                      if ($('.switch_checkbox').is(':checked')==false) {
-
-
-                        $(self).parent().append(`<div class='mark_div markBW'>${mark}</div>`)
-                    }
-                    else {
-                        $(self).parent().append(`<div class='mark_div mark${mark}'>${mark}</div>`)
-                    }
-                    $('#av'+student).text(response.result)
-                    console.log(response.mark_pk)
-                  },
-                  // если ошибка, то
-                  error: function (response) {
-                      alert("Ошибка")
-                  }
-              });
-        }
-
-
-        var count_sep=$('table').find('.day09').length;
-        if (count_sep){
-          $(sep).attr('colspan',count_sep).show()
-      }
-        var count_oct=$('table').find('.day10').length;
-        if (count_oct){
-        $(oct).attr('colspan',count_oct).show()
-      }
-        var count_nov=$('table').find('.day11').length;
-        if (count_nov){
-          $(nov).attr('colspan',count_nov).show()
-        }
-        var count_dec=$('table').find('.day12').length;
-        if (count_dec){
-        $(dec).attr('colspan',count_dec).show()
-        }
-
-
-
-
-        var count_jan=$('table').find('.day01').length;
-
-        if (count_jan){
-        $(jan).attr('colspan',count_jan).show()
-        }
-
-
-        var count_feb=$('table').find('.day02').length;
-        if (count_feb){
-        $(feb).attr('colspan',count_feb).show()
-        }
-
-        var count_mar=$('table').find('.day03').length;
-        if (count_mar){
-        $(march).attr('colspan',count_mar).show()
-        }
-
-
-        var count_ap=$('table').find('.day04').length;
-        if (count_ap){
-        $('#april').attr('colspan',count_ap).show()
-        }
-
-        var count_may=$('table').find('.day05').length;
-        if (count_may){
-        $('#may').attr('colspan',count_may).show()
-        }
-
-
-
-
-        $(":checkbox").change(function(){
-
-        if(this.checked){
-            console.log(1);
-        }else{
-            console.log(2);
-        }
-
-    });
-
+// Вызываем функцию для каждого месяца
+updateColspan('.day09', 'sep');
+updateColspan('.day10', 'oct');
+updateColspan('.day11', 'nov');
+updateColspan('.day12', 'dec');
+updateColspan('.day01', 'jan');
+updateColspan('.day02', 'feb');
+updateColspan('.day03', 'march');
+updateColspan('.day04', 'april');
+updateColspan('.day05', 'may');
 
 
 

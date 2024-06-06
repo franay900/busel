@@ -186,10 +186,10 @@ class StudyPeriodsUpdateView(View, Study_Periods):
 
 
 # Звонки
-class BellProfileView(AdminPermissionMixin, ListView):
+class BellProfileView(PermissionRequiredMixin, ListView):
     model = BellProfile
     template_name = "institutions/bell_profile.html"
-
+    permission_required = 'institutions.view_belltimetable'
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
         context["title"] = "Профили звонков"
@@ -247,10 +247,10 @@ class BellProfileCreateView(AdminPermissionMixin, CreateView):
 
 
 
-class SubjectView(AdminPermissionMixin, CreateView):
+class SubjectView(PermissionRequiredMixin, CreateView):
     form_class = SubjectForm
     template_name = "institutions/subject_list.html"
-
+    permission_required = "institutions.view_subject"
     def form_valid(self, form):
         form.instance.institution_id = self.request.user.institution.pk
         if (

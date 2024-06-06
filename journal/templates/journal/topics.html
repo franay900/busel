@@ -1,0 +1,123 @@
+{% extends 'lk.html' %}
+{% load dz_tags %}
+
+
+
+
+{% block h2 %}
+<i class="bi bi-layout-text-sidebar"></i> {{ title }} 
+{% endblock %}
+{% block content %}
+
+
+{% if request.user.institution.typeInstitutions.title == 'Профессиональная образовательная организация' %}
+<div class="row">
+	<div class="col font-weight-bold">Группа</div>
+	<div class="col">{{ load.class_pk }}</div>
+</div>
+
+<div class="row">
+	<div class="col font-weight-bold">Дисциплина</div>
+	<div class="col">{{load.subject_pk}} </div>
+</div>
+
+
+
+{% else %}
+<div class="row">
+	<div class="col font-weight-bold">Класс</div>
+	<div class="col">{{ load.class_pk }}</div>
+</div>
+
+<div class="row">
+	<div class="col font-weight-bold">Предмет</div>
+	<div class="col">{{load.subject_pk}} </div>
+</div>
+
+<div class="row">
+	<div class="col font-weight-bold">КТП:</div>
+	<div class="col">
+		{% if ktp.0 %}
+		{{ ktp.0.name }}
+		{% else %}
+		<a class="text font-weight-bold ">Не используется</a>
+		{% endif %}
+	</div>
+</div>
+
+{% endif %}
+
+<table>
+	<thead class="topic_thead">
+		<td class="number">№</td>
+		<td class="topic_td topic_date">Дата</td>
+		<td class="topic_td">Тема урока</td>
+		<td class="itog topic_itog">Домашне задание</td>
+	</thead>
+	<tbody>
+		{% for lesson in lessons %}
+		{% if lesson.date >= period.start and lesson.date <= period.end %}
+		<tr>
+			<td class="num">{{ forloop.counter }}</td>
+			<td class="topic_date_td"> <p class="date_text">{{ lesson.date|date:'d.m.Y' }}</p> </td>
+			<td class="lesson_topic__td">
+				<input name="topic{{ lesson.pk }}" class="custom_input topic_input topic_input" {% if lesson.ktp %} disabled {% endif %} 
+				value="{% if lesson.ktp %}{{ lesson.ktp.name }}{% else %}{% if lesson.topic %}{{ lesson.topic }}{% endif %}{% endif %}"> 
+				
+				
+				{% if lesson.ktp %}
+				
+				<p class="topic_text">{{ lesson.ktp.name }}</p>
+				{% else %}
+				{% if lesson.topic %}
+				
+				<p class="topic_text">{{ lesson.topic|truncatechars:50 }}</p>
+				{% else %} <p class="no_topic topic_text">не указана</p>  {% endif %}{% endif %}
+				
+			</td>
+			<td>
+				<input name="homework{{ lesson.pk }}" class="custom_input topic_input" value="{% if lesson.homework %}{{ lesson.homework }}{% endif %}">
+				
+				{% if lesson.homework %}
+				<p class="homework_text">
+					{{ lesson.homework|truncatechars:50 }}
+				</p>
+				 
+				{% else %} <p class="no_topic">не указано</p> 
+				{% endif %}
+				
+			</td>
+			
+		</tr>
+		{% endif %}
+		{% endfor %}
+	</tbody>
+</table>
+
+<script>
+	const topics = document.querySelectorAll('.lesson_topic__td');
+	topics.forEach(function(topic) {
+		topic.addEventListener('click', function() {
+			let topic_input = topic.querySelector('input');
+			let topic_text = topic.querySelector('.topic_text');
+			topic_input.style.display = 'block';
+			topic_text.style.display = 'none';
+			topic_input.focus();
+		})
+	});
+
+	const topics_input = document.querySelectorAll('.topic_input');
+	topics_input.forEach(function(topic_input) {
+		topic_input.addEventListener('blur', function() {
+			topic_input.style.display = 'none';
+			let td = topic_input.closest('td');
+			let topic_text = td.querySelector('.topic_text');
+			topic_text.textContent = topic_input.value;
+			topic_text.style.display = 'block';
+			
+		})
+	});
+
+</script>
+
+{% endblock %}

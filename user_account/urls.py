@@ -6,7 +6,8 @@ urlpatterns= [
 	path('',HomePageAccountView.as_view(),name='HomePageUserAccount'),
 	path('users',UsersView.as_view(),name='users'),
 	path('uo/users',UsersUoView.as_view(),name='UsersUo'),
-
+	path('api/v1/userlist', UserApiList.as_view()),
+	path('api/v1/userlist/<int:pk>', UserApiView.as_view()),
 	path('edit_my_account',EditMyAccount.as_view(),name='EditMyAccount'),
 
 	path('user_edit/<int:user_id>/',user_edit_view,name='user_edit'),

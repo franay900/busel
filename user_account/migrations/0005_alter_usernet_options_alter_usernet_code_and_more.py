@@ -26,10 +26,7 @@ class Migration(migrations.Migration):
             name='institution',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='institutions.institutions', verbose_name='Организация'),
         ),
-        migrations.AlterUniqueTogether(
-            name='usernet',
-            unique_together={('email',)},
-        ),
+   
         migrations.DeleteModel(
             name='HistoricalUserNet',
         ),

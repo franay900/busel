@@ -1,6 +1,6 @@
 import random
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse,HttpResponseForbidden,HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
 from django.contrib.auth import login, logout, get_user_model
@@ -14,7 +14,6 @@ from django.contrib.messages.views import SuccessMessageMixin
 from institutions.permissions import InstitutionsMixin
 from modules.users import get_user, generate_login, confirm_email
 from django.contrib import messages
-from django.http import HttpResponseForbidden,HttpResponseRedirect
 from classes.models import Load,Classes
 from news.models import AdsInstitution
 from .tokens import account_activation_token
@@ -22,7 +21,10 @@ from django.utils.timezone import now
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from institutions.models import Institutions
-
+from rest_framework import generics
+from .serializers import UserSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 
 
@@ -30,11 +32,14 @@ class HomePageAccountView(RegisterMixin,LoginRequiredMixin, ListView):
     model = UserNet
     login_url = 'login'
     template_name = 'user_account/index.html'
+    def get_template_names(self):
+        if UserNet.objects.filter(pk=self.request.user.pk,groups__name__in=['Администратор ОО']): return ['user_account/index.html']
+        else: return ['user_account/desktop.html']
     def get_context_data(self, *, object_list=None, **kwargs):
         today = now().date()
         context = super().get_context_data()
 
-        context['title'] = "Главная"
+        context['title'] = "Рабочий стол"
         context['ads']=AdsInstitution.objects.filter(institution=self.request.user.institution).order_by('-date_public')
         context['now'] = today
         return context
@@ -48,6 +53,32 @@ class UsersView(PermissionRequiredMixin,UserMixin, ListView):
         c_def = self.getUserByInstitutions(title='Сотрудники')
         return dict(list(context.items()) + list(c_def.items()))
 
+class UserApiList(generics.ListCreateAPIView):
+    queryset = UserNet.objects.filter()
+    serializer_class = UserSerializer
+
+
+class UserApiView(APIView):
+    def get(self,request):
+        u = UserNet.objects.all()
+        return Response({'users': UserSerializer(u, many=True).data})
+    def post(self,request):
+        serializer = UserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'users': serializer.data})
+    def put(self,request,*args, **kwargs):
+        pk = kwargs.get("pk", None)
+        if not pk:
+            return Response({"error:": "Ключ не определен"})
+        try:
+            instance = UserNet.objects.get(pk=pk)
+        except:
+            return Response({"error:": "Объект не найден"})
+        serializer = UserSerializer(data=request.data, instance=instance)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'post': serializer.data})
 
 class UsersUoView(PermissionRequiredMixin,View):
     permission_required = 'user_account.view_usernet'

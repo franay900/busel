@@ -2,6 +2,7 @@ from django import template
 from django.contrib.auth.models import Group 
 from journal.models import Lessons 
 from datetime import datetime
+from classes.models import Load
 
 register = template.Library() 
 
@@ -12,3 +13,7 @@ def get_timetable(user):
 
 
 	return lessons
+
+@register.simple_tag(name='get_journals')
+def get_journals(user):
+	return Load.objects.filter(teacher=user).order_by('class_pk')
